@@ -17,7 +17,7 @@ def call(body) {
     dockerRepo = "repo.adeo.no:5443"
     nais = "/usr/bin/nais"
     appConfig = "nais.yaml"
-
+    cluster = "${naisCluster}"
 
     node {
         stage("#1: Clone Project From Github") {
