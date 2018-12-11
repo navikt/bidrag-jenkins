@@ -33,12 +33,12 @@ def call(body) {
             tokens = releaseVersion.tokenize(".")
             devVersion = "${tokens[0]}.${tokens[1]}"
             isSnapshot = pom.version.contains("-SNAPSHOT")
-            committer = "git log -1 --pretty=format:\"%an (%ae)\"".execute().trim()
-            committerEmail = "git log -1 --pretty=format:\"%ae\"".execute() trim()
-            changelog = "git log `git describe --tags --abbrev=0`..HEAD --oneline".execute()
+            committer = sh(script: 'git log -1 --pretty=format:"%an (%ae)"', returnStdout: true).trim()
+            committerEmail = sh(script: 'git log -1 --pretty=format:"%ae"', returnStdout: true).trim()
+            changelog = sh(script: 'git log `git describe --tags --abbrev=0`..HEAD --oneline', returnStdout: true)
             dockerReleaseVersion = pom.version
-            commitHash = "git rev-parse HEAD".execute().trim()
-            commitHashShort = "git rev-parse --short HEAD".execute().trim()
+            commitHash = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+            commitHashShort = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
             commitUrl = "https://github.com/navikt/${application}/commit/${commitHash}"
             amount = env.BUILD_NUMBER.toString().padLeft(4, '0')
             releaseVersion = "${devVersion}.${amount}-SNAPSHOT"
