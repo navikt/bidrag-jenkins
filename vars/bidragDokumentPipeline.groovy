@@ -19,7 +19,7 @@ def call(body) {
             mvnImage = $ { pipelineParams.mvnImage }
         }
 
-        stages {
+        node {
             stage("#1: Clone Project From Github") {
                 cleanWs()
                 withCredentials([string(credentialsId: 'OAUTH_TOKEN', variable: 'token')]) {
