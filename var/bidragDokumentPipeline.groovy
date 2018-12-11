@@ -8,6 +8,8 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
+    print "bidragDokumentPipeline: pipelineParams = ${pipelineParams}"
+    
     pipeline {
         agent any
         environment {
