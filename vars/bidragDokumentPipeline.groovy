@@ -14,6 +14,8 @@ def call(body) {
     branch = pipelineParams.branch
     mvnImage = pipelineParams.mvnImage
     environment = pipelineParams.environment
+    dockerRepo = "repo.adeo.no:5443"
+
 
     node {
         stage("#1: Clone Project From Github") {
@@ -58,7 +60,7 @@ def call(body) {
         }
 
         stage("#5: release artifact") {
-            Builder.releaseArtifact(isSnapshot, mvnImage, imageVersion, releaseVersion, environment, application, pom.version, "$HOME", "$dockerRepo")
+            Builder.releaseArtifact(isSnapshot, mvnImage, imageVersion, releaseVersion, environment, application, pom.version, "$HOME", dockerRepo)
         }
 
         stage("#6: publish docker image") {
