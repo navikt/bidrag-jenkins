@@ -17,7 +17,6 @@ def call(body) {
             branch = $ { pipelineParams.branch }
             envOut = $ { EnvironmentOut }
             mvnImage = $ { pipelineParams.mvnImage }
-            pom
         }
 
         stages {
