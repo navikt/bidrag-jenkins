@@ -50,7 +50,7 @@ def call(body) {
         }
 
         stage("#3: Verify maven dependency versions") {
-            DependentVersions.verify()
+            DependentVersions.verify(pom)
         }
 
         stage("#4: Build & Test Project") {
