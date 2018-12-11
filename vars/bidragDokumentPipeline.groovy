@@ -58,7 +58,7 @@ def call(body) {
         }
 
         stage("#5: release artifact") {
-            Builder.releaseArtifact(isSnapshot, mvnImage, releaseVersion, environment, application, pom.version, "$HOME")
+            Builder.releaseArtifact(isSnapshot, mvnImage, imageVersion, releaseVersion, environment, application, pom.version, "$HOME")
         }
 
         stage("#6: publish docker image") {
