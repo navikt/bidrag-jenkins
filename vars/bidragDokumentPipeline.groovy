@@ -15,6 +15,7 @@ def call(body) {
     mvnImage = pipelineParams.mvnImage
     environment = pipelineParams.environment
     dockerRepo = "repo.adeo.no:5443"
+    nais = "/usr/bin/nais"
 
 
     node {
