@@ -11,4 +11,18 @@ class Builder {
             println("POM version is not a SNAPSHOT, it is ${pomVersion}. Skipping build and testing of backend")
         }
     }
+
+    static def releaseArtifact(isSnapshot, mvnImage, releaseVersion, environment, application, pomversion) {
+        if (isSnapshot) {
+            sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '$HOME/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false"
+            sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '$HOME/.m2':/root/.m2 ${mvnImage} mvn clean install -DskipTests -Dhendelse.environments=${environment} -B -e"
+            sh "docker build --build-arg version=${releaseVersion} -t ${dockerRepo}/${application}:${imageVersion} ."
+            sh "git commit -am \"set version to ${releaseVersion} (from Jenkins pipeline)\""
+            sh "git push"
+            sh "git tag -a ${application}-${releaseVersion}-${environment} -m ${application}-${releaseVersion}-${environment}"
+            sh "git push --tags"
+        } else {
+            println("POM version is not a SNAPSHOT, it is ${pomversion}. Skipping releasing")
+        }
+    }
 }
