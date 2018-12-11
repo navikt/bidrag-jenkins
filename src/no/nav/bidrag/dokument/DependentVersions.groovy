@@ -3,7 +3,7 @@ package no.nav.bidrag.dokument
 class DependentVersions {
     static def verify(pom) {
         "echo \"Verifying that no snapshot dependencies is being used.\"".execute()
-        if ( pom.getProperties().getValues().toString().contains('SNAPSHOT') ) {
+        if ( pom.getProperties().values().toString().contains('SNAPSHOT') ) {
             throw "pom.xml har snapshot dependencies"
         }
 
