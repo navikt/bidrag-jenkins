@@ -13,6 +13,7 @@ def call(body) {
     application = pipelineParams.application
     branch = pipelineParams.branch
     mvnImage = pipelineParams.mvnImage
+    environment = pipelineParams.environment
 
     node {
         stage("#1: Clone Project From Github") {
