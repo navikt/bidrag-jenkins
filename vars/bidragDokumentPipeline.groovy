@@ -10,12 +10,12 @@ def call(body) {
 
     print "bidragDokumentPipeline: pipelineParams = ${pipelineParams}"
 
-    def environment = {
+    // def environment = {
         application = $ { pipelineParams.application }
         branch = $ { pipelineParams.branch }
         envOut = $ { EnvironmentOut }
         mvnImage = $ { pipelineParams.mvnImage }
-    }
+    // }
 
     node {
         stage("#1: Clone Project From Github") {
