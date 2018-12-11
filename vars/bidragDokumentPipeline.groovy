@@ -28,7 +28,6 @@ def call(body) {
         }
 
         stage("#2: initialize") {
-            println("${EnvironmentOut}")
             pom = readMavenPom file: 'pom.xml'
             releaseVersion = pom.version.tokenize("-")[0]
             tokens = releaseVersion.tokenize(".")
