@@ -58,7 +58,7 @@ def call(body) {
             }
 
             stage("#4: Build & Test Project") {
-                Builder.runMavenBuild(application, "$HOME", mvnImage, isSnapshot, pom.version9
+                Builder.runMavenBuild(application, "$HOME", mvnImage, isSnapshot, pom.version)
             }
 
             stage("#5: release artifact") {
