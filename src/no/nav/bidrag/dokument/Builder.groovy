@@ -12,7 +12,7 @@ class Builder {
         }
     }
 
-    static def releaseArtifact(isSnapshot, mvnImage, imageVersion, releaseVersion, environment, application, pomversion, home) {
+    static def releaseArtifact(isSnapshot, mvnImage, imageVersion, releaseVersion, environment, application, pomversion, home, dockerRepo) {
         if (isSnapshot) {
             sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '${home}/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false"
             sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '${home}/.m2':/root/.m2 ${mvnImage} mvn clean install -DskipTests -Dhendelse.environments=${environment} -B -e"
