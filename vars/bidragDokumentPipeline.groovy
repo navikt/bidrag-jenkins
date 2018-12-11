@@ -10,21 +10,19 @@ def call(body) {
 
     print "bidragDokumentPipeline: pipelineParams = ${pipelineParams}"
 
-    // def environment = {
-        application = pipelineParams.application
-        branch = pipelineParams.branch
-        mvnImage = pipelineParams.mvnImage
-    // }
+    application = pipelineParams.application
+    branch = pipelineParams.branch
+    mvnImage = pipelineParams.mvnImage
 
     node {
         stage("#1: Clone Project From Github") {
             cleanWs()
             withCredentials([string(credentialsId: 'OAUTH_TOKEN', variable: 'token')]) {
                 withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
-                    sh(script: "git clone https://${token}:x-oauth-basic@github.com/navikt/${environment.application}.git .")
+                    sh(script: "git clone https://${token}:x-oauth-basic@github.com/navikt/${application}.git .")
                     sh "echo '****** BRANCH ******'"
-                    sh "echo 'BRANCH CHECKOUT: ${environment.branch}'......"
-                    sh(script: "git checkout ${environment.branch}")
+                    sh "echo 'BRANCH CHECKOUT: ${branch}'......"
+                    sh(script: "git checkout ${branch}")
                 }
             }
         }
