@@ -11,10 +11,9 @@ def call(body) {
     print "bidragDokumentPipeline: pipelineParams = ${pipelineParams}"
 
     // def environment = {
-        application = $ { pipelineParams.application }
-        branch = $ { pipelineParams.branch }
-        envOut = $ { EnvironmentOut }
-        mvnImage = $ { pipelineParams.mvnImage }
+        application = pipelineParams.application
+        branch = pipelineParams.branch
+        mvnImage = pipelineParams.mvnImage
     // }
 
     node {
@@ -31,7 +30,7 @@ def call(body) {
         }
 
         stage("#2: initialize") {
-            println("${envOut}")
+            println("${EnvironmentOut}")
             pom = readMavenPom file: 'pom.xml'
             releaseVersion = pom.version.tokenize("-")[0]
             tokens = releaseVersion.tokenize(".")
