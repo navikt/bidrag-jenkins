@@ -12,10 +12,10 @@ class Builder {
         }
     }
 
-    static def releaseArtifact(isSnapshot, mvnImage, releaseVersion, environment, application, pomversion) {
+    static def releaseArtifact(isSnapshot, mvnImage, releaseVersion, environment, application, pomversion, home) {
         if (isSnapshot) {
-            sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '$HOME/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false"
-            sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '$HOME/.m2':/root/.m2 ${mvnImage} mvn clean install -DskipTests -Dhendelse.environments=${environment} -B -e"
+            sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '${home}/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false"
+            sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '${home}/.m2':/root/.m2 ${mvnImage} mvn clean install -DskipTests -Dhendelse.environments=${environment} -B -e"
             sh "docker build --build-arg version=${releaseVersion} -t ${dockerRepo}/${application}:${imageVersion} ."
             sh "git commit -am \"set version to ${releaseVersion} (from Jenkins pipeline)\""
             sh "git push"
