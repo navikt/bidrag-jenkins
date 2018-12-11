@@ -10,7 +10,7 @@ def call(body) {
 
     print "bidragDokumentPipeline: pipelineParams = ${pipelineParams}"
 
-    def environment {
+    def environment = {
         application = $ { pipelineParams.application }
         branch = $ { pipelineParams.branch }
         envOut = $ { EnvironmentOut }
@@ -32,7 +32,7 @@ def call(body) {
 
         stage("#2: initialize") {
             println("${envOut}")
-            environment.pom = readMavenPom file: 'pom.xml'
+            pom = readMavenPom file: 'pom.xml'
             releaseVersion = pom.version.tokenize("-")[0]
             tokens = releaseVersion.tokenize(".")
             devVersion = "${tokens[0]}.${tokens[1]}"
@@ -72,6 +72,7 @@ def call(body) {
                 println("POM version is not a SNAPSHOT, it is ${pom.version}. Skipping releasing")
             }
         }
+
         stage("#6: publish docker image") {
             if (isSnapshot) {
                 sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '$HOME/.m2':/root/.m2 ${mvnImage} mvn clean deploy -DskipTests -B -e"
