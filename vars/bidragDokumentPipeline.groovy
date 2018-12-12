@@ -14,7 +14,7 @@ def call(body) {
     application = pipelineParams.application
     branch = pipelineParams.branch
     mvnImage = pipelineParams.mvnImage
-    environment = pipelineParams.environment
+    environment = pipelineParams.environment || "q0"
     dockerRepo = "repo.adeo.no:5443"
     nais = "/usr/bin/nais"
     appConfig = "nais.yaml"
