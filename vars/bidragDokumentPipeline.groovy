@@ -1,5 +1,6 @@
 import no.nav.bidrag.dokument.DependentVersions
 import no.nav.bidrag.dokument.Builder
+import no.nav.bidrag.dokument.Cucumber
 
 def call(body) {
 
@@ -51,6 +52,8 @@ def call(body) {
             releaseVersion = "${devVersion}.${amount}-SNAPSHOT"
             imageVersion = "${releaseVersion}-${environment}"
             newReleaseVersion = amount
+
+            println "bidragDokumentPipeline: imageVersion=${imageVersion}, environment=${environment}, releaseVersion=${releaseVersion}"
         }
 
         stage("#3: Verify maven dependency versions") {
@@ -113,30 +116,7 @@ def call(body) {
         // Only signal fail the step not the entire pipeline
         try {
             stage("#10: Cucumber") {
-                if (fileExists('cucumber')) {
-                    println("[INFO] Run cucumber tests")
-                    sleep(20)
-                    try {
-                        sh "docker run --rm -v ${env.WORKSPACE}/cucumber:/cucumber bidrag-dokument-cucumber"
-                    } catch (e) {
-                        result = 'UNSTABLE'
-                    }
-                    if (fileExists('cucumber/cucumber.json')) {
-                        cucumber buildStatus: 'UNSTABLE',
-                                fileIncludePattern: 'cucumber/*.json',
-                                trendsLimit: 10,
-                                classifications: [
-                                        [
-                                                'key'  : 'Browser',
-                                                'value': 'Firefox'
-                                        ]
-                                ]
-                    } else {
-                        throw e
-                    }
-                } else {
-                    println("[INFO] No cucumber directory - not tests to run!")
-                }
+                Cucumber.runCucumberTests(this)
             }
         } catch (e) {
             result = 'FAIL'
