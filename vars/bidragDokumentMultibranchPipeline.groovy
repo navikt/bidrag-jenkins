@@ -19,7 +19,7 @@ def call(body) {
 
     node {
         stage("prepare multibranch shared library pipeline") {
-            println "running multibranch: `pwd`"
+            println "running multibranch: $PWD"
         }
     }
 }
