@@ -1,6 +1,5 @@
-import no.nav.bidrag.dokument.DependentVersions
 import no.nav.bidrag.dokument.Builder
-import no.nav.bidrag.dokument.Cucumber
+import no.nav.bidrag.dokument.DependentVersions
 
 def call(body) {
 
