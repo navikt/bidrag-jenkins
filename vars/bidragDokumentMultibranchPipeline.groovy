@@ -13,9 +13,7 @@ def call(body) {
     String mvnImage = pipelineParams.mvnImage
     String gitHubProjectName = pipelineParams.gitHubProjectName
 
-    pipeline {
-        agent any
-
+    node {
         stage("init environment") {
             sh 'env'
             workspace = "$HOME/$gitHubProjectName"
