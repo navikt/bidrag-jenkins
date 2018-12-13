@@ -15,14 +15,12 @@ def call(body) {
     dockerRepo = "repo.adeo.no:5443"
     nais = "/usr/bin/nais"
     appConfig = "nais.yaml"
-    labelOfBuild = application + '_test'
 //    cluster = "${naisCluster}"
 
     node {
         agent {
             docker: mvnImage
-            label: labelOfBuild
-            args: -v /var/lib/jenkins/workspace/bidrag-dokument-dto
+            args: -v "$PWD"
         }
 
         stage("prepare multibranch shared library pipeline") {
