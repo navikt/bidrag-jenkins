@@ -20,12 +20,13 @@ def call(body) {
     node {
         agent {
             docker: mvnImage
-            args: "-v $PWD"
+            args: "-v $WORKSPACE"
         }
 
         stage("prepare multibranch shared library pipeline") {
             sh 'env'
-            println "running multibranch: $PWD"
+            println "running multibranch: $WORKSPACE"
+            sh 'mvn clean install'
         }
     }
 }
