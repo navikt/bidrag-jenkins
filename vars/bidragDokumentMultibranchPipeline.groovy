@@ -20,7 +20,7 @@ def call(body) {
     node {
         agent {
             docker: mvnImage
-            args: -v "$PWD"
+            args: "-v $PWD"
         }
 
         stage("prepare multibranch shared library pipeline") {
