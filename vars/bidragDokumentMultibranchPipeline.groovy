@@ -15,7 +15,7 @@ def call(body) {
     dockerRepo = "repo.adeo.no:5443"
     nais = "/usr/bin/nais"
     appConfig = "nais.yaml"
-    cluster = "${naisCluster}"
+//    cluster = "${naisCluster}"
 
     node {
         stage("prepare multibranch shared library pipeline") {
