@@ -10,13 +10,13 @@ class MavenBuild {
         this.mvnImage = mvnImage
         this.workspace = workspace
         this.pom = pom
-        "echo mvnInage: $mvnImage".execute()
-        "echo workspace: $workspace".execute()
-        "echo pom: $pom".execute()
+        sh "echo mvnImage: $mvnImage"
+        sh "echo workspace: $workspace"
+        sh "echo pom: $pom"
     }
 
     def buildAndTest() {
-        "echo buildAndTest".execute()
+        sh "buildAndTest"
     }
 
 }

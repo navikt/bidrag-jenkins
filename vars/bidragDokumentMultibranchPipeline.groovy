@@ -1,3 +1,4 @@
+import no.nav.bidrag.dokument.GitHubArtifact
 import no.nav.bidrag.dokument.MavenBuild
 
 def call(body) {
@@ -10,16 +11,22 @@ def call(body) {
     println "bidragDokumentmMultibranchPipeline: pipelineParams = ${pipelineParams}"
 
     String mvnImage = pipelineParams.mvnImage
-    File pom = null
+    String gitHubProjectName = pipelineParams.gitHubProjectName
 
-    node {
-        stage("list environment") {
+    pipeline {
+        agent any
+
+        stage("init environment") {
             sh 'env'
-            pom = readMavenPom file: 'pom.xml'
+            workspace = "$HOME/$gitHubProjectName"
+            gitHubArtifact = new GitHubArtifact(this, workspace, gitHubProjectName, token, "master")
+            gitHubArtifact.checkout()
+            pom = gitHubProjectName.fetchPom()
+            sh "pom: $pom"
         }
 
         stage("build and test") {
-            new MavenBuild(mvnImage, "$WORKSPACE", pom).buildAndTest()
+            new MavenBuild(mvnImage, workspace, pom).buildAndTest()
         }
     }
 }

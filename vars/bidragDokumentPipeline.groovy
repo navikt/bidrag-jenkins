@@ -33,7 +33,7 @@ def call(body) {
         }
 
         stage("#2: initialize") {
-            pom = readMavenPom file: 'pom.xml'
+            pom = readMavenPomq file: 'pom.xml'
             println "POM props"
             println pom.getProperties()
             releaseVersion = pom.version.tokenize("-")[0]
