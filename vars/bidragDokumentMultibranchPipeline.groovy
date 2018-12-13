@@ -18,7 +18,7 @@ def call(body) {
     labelOfBuild = application + '_test'
 //    cluster = "${naisCluster}"
 
-    pipeline {
+    node {
         agent {
             docker: mvnImage
             label: labelOfBuild
