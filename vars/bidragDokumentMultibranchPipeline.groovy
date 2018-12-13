@@ -16,9 +16,12 @@ def call(body) {
     node {
         stage("init environment") {
             sh 'env'
-            workspace = "$HOME/$gitHubProjectName"
-            gitHubArtifact = new GitHubArtifact(this, workspace, gitHubProjectName, token, "master")
+            String workspace = "$HOME/$gitHubProjectName"
+            String branch = "$BRANCH_NAME"
+
+            gitHubArtifact = new GitHubArtifact(this, workspace, gitHubProjectName, 'token', branch)
             gitHubArtifact.checkout()
+
             pom = gitHubProjectName.fetchPom()
             sh "pom: $pom"
         }
