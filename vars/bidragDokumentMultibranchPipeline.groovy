@@ -1,3 +1,4 @@
+import no.nav.bidrag.dokument.MavenBuild
 
 def call(body) {
 
@@ -8,26 +9,17 @@ def call(body) {
 
     println "bidragDokumentmMultibranchPipeline: pipelineParams = ${pipelineParams}"
 
-    application = pipelineParams.application
-    branch = pipelineParams.branch
-    mvnImage = pipelineParams.mvnImage
-    environment = pipelineParams.environment
-    dockerRepo = "repo.adeo.no:5443"
-    nais = "/usr/bin/nais"
-    appConfig = "nais.yaml"
-//    cluster = "${naisCluster}"
+    String mvnImage = pipelineParams.mvnImage
+    File pom = null
 
     node {
-        agent {
-            docker: mvnImage
-            args: "-v $WORKSPACE -v $HOME/.m2:root/.m2"
+        stage("list environment") {
+            sh 'env'
+            pom = readMavenPom file: 'pom.xml'
         }
 
-        stage("prepare multibranch shared library pipeline") {
-            sh 'env'
-            println "running multibranch: $WORKSPACE"
-            sh 'mvn --version'
-            sh 'mvn clean install'
+        stage("build and test") {
+            new MavenBuild(mvnImage, "$WORKSPACE", pom).buildAndTest()
         }
     }
 }
