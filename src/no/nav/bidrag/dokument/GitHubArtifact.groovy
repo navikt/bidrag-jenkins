@@ -1,35 +1,27 @@
 package no.nav.bidrag.dokument
 
 class GitHubArtifact {
+    def multibranchPipeline
     def pom
-    def script
     private String branch
     private String gitHubProjectName
 
-    GitHubArtifact(script, String gitHubProjectName, String branch) {
+    GitHubArtifact(multibranchPipeline, String gitHubProjectName, String branch) {
         this.branch = branch
         this.gitHubProjectName = gitHubProjectName
-        this.script = script
+        this.multibranchPipeline = multibranchPipeline
     }
 
     def checkout() {
-        script.cleanWs()
-        script.withCredentials([script.string(credentialsId: 'OAUTH_TOKEN', variable: 'token')]) {
-            script.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
-                script.sh(script: "git clone https://${script.token}:x-oauth-basic@github.com/navikt/${gitHubProjectName}.git .")
-                script.sh "echo '****** BRANCH ******'"
-                script.sh "echo 'BRANCH CHECKOUT: ${branch}'......"
-                script.sh(script: "git checkout ${branch}")
+        multibranchPipeline.cleanWs()
+        multibranchPipeline.withCredentials([multibranchPipeline.string(credentialsId: 'OAUTH_TOKEN', variable: 'token')]) {
+            multibranchPipeline.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
+                multibranchPipeline.sh(script: "git clone https://${multibranchPipeline.token}:x-oauth-basic@github.com/navikt/${gitHubProjectName}.git .")
+                multibranchPipeline.sh "echo '****** BRANCH ******'"
+                multibranchPipeline.sh "echo 'BRANCH CHECKOUT: ${branch}'......"
+                multibranchPipeline.sh(script: "git checkout ${branch}")
             }
         }
-    }
-
-    def fetchPom() {
-        if (pom == null) {
-            pom = script.readMavenPom file: './pom.xml'
-        }
-
-        return pom
     }
 
 }
