@@ -18,7 +18,7 @@ class GitHubArtifact {
     def checkout() {
         script.withCredentials([script.string(credentialsId: 'OAUTH_TOKEN', variable: 'token')]) {
             script.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
-                script.sh(script: "git clone https://${token}:x-oauth-basic@github.com/navikt/${gitHubProjectName}.git .")
+                script.sh(script: "git clone https://${script.token}:x-oauth-basic@github.com/navikt/${gitHubProjectName}.git .")
                 script.sh "echo '****** BRANCH ******'"
                 script.sh "echo 'BRANCH CHECKOUT: ${branch}'......"
                 script.sh(script: "git checkout ${branch}")
