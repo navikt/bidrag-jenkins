@@ -7,7 +7,7 @@ class GitHubArtifact {
     private String workspace
 
     GitHubArtifact(script, String workspace, String gitHubProjectName, String branch) {
-        this.branch = branch;
+        this.branch = branch
         this.gitHubProjectName = gitHubProjectName
         this.script = script
         this.workspace = workspace

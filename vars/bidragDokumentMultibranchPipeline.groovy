@@ -10,8 +10,10 @@ def call(body) {
 
     println "bidragDokumentmMultibranchPipeline: pipelineParams = ${pipelineParams}"
 
+    def pom
     String mvnImage = pipelineParams.mvnImage
     String gitHubProjectName = pipelineParams.gitHubProjectName
+    MavenBuilder mavenBuilder
 
     node {
         stage("init environment") {
@@ -22,10 +24,10 @@ def call(body) {
             gitHubArtifact = new GitHubArtifact(this, workspace, gitHubProjectName, branch)
             gitHubArtifact.checkout()
 
-            File pom = gitHubProjectName.fetchPom()
+            pom = gitHubArtifact.fetchPom()
             sh "pom: $pom"
 
-            mavenBuilder = new MavenBuilder(mvnImage, workspace, pom)
+            mavenBuilder = new MavenBuilder(this, mvnImage, workspace, pom)
         }
 
         stage("build and test") {

@@ -4,19 +4,21 @@ class MavenBuilder {
 
     private String mvnImage
     public String workspace
-    private File pom
+    private def pom
+    private def script
 
-    MavenBuilder(String mvnImage, String workspace, File pom) {
+    MavenBuilder(script, String mvnImage, String workspace, pom) {
         this.mvnImage = mvnImage
         this.workspace = workspace
         this.pom = pom
-        sh "echo mvnImage: $mvnImage"
-        sh "echo workspace: $workspace"
-        sh "echo pom: $pom"
+        this.script = script
+        script.sh "echo mvnImage: $mvnImage"
+        script.sh "echo workspace: $workspace"
+        script.sh "echo pom: $pom"
     }
 
     def buildAndTest() {
-        sh "buildAndTest"
+        script.sh "buildAndTest"
     }
 
 }
