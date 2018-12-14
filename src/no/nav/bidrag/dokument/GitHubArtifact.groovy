@@ -26,11 +26,12 @@ class GitHubArtifact {
         }
     }
 
-    def parseMavenPom() {
+    def fetchPom() {
         multibranchPipeline.sh "parsing pom.xml from ${workspace}"
 
-        def xmlParser = new XmlParser()
-        pom = xmlParser.parse("${workspace}/pom.xml")
+        if (pom == null) {
+            pom = multibranchPipeline.readMavenPom file: 'pom.xml'
+        }
 
         return pom
     }
