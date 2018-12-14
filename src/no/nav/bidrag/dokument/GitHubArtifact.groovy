@@ -14,6 +14,7 @@ class GitHubArtifact {
     }
 
     def checkout() {
+        script.cleanWs()
         script.withCredentials([script.string(credentialsId: 'OAUTH_TOKEN', variable: 'token')]) {
             script.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
                 script.sh(script: "git clone https://${script.token}:x-oauth-basic@github.com/navikt/${gitHubProjectName}.git .")
