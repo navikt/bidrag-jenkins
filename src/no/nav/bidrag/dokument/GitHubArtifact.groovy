@@ -2,16 +2,14 @@ package no.nav.bidrag.dokument
 
 class GitHubArtifact {
     def script
-    def token
     private String branch
     private String gitHubProjectName
     private String workspace
 
-    GitHubArtifact(script, String workspace, String gitHubProjectName, token, String branch) {
+    GitHubArtifact(script, String workspace, String gitHubProjectName, String branch) {
         this.branch = branch;
         this.gitHubProjectName = gitHubProjectName
         this.script = script
-        this.token = token
         this.workspace = workspace
     }
 
@@ -27,7 +25,7 @@ class GitHubArtifact {
     }
 
     def fetchPom() {
-         script.readMavenPom file: "$workspace/pom.xml"
+        script.readMavenPom file: "$workspace/pom.xml"
     }
 
 }

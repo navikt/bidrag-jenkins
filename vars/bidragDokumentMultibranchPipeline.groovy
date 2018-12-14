@@ -19,7 +19,7 @@ def call(body) {
             String workspace = "$HOME/$gitHubProjectName"
             String branch = "$BRANCH_NAME"
 
-            gitHubArtifact = new GitHubArtifact(this, workspace, gitHubProjectName, "${token}", branch)
+            gitHubArtifact = new GitHubArtifact(this, workspace, gitHubProjectName, branch)
             gitHubArtifact.checkout()
 
             pom = gitHubProjectName.fetchPom()
