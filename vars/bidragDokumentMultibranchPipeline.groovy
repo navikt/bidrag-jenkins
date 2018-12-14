@@ -22,8 +22,8 @@ def call(body) {
 
             gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch)
             gitHubArtifact.checkout()
-
             pom = gitHubArtifact.fetchPom()
+
             sh "pom: $pom"
 
             mavenBuilder = new MavenBuilder(this, mvnImage, pom)

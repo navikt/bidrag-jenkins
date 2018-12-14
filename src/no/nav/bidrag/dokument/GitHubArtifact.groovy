@@ -2,6 +2,7 @@ package no.nav.bidrag.dokument
 
 class GitHubArtifact {
     def script
+    def pom
     private String branch
     private String gitHubProjectName
 
@@ -24,7 +25,11 @@ class GitHubArtifact {
     }
 
     def fetchPom() {
-        script.readMavenPom file: 'pom.xml'
+        if (pom == null) {
+            pom = script.readMavenPom file: 'pom.xml'
+        }
+
+        return pom
     }
 
 }
