@@ -24,4 +24,9 @@ class GitHubArtifact {
         }
     }
 
+    def parseMavenPom() {
+        def xmlParser = new XmlParser()
+        pom = xmlParser.parse('./pom.xml')
+    }
+
 }

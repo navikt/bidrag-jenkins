@@ -22,7 +22,7 @@ def call(body) {
             gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch)
             gitHubArtifact.checkout()
 
-            def pom = loadMavenModel()
+            def pom = gitHubArtifact.parseMavenPom()
             sh "pom: $pom"
 
             mavenBuilder = new MavenBuilder(this, mvnImage, pom)
@@ -32,10 +32,4 @@ def call(body) {
             mavenBuilder.buildAndTest()
         }
     }
-}
-
-def loadMavenModel() {
-    def pom = readMavenPom file: 'pom.xml'
-
-    return pom
 }
