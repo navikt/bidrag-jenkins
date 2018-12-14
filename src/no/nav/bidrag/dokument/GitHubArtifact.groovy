@@ -30,7 +30,7 @@ class GitHubArtifact {
         multibranchPipeline.sh "parsing pom.xml from ${workspace}"
 
         if (pom == null) {
-            pom = multibranchPipeline.${readMavenPom} file: 'pom.xml'
+            pom = multibranchPipeline.readMavenPom file: 'pom.xml'
         }
 
         return pom
