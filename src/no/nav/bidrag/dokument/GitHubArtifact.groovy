@@ -4,13 +4,11 @@ class GitHubArtifact {
     def script
     private String branch
     private String gitHubProjectName
-    private String workspace
 
-    GitHubArtifact(script, String workspace, String gitHubProjectName, String branch) {
+    GitHubArtifact(script, String gitHubProjectName, String branch) {
         this.branch = branch
         this.gitHubProjectName = gitHubProjectName
         this.script = script
-        this.workspace = workspace
     }
 
     def checkout() {
@@ -26,7 +24,7 @@ class GitHubArtifact {
     }
 
     def fetchPom() {
-        script.readMavenPom file: "$workspace/pom.xml"
+        script.readMavenPom file: 'pom.xml'
     }
 
 }

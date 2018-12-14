@@ -18,16 +18,15 @@ def call(body) {
     node {
         stage("init environment") {
             sh 'env'
-            String workspace = "$HOME/$gitHubProjectName"
             String branch = "$BRANCH_NAME"
 
-            gitHubArtifact = new GitHubArtifact(this, workspace, gitHubProjectName, branch)
+            gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch)
             gitHubArtifact.checkout()
 
             pom = gitHubArtifact.fetchPom()
             sh "pom: $pom"
 
-            mavenBuilder = new MavenBuilder(this, mvnImage, workspace, pom)
+            mavenBuilder = new MavenBuilder(this, mvnImage, pom)
         }
 
         stage("build and test") {
