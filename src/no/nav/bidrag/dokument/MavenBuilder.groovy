@@ -1,12 +1,12 @@
 package no.nav.bidrag.dokument
 
-class MavenBuild {
+class MavenBuilder {
 
     private String mvnImage
     public String workspace
     private File pom
 
-    MavenBuild(String mvnImage, String workspace, File pom) {
+    MavenBuilder(String mvnImage, String workspace, File pom) {
         this.mvnImage = mvnImage
         this.workspace = workspace
         this.pom = pom

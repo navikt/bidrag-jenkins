@@ -1,5 +1,5 @@
 import no.nav.bidrag.dokument.GitHubArtifact
-import no.nav.bidrag.dokument.MavenBuild
+import no.nav.bidrag.dokument.MavenBuilder
 
 def call(body) {
 
@@ -22,12 +22,14 @@ def call(body) {
             gitHubArtifact = new GitHubArtifact(this, workspace, gitHubProjectName, branch)
             gitHubArtifact.checkout()
 
-            pom = gitHubProjectName.fetchPom()
+            File pom = gitHubProjectName.fetchPom()
             sh "pom: $pom"
+
+            mavenBuilder = new MavenBuilder(mvnImage, workspace, pom)
         }
 
         stage("build and test") {
-            new MavenBuild(mvnImage, workspace, pom).buildAndTest()
+            mavenBuilder.buildAndTest()
         }
     }
 }
