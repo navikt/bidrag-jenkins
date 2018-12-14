@@ -26,7 +26,7 @@ class GitHubArtifact {
 
     def fetchPom() {
         if (pom == null) {
-            pom = script.readMavenPom 'pom.xml'
+            pom = script.readMavenPom file: './pom.xml'
         }
 
         return pom
