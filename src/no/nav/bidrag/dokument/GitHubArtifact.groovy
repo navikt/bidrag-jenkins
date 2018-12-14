@@ -1,15 +1,17 @@
 package no.nav.bidrag.dokument
 
 class GitHubArtifact {
-    def multibranchPipeline
-    def pom
+    private def multibranchPipeline
+    private def pom
     private String branch
     private String gitHubProjectName
+    private String workspace
 
-    GitHubArtifact(multibranchPipeline, String gitHubProjectName, String branch) {
+    GitHubArtifact(multibranchPipeline, String gitHubProjectName, String branch, String workspace) {
         this.branch = branch
         this.gitHubProjectName = gitHubProjectName
         this.multibranchPipeline = multibranchPipeline
+        this.workspace = workspace
     }
 
     def checkout() {
@@ -26,7 +28,9 @@ class GitHubArtifact {
 
     def parseMavenPom() {
         def xmlParser = new XmlParser()
-        pom = xmlParser.parse('./pom.xml')
+        pom = xmlParser.parse("${workspace}/pom.xml")
+
+        return pom
     }
 
 }

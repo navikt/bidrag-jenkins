@@ -18,8 +18,9 @@ def call(body) {
         stage("init environment") {
             sh 'env'
             String branch = "$BRANCH_NAME"
+            String workspace = "$WORKSPACE"
 
-            gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch)
+            gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
             gitHubArtifact.checkout()
 
             def pom = gitHubArtifact.parseMavenPom()
