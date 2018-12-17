@@ -44,31 +44,21 @@ def call(body) {
             }
 
             stage("bump minor version") {
-                when(BRANCH_NAME == 'develop') {
-                    script {
-                        if (gitHubArtifact.isSnapshot()) {
-                            println("bumping minor version")
-                        } else {
-                            println("do not bump released artifact")
-                        }
-                    }
+                when(BRANCH_NAME == 'develop' && gitHubArtifact.isSnapshot()) {
+                    script { println("bumping minor version") }
                 }
             }
 
             stage("bump major version") {
-                when(BRANCH_NAME == 'master') {
-                    script {
-                        if (gitHubArtifact.isSnapshot()) {
-                            println("bumping major version")
-                        } else {
-                            println("do not bump released artifact")
-                        }
-                    }
+                when(BRANCH_NAME == 'master' && gitHubArtifact.isSnapshot()) {
+                    script { println("bumping major version") }
                 }
             }
 
             post {
-                println("end of pipeline on $BRANCH_NAME")
+                stage {
+                    script { println("end of pipeline on $BRANCH_NAME") }
+                }
             }
         }
     }
