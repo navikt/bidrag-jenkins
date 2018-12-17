@@ -27,6 +27,8 @@ def call(body) {
         }
 
         stage("build and test") {
+            pom = readMavenPom file: 'pom.xml'
+            println(pom)
             mavenBuilder.buildAndTest(this)
         }
     }
