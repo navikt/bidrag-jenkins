@@ -22,39 +22,47 @@ def call(body) {
         stages {
             stage("init environment") {
                 steps {
-                    sh 'env'
-                    branch = "$BRANCH_NAME"
-                    workspace = "$WORKSPACE"
+                    script {
+                        sh 'env'
+                        String branch = "$BRANCH_NAME"
+                        String workspace = "$WORKSPACE"
 
-                    gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
-                    gitHubArtifact.checkout()
+                        gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
+                        gitHubArtifact.checkout()
 
-                    mavenBuilder = new MavenBuilder(mvnImage, gitHubArtifact)
+                        mavenBuilder = new MavenBuilder(mvnImage, gitHubArtifact)
+                    }
                 }
             }
 
             stage("build and test") {
                 steps {
-                    mavenBuilder.buildAndTest("$HOME")
+                    script {
+                        mavenBuilder.buildAndTest("$HOME")
+                    }
                 }
             }
 
             stage("bump minor version") {
                 when(BRANCH_NAME == 'develop') {
-                    if (gitHubArtifact.isSnapshot()) {
-                        println("bumping minor version")
-                    } else {
-                        println("do not bump released artifact")
+                    script {
+                        if (gitHubArtifact.isSnapshot()) {
+                            println("bumping minor version")
+                        } else {
+                            println("do not bump released artifact")
+                        }
                     }
                 }
             }
 
             stage("bump major version") {
                 when(BRANCH_NAME == 'master') {
-                    if (gitHubArtifact.isSnapshot()) {
-                        println("bumping major version")
-                    } else {
-                        println("do not bump released artifact")
+                    script {
+                        if (gitHubArtifact.isSnapshot()) {
+                            println("bumping major version")
+                        } else {
+                            println("do not bump released artifact")
+                        }
                     }
                 }
             }
