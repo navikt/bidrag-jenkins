@@ -30,7 +30,7 @@ class GitHubArtifact {
         debugCommand("echo", "parsing pom.xml from ${workspace}")
 
         if (pom == null) {
-            println("p1 ${pom}")
+            println("p1")
 
             pom = multibranchPipeline.readMavenPom file: 'pom.xml'
         }
