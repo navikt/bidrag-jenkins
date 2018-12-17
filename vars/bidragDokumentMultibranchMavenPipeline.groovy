@@ -23,8 +23,8 @@ def call(body) {
             stage("init environment") {
                 steps {
                     sh 'env'
-                    String branch = "$BRANCH_NAME"
-                    String workspace = "$WORKSPACE"
+                    branch = "$BRANCH_NAME"
+                    workspace = "$WORKSPACE"
 
                     gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
                     gitHubArtifact.checkout()
