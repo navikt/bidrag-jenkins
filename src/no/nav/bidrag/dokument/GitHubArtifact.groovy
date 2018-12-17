@@ -40,4 +40,8 @@ class GitHubArtifact {
         multibranchPipeline.sh(message)
     }
 
+    String toString() {
+       multibranchPipeline.sh("cloned to: `pwd`")
+    }
+
 }
