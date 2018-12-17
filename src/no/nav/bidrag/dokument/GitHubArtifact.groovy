@@ -26,7 +26,7 @@ class GitHubArtifact {
         }
     }
 
-    def fetchPom(multibranchPipeline) {
+    def fetchPom() {
         debugCommand("echo", "parsing pom.xml from ${workspace}")
 
         if (pom == null) {
