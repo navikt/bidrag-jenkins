@@ -17,7 +17,7 @@ class MavenBuilder {
         gitHubArtifact.debugCommand("echo", "gitHubArtifact: $targetFolder")
 
         def pom = gitHubArtifact.fetchPom()
-        gitHubArtifact.debugCommand("echo", "pom: `$pom`")
+        gitHubArtifact.debugCommand("echo", "pom: ${pom}")
         gitHubArtifact.debugCommand("echo", "buildAndTest")
     }
 }
