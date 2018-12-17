@@ -36,4 +36,8 @@ class GitHubArtifact {
         return pom
     }
 
+    def debug(String message) {
+        multibranchPipeline.sh(message)
+    }
+
 }

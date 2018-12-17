@@ -2,19 +2,18 @@ package no.nav.bidrag.dokument
 
 class MavenBuilder {
 
+    private GitHubArtifact gitHubArtifact
     private String mvnImage
-    private def pom
-    private def script
 
-    MavenBuilder(script, String mvnImage, pom) {
-        this.mvnImage = mvnImage
-        this.pom = pom
-        this.script = script
-        script.sh "echo mvnImage: $mvnImage"
-        script.sh "echo pom: $pom"
-    }
+    MavenBuilder(String mvnImage, GitHubArtifact gitHubArtifact) {
+        this.gitHubArtifact = gitHubArtifact
+        this.mvnImage = mvnImage }
 
     def buildAndTest() {
-        script.sh "buildAndTest"
+        gitHubArtifact.debug("echo mvnImage: $mvnImage")
+        gitHubArtifact.debug("echo pom: $gitHubArtifact")
+        gitHubArtifact.debug("buildAndTest")
+        def pom = gitHubArtifact.fetchPom()
+        gitHubArtifact.debug( "pom: $pom")
     }
 }
