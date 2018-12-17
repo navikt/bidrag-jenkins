@@ -44,15 +44,11 @@ class GitHubArtifact {
         multibranchPipeline.sh("$command \"$quotedArgs\"")
     }
 
-    String targetFolder() {
+    String workspaceFolder() {
         return "${workspace}"
     }
 
     boolean isSnapshot() {
         return pom.version.contains("-SNAPSHOT")
-    }
-
-    boolean isNotFeatureBranch() {
-        return branch == "master" || branch == "develop"
     }
 }

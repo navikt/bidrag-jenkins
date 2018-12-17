@@ -32,17 +32,32 @@ def call(body) {
             mavenBuilder.buildAndTest("$HOME")
         }
 
-        stage("bump snapshot version") {
-            if (gitHubArtifact.isSnapshot()) {
-                if (gitHubArtifact.isNotFeatureBranch()) {
-                    println("bumping version")
-                } else {
-                    println("feature branch is not bumped")
-                }
-            } else {
-                pom = gitHubArtifact.fetchPom()
-                println("do not bump: ${pom}")
+        stage("bump minor version") {
+            when {
+                BRANCH_NAME == 'develop'
             }
+
+            step {
+                if (gitHubArtifact.isSnapshot()) {
+                    println("bumping minor version")
+                }
+            }
+        }
+
+        stage("bump major version") {
+            when {
+                BRANCH_NAME == 'master'
+            }
+
+            step {
+                if (gitHubArtifact.isSnapshot()) {
+                    println("bumping major version")
+                }
+            }
+        }
+
+        post {
+            println("end of pipeline on $BRANCH_NAME")
         }
     }
 }
