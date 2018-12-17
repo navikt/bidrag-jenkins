@@ -55,8 +55,8 @@ def call(body) {
                 }
             }
 
-            post {
-                stage {
+            stage("complete pipeline") {
+                steps {
                     script { println("end of pipeline on $BRANCH_NAME") }
                 }
             }
