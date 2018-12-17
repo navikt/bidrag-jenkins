@@ -27,11 +27,15 @@ class GitHubArtifact {
     }
 
     def fetchPom(multibranchPipeline) {
-        debugCommand("echo","parsing pom.xml from ${workspace}")
+        debugCommand("echo", "parsing pom.xml from ${workspace}")
 
         if (pom == null) {
+            println("p1 ${pom}")
+
             pom = multibranchPipeline.readMavenPom file: 'pom.xml'
         }
+
+        println("p2 ${pom}")
 
         return pom
     }
@@ -41,6 +45,6 @@ class GitHubArtifact {
     }
 
     String targetFolder() {
-       return  "${workspace}"
+        return "${workspace}"
     }
 }

@@ -31,7 +31,7 @@ def call(body) {
             println("maven model:")
             println(pom)
             println(pom.getProperties())
-            mavenBuilder.buildAndTest(this)
+            mavenBuilder.buildAndTest()
         }
     }
 }
