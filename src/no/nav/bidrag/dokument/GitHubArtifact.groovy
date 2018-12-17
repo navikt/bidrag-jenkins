@@ -43,4 +43,8 @@ class GitHubArtifact {
     String targetFolder() {
         return "${workspace}"
     }
+
+    boolean isSnapshot() {
+        return pom.version.contains("-SNAPSHOT")
+    }
 }
