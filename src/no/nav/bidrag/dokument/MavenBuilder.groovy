@@ -10,13 +10,13 @@ class MavenBuilder {
         this.mvnImage = mvnImage
     }
 
-    def buildAndTest() {
+    def buildAndTest(multibranchPipeline) {
         gitHubArtifact.debugCommand("echo", "mvnImage: $mvnImage")
 
         String targetFolder = gitHubArtifact.targetFolder()
         gitHubArtifact.debugCommand("echo", "gitHubArtifact: $targetFolder")
 
-        def pom = gitHubArtifact.fetchPom()
+        def pom = gitHubArtifact.fetchPom(multibranchPipeline)
         gitHubArtifact.debugCommand("echo", "pom: `$pom`")
         gitHubArtifact.debugCommand("echo", "buildAndTest")
     }

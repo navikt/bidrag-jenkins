@@ -27,7 +27,7 @@ def call(body) {
         }
 
         stage("build and test") {
-            mavenBuilder.buildAndTest()
+            mavenBuilder.buildAndTest(this)
         }
     }
 }
