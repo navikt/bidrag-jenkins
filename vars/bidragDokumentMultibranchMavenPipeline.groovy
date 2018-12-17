@@ -44,13 +44,19 @@ def call(body) {
             }
 
             stage("bump minor version") {
-                when(BRANCH_NAME == 'develop' && gitHubArtifact.isSnapshot()) {
+                when {
+                    expression { BRANCH_NAME == 'develop' && gitHubArtifact.isSnapshot() }
+                }
+                steps {
                     script { println("bumping minor version") }
                 }
             }
 
             stage("bump major version") {
-                when(BRANCH_NAME == 'master' && gitHubArtifact.isSnapshot()) {
+                when {
+                    expression { BRANCH_NAME == 'master' && gitHubArtifact.isSnapshot() }
+                }
+                steps {
                     script { println("bumping major version") }
                 }
             }
