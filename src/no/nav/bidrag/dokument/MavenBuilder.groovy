@@ -11,18 +11,21 @@ class MavenBuilder {
     }
 
     def buildAndTest(String deployerHomeFolder) {
-        gitHubArtifact.debugCommand("echo", "mvnImage: $mvnImage")
+        gitHubArtifact.execute("echo", "mvnImage: $mvnImage")
 
         String targetFolder = gitHubArtifact.targetFolder()
-        gitHubArtifact.debugCommand("echo", "gitHubArtifact: $targetFolder")
+        gitHubArtifact.execute("echo", "gitHubArtifact: $targetFolder")
 
-        def pom = gitHubArtifact.fetchPom().version
+        def pom = gitHubArtifact.fetchPom()
 
         if (gitHubArtifact.isSnapshot()) {
-            gitHubArtifact.debugCommand("echo", "running maven build image.")
-           "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v \"${deployerHomeFolder}/.m2\":/root/.m2 ${mvnImage} mvn clean install -B -e".execute()
+            gitHubArtifact.execute("echo", "running maven build image.")
+            gitHubArtifact.execute("docker",
+                    "run --rm -v ${targetFolder}:/usr/src/mymaven -w /usr/src/mymaven -v \"" +
+                    "${deployerHomeFolder}/.m2\":/root/.m2 ${mvnImage} mvn clean install -B -e"
+            )
         } else {
-            gitHubArtifact.debugCommand("echo","POM version is not a SNAPSHOT, it is ${pom}. Skipping build and testing of backend")
+            gitHubArtifact.execute("echo", "POM version is not a SNAPSHOT, it is ${pom}. Skipping build and testing of backend")
         }
     }
 }

@@ -27,7 +27,7 @@ class GitHubArtifact {
     }
 
     def fetchPom() {
-        debugCommand("echo", "parsing pom.xml from ${workspace}")
+        execute("echo", "parsing pom.xml from ${workspace}")
 
         if (pom == null) {
             pom = multibranchPipeline.readMavenPom file: 'pom.xml'
@@ -36,8 +36,8 @@ class GitHubArtifact {
         return pom
     }
 
-    def debugCommand(String command, String message) {
-        multibranchPipeline.sh("$command \"$message\"")
+    def execute(String command, String arguments) {
+        multibranchPipeline.sh("$command \"$arguments\"")
     }
 
     String targetFolder() {
