@@ -14,7 +14,7 @@ class GitHubArtifact {
         this.workspace = workspace
     }
 
-    def checkout() {
+    void checkout() {
         multibranchPipeline.cleanWs()
         multibranchPipeline.withCredentials([multibranchPipeline.string(credentialsId: 'OAUTH_TOKEN', variable: 'token')]) {
             multibranchPipeline.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
@@ -36,11 +36,11 @@ class GitHubArtifact {
         return pom
     }
 
-    def execute(String command) {
+    void execute(String command) {
         multibranchPipeline.sh("$command")
     }
 
-    def execute(String command, String quotedArgs) {
+    void execute(String command, String quotedArgs) {
         multibranchPipeline.sh("$command \"$quotedArgs\"")
     }
 
@@ -50,5 +50,12 @@ class GitHubArtifact {
 
     boolean isSnapshot() {
         return pom.version.contains("-SNAPSHOT")
+    }
+
+    String fetchDevVersion() {
+        String releaseVersion = pom.version.tokenize("-")[0]
+        def tokens = releaseVersion.tokenize(".")
+
+        return  "${tokens[0]}.${tokens[1]}"
     }
 }

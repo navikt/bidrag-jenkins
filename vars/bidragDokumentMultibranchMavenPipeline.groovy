@@ -43,12 +43,18 @@ def call(body) {
                 }
             }
 
-            stage("bump minor version") {
+            stage("bump dev version") {
                 when {
                     expression { BRANCH_NAME == 'develop' && gitHubArtifact.isSnapshot() }
                 }
                 steps {
-                    script { println("bumping minor version") }
+                    script {
+                        String devVersion = gitHubArtifact.fetchDevVersion()
+                        nextVersion = "${devVersion}." + (newReleaseVersion.toInteger() + 1) + "-SNAPSHOT"
+                        sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '$HOME/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
+                        sh "git commit -a -m \"updated to new dev-version ${nextVersion} after release by ${committer}\""
+                        sh "git push"
+                    }
                 }
             }
 
@@ -63,7 +69,10 @@ def call(body) {
 
             stage("complete pipeline") {
                 steps {
-                    script { println("end of pipeline on $BRANCH_NAME") }
+                    script {
+                        pom = gitHubArtifact.fetchPom()
+                        println("end of pipeline on $BRANCH_NAME for artifact $pom")
+                    }
                 }
             }
         }
