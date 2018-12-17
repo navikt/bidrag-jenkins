@@ -17,43 +17,47 @@ def call(body) {
     MavenBuilder mavenBuilder
 
     pipeline {
-        stage("init environment") {
-            agent any
-            sh 'env'
-            String branch = "$BRANCH_NAME"
-            String workspace = "$WORKSPACE"
+        agent any
 
-            gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
-            gitHubArtifact.checkout()
+        stages {
+            stage("init environment") {
+                sh 'env'
+                String branch = "$BRANCH_NAME"
+                String workspace = "$WORKSPACE"
 
-            mavenBuilder = new MavenBuilder(mvnImage, gitHubArtifact)
-        }
+                gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
+                gitHubArtifact.checkout()
 
-        stage("build and test") {
-            agent any
-            mavenBuilder.buildAndTest("$HOME")
-        }
+                mavenBuilder = new MavenBuilder(mvnImage, gitHubArtifact)
+            }
 
-        stage("bump minor version") {
-            agent any
-            when(BRANCH_NAME == 'develop') {
-                if (gitHubArtifact.isSnapshot()) {
-                    println("bumping minor version")
+            stage("build and test") {
+                mavenBuilder.buildAndTest("$HOME")
+            }
+
+            stage("bump minor version") {
+                when(BRANCH_NAME == 'develop') {
+                    if (gitHubArtifact.isSnapshot()) {
+                        println("bumping minor version")
+                    } else {
+                        println("do not bump released artifact")
+                    }
                 }
             }
-        }
 
-        stage("bump major version") {
-            agent any
-            when(BRANCH_NAME == 'master') {
-                if (gitHubArtifact.isSnapshot()) {
-                    println("bumping major version")
+            stage("bump major version") {
+                when(BRANCH_NAME == 'master') {
+                    if (gitHubArtifact.isSnapshot()) {
+                        println("bumping major version")
+                    } else {
+                        println("do not bump released artifact")
+                    }
                 }
             }
-        }
 
-        post {
-            println("end of pipeline on $BRANCH_NAME")
+            post {
+                println("end of pipeline on $BRANCH_NAME")
+            }
         }
     }
 }
