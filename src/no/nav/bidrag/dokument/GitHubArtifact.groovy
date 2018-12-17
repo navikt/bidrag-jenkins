@@ -37,11 +37,10 @@ class GitHubArtifact {
     }
 
     def debugCommand(String command, String message) {
-        multibranchPipeline.sh(command + " $message")
+        multibranchPipeline.sh("$command \" $message\"")
     }
 
     String toString() {
        multibranchPipeline.sh("cloned to: `pwd`")
     }
-
 }
