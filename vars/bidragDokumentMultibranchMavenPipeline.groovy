@@ -33,11 +33,7 @@ def call(body) {
         }
 
         stage("bump minor version") {
-            when {
-                BRANCH_NAME == 'develop'
-            }
-
-            step {
+            when(BRANCH_NAME == 'develop') {
                 if (gitHubArtifact.isSnapshot()) {
                     println("bumping minor version")
                 }
@@ -45,11 +41,7 @@ def call(body) {
         }
 
         stage("bump major version") {
-            when {
-                BRANCH_NAME == 'master'
-            }
-
-            step {
+            when(BRANCH_NAME == 'master') {
                 if (gitHubArtifact.isSnapshot()) {
                     println("bumping major version")
                 }
