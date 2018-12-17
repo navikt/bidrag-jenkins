@@ -28,10 +28,9 @@ class GitHubArtifact {
 
     def fetchPom() {
         debugCommand("echo","parsing pom.xml from ${workspace}")
-        String pomFile = "${workspace}/pom.xml"
 
         if (pom == null) {
-            pom = multibranchPipeline.readMavenPom file: pomFile
+            pom = multibranchPipeline.readMavenPom file: 'pom.xml'
         }
 
         return pom
