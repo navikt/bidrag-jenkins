@@ -20,8 +20,8 @@ class MavenBuilder {
 
         if (gitHubArtifact.isSnapshot()) {
             gitHubArtifact.execute("echo", "running maven build image.")
-            gitHubArtifact.execute("docker",
-                    "run --rm -v ${targetFolder}:/usr/src/mymaven -w /usr/src/mymaven -v \"" +
+            gitHubArtifact.execute(
+                    "docker run --rm -v ${targetFolder}:/usr/src/mymaven -w /usr/src/mymaven -v \"" +
                     "${deployerHomeFolder}/.m2\":/root/.m2 ${mvnImage} mvn clean install -B -e"
             )
         } else {

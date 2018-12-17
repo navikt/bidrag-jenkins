@@ -36,6 +36,10 @@ class GitHubArtifact {
         return pom
     }
 
+    def execute(String command) {
+        multibranchPipeline.sh("$command")
+    }
+
     def execute(String command, String arguments) {
         multibranchPipeline.sh("$command \"$arguments\"")
     }
