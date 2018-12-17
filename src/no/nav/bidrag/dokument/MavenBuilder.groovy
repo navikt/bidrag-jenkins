@@ -10,10 +10,10 @@ class MavenBuilder {
         this.mvnImage = mvnImage }
 
     def buildAndTest() {
-        gitHubArtifact.debugCommand("echo mvnImage: $mvnImage")
-        gitHubArtifact.debugCommand("echo gitHubArtifact: $gitHubArtifact")
+        gitHubArtifact.debugCommand("echo mvnImage:$mvnImage")
+        gitHubArtifact.debugCommand("echo gitHubArtifact:$gitHubArtifact")
         def pom = gitHubArtifact.fetchPom()
-        gitHubArtifact.debugCommand( "echo pom: $pom")
+        gitHubArtifact.debugCommand( "echo pom:$pom")
         gitHubArtifact.debugCommand("echo buildAndTest")
     }
 }
