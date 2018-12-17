@@ -16,7 +16,9 @@ def call(body) {
     GitHubArtifact gitHubArtifact
     MavenBuilder mavenBuilder
 
-    node {
+    pipeline {
+        agent any
+
         stage("init environment") {
             sh 'env'
             String branch = "$BRANCH_NAME"
