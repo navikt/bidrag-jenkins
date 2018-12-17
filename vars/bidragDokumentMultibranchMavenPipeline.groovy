@@ -21,18 +21,22 @@ def call(body) {
 
         stages {
             stage("init environment") {
-                sh 'env'
-                String branch = "$BRANCH_NAME"
-                String workspace = "$WORKSPACE"
+                steps {
+                    sh 'env'
+                    String branch = "$BRANCH_NAME"
+                    String workspace = "$WORKSPACE"
 
-                gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
-                gitHubArtifact.checkout()
+                    gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
+                    gitHubArtifact.checkout()
 
-                mavenBuilder = new MavenBuilder(mvnImage, gitHubArtifact)
+                    mavenBuilder = new MavenBuilder(mvnImage, gitHubArtifact)
+                }
             }
 
             stage("build and test") {
-                mavenBuilder.buildAndTest("$HOME")
+                steps {
+                    mavenBuilder.buildAndTest("$HOME")
+                }
             }
 
             stage("bump minor version") {
