@@ -12,7 +12,10 @@ class MavenBuilder {
 
     def buildAndTest() {
         gitHubArtifact.debugCommand("echo", "mvnImage: $mvnImage")
-        gitHubArtifact.debugCommand("echo", "gitHubArtifact: $gitHubArtifact")
+
+        String targetFolder = gitHubArtifact.targetFolder()
+        gitHubArtifact.debugCommand("echo", "gitHubArtifact: $targetFolder")
+
 /*        def pom = gitHubArtifact.fetchPom()
         gitHubArtifact.debugCommand("echo", "pom: `$pom`")
         gitHubArtifact.debugCommand("echo", "buildAndTest")*/

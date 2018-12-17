@@ -41,7 +41,7 @@ class GitHubArtifact {
         multibranchPipeline.sh("$command \"$message\"")
     }
 
-    String toString() {
-       return  "cloned to: ${workspace}"
+    String targetFolder() {
+       return  "${workspace}"
     }
 }
