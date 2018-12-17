@@ -17,9 +17,8 @@ def call(body) {
     MavenBuilder mavenBuilder
 
     pipeline {
-        agent any
-
         stage("init environment") {
+            agent any
             sh 'env'
             String branch = "$BRANCH_NAME"
             String workspace = "$WORKSPACE"
@@ -31,10 +30,12 @@ def call(body) {
         }
 
         stage("build and test") {
+            agent any
             mavenBuilder.buildAndTest("$HOME")
         }
 
         stage("bump minor version") {
+            agent any
             when(BRANCH_NAME == 'develop') {
                 if (gitHubArtifact.isSnapshot()) {
                     println("bumping minor version")
@@ -43,6 +44,7 @@ def call(body) {
         }
 
         stage("bump major version") {
+            agent any
             when(BRANCH_NAME == 'master') {
                 if (gitHubArtifact.isSnapshot()) {
                     println("bumping major version")
