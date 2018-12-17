@@ -40,8 +40,8 @@ class GitHubArtifact {
         multibranchPipeline.sh("$command")
     }
 
-    def execute(String command, String arguments) {
-        multibranchPipeline.sh("$command \"$arguments\"")
+    def execute(String command, String quotedArgs) {
+        multibranchPipeline.sh("$command \"$quotedArgs\"")
     }
 
     String targetFolder() {
@@ -50,5 +50,9 @@ class GitHubArtifact {
 
     boolean isSnapshot() {
         return pom.version.contains("-SNAPSHOT")
+    }
+
+    boolean isNotFeatureBranch() {
+        return branch == "master" || branch == "develop"
     }
 }

@@ -12,6 +12,8 @@ def call(body) {
 
     String mvnImage = pipelineParams.mvnImage
     String gitHubProjectName = pipelineParams.gitHubProjectName
+
+    GitHubArtifact gitHubArtifact
     MavenBuilder mavenBuilder
 
     node {
@@ -28,6 +30,19 @@ def call(body) {
 
         stage("build and test") {
             mavenBuilder.buildAndTest("$HOME")
+        }
+
+        stage("bump snapshot version") {
+            if (gitHubArtifact.isSnapshot()) {
+                if (gitHubArtifact.isNotFeatureBranch()) {
+                    println("bumping version")
+                } else {
+                    println("feature branch is not bumped")
+                }
+            } else {
+                pom = gitHubArtifact.fetchPom()
+                println("do not bump: ${pom}")
+            }
         }
     }
 }
