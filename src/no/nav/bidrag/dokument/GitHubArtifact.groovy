@@ -79,8 +79,8 @@ class GitHubArtifact {
     }
 
     boolean isLastCommitterFromPipeline() {
-        lastCommitter =  multibranchPipeline.sh(script: 'git log -1 --pretty=format:"%an (%ae)"', returnStdout: true).trim()
-        execute( "echo", "last committ done by $lastCommitter")
+        lastCommitter = multibranchPipeline.sh(script: 'git log -1 --pretty=format:"%an (%ae)"', returnStdout: true).trim()
+        execute("echo", "last committ done by $lastCommitter")
 
         return lastCommitter.contains('navikt-ci')
     }
@@ -89,19 +89,17 @@ class GitHubArtifact {
         String majorVersion = fetchMajorVersion()
         String minorVersion = fetchMinorVersion()
         String nextVersion = "${majorVersion}." + (minorVersion.toInteger() + 1) + "-SNAPSHOT"
-        updateVersion(homeFolderInJenkins, mvnImage, nextVersion)
-   }
+        multibranchPipeline.sh "docker run --rm -v ${workspace}:/usr/src/mymaven -w /usr/src/mymaven -v '$homeFolderInJenkins/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
+        multibranchPipeline.sh "git commit -a -m \"updated to new minor version ${nextVersion} after release by ${lastCommitter}\""
+        multibranchPipeline.sh "git push"
+    }
 
     void updateMajorVersion(String homeFolderInJenkins, String mvnImage) {
         String majorVersion = fetchMajorVersion()
         String minorVersion = fetchMinorVersion()
         String nextVersion = (majorVersion.toFloat() + 1) + ".${minorVersion}-SNAPSHOT"
-        updateVersion(homeFolderInJenkins, mvnImage, nextVersion)
-    }
-
-    private void updateVersion(String homeFolderInJenkins, String mvnImage, String nextVersion) {
         multibranchPipeline.sh "docker run --rm -v ${workspace}:/usr/src/mymaven -w /usr/src/mymaven -v '$homeFolderInJenkins/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
-        multibranchPipeline.sh "git commit -a -m \"updated to new dev-major-version ${nextVersion} after release by ${lastCommitter}\""
+        multibranchPipeline.sh "git commit -a -m \"updated to new major version ${nextVersion} after release by ${lastCommitter}\""
         multibranchPipeline.sh "git push"
     }
 }
