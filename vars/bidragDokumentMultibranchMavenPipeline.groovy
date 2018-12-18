@@ -10,6 +10,7 @@ def call(body) {
 
     println "bidragDokumentmMultibranchPipeline: pipelineParams = ${pipelineParams}"
 
+    String committer
     String mvnImage = pipelineParams.mvnImage
     String gitHubProjectName = pipelineParams.gitHubProjectName
 
@@ -26,6 +27,8 @@ def call(body) {
                         sh 'env'
                         String branch = "$BRANCH_NAME"
                         String workspace = "$WORKSPACE"
+                        committer = sh(script: 'git log -1 --pretty=format:"%an (%ae)"', returnStdout: true).trim()
+                        println("svada lada " + committer)
 
                         gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
                         gitHubArtifact.checkout()
