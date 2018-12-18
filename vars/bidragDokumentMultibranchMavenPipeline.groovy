@@ -30,7 +30,7 @@ def call(body) {
 
                         if (gitHubArtifact.isLastCommitterFromPipeline()) {
                             result = 'UNSTABLE'
-                            throw new IllegalStateException("not a real change")
+                            return
                         } else {
                             gitHubArtifact.checkout()
                             mavenBuilder = new MavenBuilder(mvnImage, gitHubArtifact)
