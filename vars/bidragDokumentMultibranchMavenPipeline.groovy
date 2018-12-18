@@ -52,12 +52,12 @@ def call(body) {
                 }
                 steps {
                     script {
-  /*                      String majorVersion = gitHubArtifact.fetchMajorVersion()
+                        String majorVersion = gitHubArtifact.fetchMajorVersion()
                         String minorVersion = gitHubArtifact.fetchMinorVersion()
                         nextVersion = "${majorVersion}." + (minorVersion.toInteger() + 1) + "-SNAPSHOT"
                         sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '$HOME/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
                         sh "git commit -a -m \"updated to new dev-minor-version ${nextVersion} after release by ${committer}\""
-                        sh "git push"*/
+                        sh "git push"
                     }
                 }
             }
