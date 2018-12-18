@@ -28,13 +28,12 @@ def call(body) {
                         sh 'env'
                         String branch = "$BRANCH_NAME"
                         String workspace = "$WORKSPACE"
+                        gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
 
                         if (gitHubArtifact.isLastCommitterFromPipeline()) {
                             exec.interrupt(Result.UNSTABLE, { "not a real change" } as CauseOfInterruption)
                         } else {
-                            gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
                             gitHubArtifact.checkout()
-
                             mavenBuilder = new MavenBuilder(mvnImage, gitHubArtifact)
                         }
                     }
