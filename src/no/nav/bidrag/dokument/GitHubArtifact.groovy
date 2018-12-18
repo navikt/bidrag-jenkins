@@ -15,6 +15,14 @@ class GitHubArtifact {
         this.workspace = workspace
     }
 
+    GitHubArtifact(GitHubArtifact gitHubArtifact, String branch) {
+        this.branch = branch
+        this.gitHubProjectName = gitHubArtifact.gitHubProjectName
+        this.multibranchPipeline = gitHubArtifact.multibranchPipeline
+        this.workspace = gitHubArtifact.workspace
+        this.lastCommitter = gitHubArtifact.lastCommitter
+    }
+
     void checkout() {
         multibranchPipeline.cleanWs()
         multibranchPipeline.withCredentials([multibranchPipeline.string(credentialsId: 'OAUTH_TOKEN', variable: 'token')]) {
