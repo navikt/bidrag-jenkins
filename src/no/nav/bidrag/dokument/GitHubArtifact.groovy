@@ -52,10 +52,17 @@ class GitHubArtifact {
         return pom.version.contains("-SNAPSHOT")
     }
 
-    String fetchDevVersion() {
+    String fetchMajorVersion() {
         String releaseVersion = pom.version.tokenize("-")[0]
         def tokens = releaseVersion.tokenize(".")
 
         return  "${tokens[0]}.${tokens[1]}"
+    }
+
+    String fetchMinorVersion() {
+        String releaseVersion = pom.version.tokenize("-")[0]
+        def tokens = releaseVersion.tokenize(".")
+
+        return  "${tokens[2]}"
     }
 }

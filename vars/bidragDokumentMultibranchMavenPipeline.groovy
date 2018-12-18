@@ -43,16 +43,17 @@ def call(body) {
                 }
             }
 
-            stage("bump dev version") {
+            stage("bump minor version") {
                 when {
                     expression { BRANCH_NAME == 'develop' && gitHubArtifact.isSnapshot() }
                 }
                 steps {
                     script {
-                        String devVersion = gitHubArtifact.fetchDevVersion()
-                        nextVersion = "${devVersion}." + (newReleaseVersion.toInteger() + 1) + "-SNAPSHOT"
+                        String majorVersion = gitHubArtifact.fetchMajorVersion()
+                        String minorVersion = gitHubArtifact.fetchMinorVersion()
+                        nextVersion = "${majorVersion}." + (minorVersion.toInteger() + 1) + "-SNAPSHOT"
                         sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '$HOME/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
-                        sh "git commit -a -m \"updated to new dev-version ${nextVersion} after release by ${committer}\""
+                        sh "git commit -a -m \"updated to new dev-minor-version ${nextVersion} after release by ${committer}\""
                         sh "git push"
                     }
                 }
@@ -63,7 +64,14 @@ def call(body) {
                     expression { BRANCH_NAME == 'master' && gitHubArtifact.isSnapshot() }
                 }
                 steps {
-                    script { println("bumping major version") }
+                    script {
+                        String majorVersion = gitHubArtifact.fetchMajorVersion()
+                        String minorVersion = gitHubArtifact.fetchMinorVersion()
+                        nextVersion = (majorVersion.toFloat() + 1) + ".${minorVersion}.-SNAPSHOT"
+                        sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '$HOME/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
+                        sh "git commit -a -m \"updated to new dev-minor-version ${nextVersion} after release by ${committer}\""
+                        sh "git push"
+                    }
                 }
             }
 
