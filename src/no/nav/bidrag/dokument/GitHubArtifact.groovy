@@ -70,7 +70,7 @@ class GitHubArtifact {
     }
 
     boolean isLastCommitterFromPipeline() {
-        multibranchPipeline.sh "echo 'last committ done by $lastCommitter'"
+        execute( "echo", "last committ done by $lastCommitter")
         return lastCommitter == 'navikt-ci'
     }
 }
