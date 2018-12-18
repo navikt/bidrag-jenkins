@@ -70,7 +70,7 @@ def call(body) {
                     script {
                         String majorVersion = gitHubArtifact.fetchMajorVersion()
                         String minorVersion = gitHubArtifact.fetchMinorVersion()
-                        nextVersion = (majorVersion.toFloat() + 1) + ".${minorVersion}.-SNAPSHOT"
+                        nextVersion = (majorVersion.toFloat() + 1) + ".${minorVersion}-SNAPSHOT"
                         sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '$HOME/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
                         sh "git commit -a -m \"updated to new dev-major-version ${nextVersion} after release by ${committer}\""
                         sh "git push"
