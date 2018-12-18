@@ -18,9 +18,10 @@ class GitHubArtifact {
     GitHubArtifact(GitHubArtifact gitHubArtifact, String branch) {
         this.branch = branch
         this.gitHubProjectName = gitHubArtifact.gitHubProjectName
-        this.multibranchPipeline = gitHubArtifact.multibranchPipeline
-        this.workspace = gitHubArtifact.workspace
         this.lastCommitter = gitHubArtifact.lastCommitter
+        this.multibranchPipeline = gitHubArtifact.multibranchPipeline
+        this.pom = gitHubArtifact.pom
+        this.workspace = gitHubArtifact.workspace
     }
 
     void checkout() {
