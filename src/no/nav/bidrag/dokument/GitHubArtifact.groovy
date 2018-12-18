@@ -71,6 +71,6 @@ class GitHubArtifact {
 
     boolean isLastCommitterFromPipeline() {
         execute( "echo", "last committ done by $lastCommitter")
-        return lastCommitter == 'navikt-ci'
+        return lastCommitter.contains('navikt-ci')
     }
 }
