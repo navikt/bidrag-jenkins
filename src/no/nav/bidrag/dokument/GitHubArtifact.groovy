@@ -63,6 +63,7 @@ class GitHubArtifact {
     }
 
     String fetchMajorVersion() {
+        fetchPom()
         String releaseVersion = pom.version.tokenize("-")[0]
         def tokens = releaseVersion.tokenize(".")
 
@@ -70,6 +71,7 @@ class GitHubArtifact {
     }
 
     String fetchMinorVersion() {
+        fetchPom()
         String releaseVersion = pom.version.tokenize("-")[0]
         def tokens = releaseVersion.tokenize(".")
 
@@ -98,7 +100,7 @@ class GitHubArtifact {
     }
 
     private void updateVersion(String homeFolderInJenkins, String mvnImage, String nextVersion) {
-        multibranchPipeline.sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '$homeFolderInJenkins/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
+        multibranchPipeline.sh "docker run --rm -v ${workspace}:/usr/src/mymaven -w /usr/src/mymaven -v '$homeFolderInJenkins/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
         multibranchPipeline.sh "git commit -a -m \"updated to new dev-major-version ${nextVersion} after release by ${lastCommitter}\""
         multibranchPipeline.sh "git push"
     }
