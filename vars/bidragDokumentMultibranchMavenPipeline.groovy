@@ -10,7 +10,6 @@ def call(body) {
 
     println "bidragDokumentmMultibranchPipeline: pipelineParams = ${pipelineParams}"
 
-    String committer
     String mvnImage = pipelineParams.mvnImage
     String gitHubProjectName = pipelineParams.gitHubProjectName
 
@@ -27,13 +26,21 @@ def call(body) {
                         sh 'env'
                         String branch = "$BRANCH_NAME"
                         String workspace = "$WORKSPACE"
-                        committer = sh(script: 'git log -1 --pretty=format:"%an (%ae)"', returnStdout: true).trim()
-                        println("svada lada " + committer)
 
                         gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
                         gitHubArtifact.checkout()
 
                         mavenBuilder = new MavenBuilder(mvnImage, gitHubArtifact)
+                    }
+                }
+            }
+
+            stage('Abort job when last commit is from pipeline') {
+                steps {
+                    script {
+                       if (gitHubArtifact.isLastCommitterFromPipeline()) {
+                           currentBuild.result = 'ABORTED'
+                       }
                     }
                 }
             }
@@ -54,6 +61,7 @@ def call(body) {
                     script {
                         String majorVersion = gitHubArtifact.fetchMajorVersion()
                         String minorVersion = gitHubArtifact.fetchMinorVersion()
+
                         nextVersion = "${majorVersion}." + (minorVersion.toInteger() + 1) + "-SNAPSHOT"
                         sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '$HOME/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
                         sh "git commit -a -m \"updated to new dev-minor-version ${nextVersion} after release by ${committer}\""
@@ -74,15 +82,6 @@ def call(body) {
                         sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '$HOME/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
                         sh "git commit -a -m \"updated to new dev-major-version ${nextVersion} after release by ${committer}\""
                         sh "git push"
-                    }
-                }
-            }
-
-            stage("complete pipeline") {
-                steps {
-                    script {
-                        pom = gitHubArtifact.fetchPom()
-                        println("end of pipeline on $BRANCH_NAME for artifact $pom")
                     }
                 }
             }

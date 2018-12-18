@@ -6,6 +6,7 @@ class GitHubArtifact {
     private String branch
     private String gitHubProjectName
     private String workspace
+    public String lastCommitter
 
     GitHubArtifact(multibranchPipeline, String gitHubProjectName, String branch, String workspace) {
         this.branch = branch
@@ -24,6 +25,8 @@ class GitHubArtifact {
                 multibranchPipeline.sh(script: "git checkout ${branch}")
             }
         }
+
+        lastCommitter =  multibranchPipeline.sh(script: 'git log -1 --pretty=format:"%an (%ae)"', returnStdout: true).trim()
     }
 
     def fetchPom() {
@@ -56,13 +59,17 @@ class GitHubArtifact {
         String releaseVersion = pom.version.tokenize("-")[0]
         def tokens = releaseVersion.tokenize(".")
 
-        return  "${tokens[0]}.${tokens[1]}"
+        return "${tokens[0]}.${tokens[1]}"
     }
 
     String fetchMinorVersion() {
         String releaseVersion = pom.version.tokenize("-")[0]
         def tokens = releaseVersion.tokenize(".")
 
-        return  "${tokens[2]}"
+        return "${tokens[2]}"
+    }
+
+    boolean isLastCommitterFromPipeline() {
+        return lastCommitter == 'navikt-ci'
     }
 }
