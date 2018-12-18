@@ -29,25 +29,19 @@ def call(body) {
                         String branch = "$BRANCH_NAME"
                         String workspace = "$WORKSPACE"
 
-                        gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
-                        gitHubArtifact.checkout()
+                        if (gitHubArtifact.isLastCommitterFromPipeline()) {
+                            exec.interrupt(Result.UNSTABLE, { "not a real change" } as CauseOfInterruption)
+                        } else {
+                            gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
+                            gitHubArtifact.checkout()
 
-                        mavenBuilder = new MavenBuilder(mvnImage, gitHubArtifact)
+                            mavenBuilder = new MavenBuilder(mvnImage, gitHubArtifact)
+                        }
                     }
                 }
             }
 
-            stage('Abort job when last commit is from pipeline') {
-                steps {
-                    script {
-                       if (gitHubArtifact.isLastCommitterFromPipeline()) {
-                           exec.interrupt(Result.ABORTED, {"not a real change"} as CauseOfInterruption)
-                       }
-                    }
-                }
-            }
-
-            stage("build and test") {
+          stage("build and test") {
                 steps {
                     script {
                         mavenBuilder.buildAndTest("$HOME")

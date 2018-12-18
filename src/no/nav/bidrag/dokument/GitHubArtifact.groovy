@@ -25,8 +25,6 @@ class GitHubArtifact {
                 multibranchPipeline.sh(script: "git checkout ${branch}")
             }
         }
-
-        lastCommitter =  multibranchPipeline.sh(script: 'git log -1 --pretty=format:"%an (%ae)"', returnStdout: true).trim()
     }
 
     def fetchPom() {
@@ -70,7 +68,9 @@ class GitHubArtifact {
     }
 
     boolean isLastCommitterFromPipeline() {
+        lastCommitter =  multibranchPipeline.sh(script: 'git log -1 --pretty=format:"%an (%ae)"', returnStdout: true).trim()
         execute( "echo", "last committ done by $lastCommitter")
+
         return lastCommitter.contains('navikt-ci')
     }
 }
