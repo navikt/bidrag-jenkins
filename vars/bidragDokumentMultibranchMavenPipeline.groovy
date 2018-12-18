@@ -12,7 +12,7 @@ def call(body) {
 
     String mvnImage = pipelineParams.mvnImage
     String gitHubProjectName = pipelineParams.gitHubProjectName
-
+    boolean isChangeOfCode = true
     GitHubArtifact gitHubArtifact
     MavenBuilder mavenBuilder
 
@@ -29,8 +29,7 @@ def call(body) {
                         gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
 
                         if (gitHubArtifact.isLastCommitterFromPipeline()) {
-                            result = 'UNSTABLE'
-                            return 2 // UNSTABLE
+                            isChangeOfCode = false
                         } else {
                             gitHubArtifact.checkout()
                             mavenBuilder = new MavenBuilder(mvnImage, gitHubArtifact)
@@ -40,6 +39,7 @@ def call(body) {
             }
 
             stage("build and test") {
+                when { expression { isChangeOfCode } }
                 steps {
                     script {
                         mavenBuilder.buildAndTest("$HOME")
@@ -49,7 +49,7 @@ def call(body) {
 
             stage("bump minor version") {
                 when {
-                    expression { BRANCH_NAME == 'develop' && gitHubArtifact.isSnapshot() }
+                    expression { isChangeOfCode && BRANCH_NAME == 'develop' && gitHubArtifact.isSnapshot() }
                 }
                 steps {
                     script {
@@ -60,7 +60,7 @@ def call(body) {
 
             stage("bump major version") {
                 when {
-                    expression { BRANCH_NAME == 'master' && gitHubArtifact.isSnapshot() }
+                    expression { isChangeOfCode && BRANCH_NAME == 'master' && gitHubArtifact.isSnapshot() }
                 }
                 steps {
                     script {
