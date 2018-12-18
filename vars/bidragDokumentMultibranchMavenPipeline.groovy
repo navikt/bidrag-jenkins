@@ -30,7 +30,7 @@ def call(body) {
 
                         if (gitHubArtifact.isLastCommitterFromPipeline()) {
                             result = 'UNSTABLE'
-                            return
+                            return 2 // UNSTABLE
                         } else {
                             gitHubArtifact.checkout()
                             mavenBuilder = new MavenBuilder(mvnImage, gitHubArtifact)
