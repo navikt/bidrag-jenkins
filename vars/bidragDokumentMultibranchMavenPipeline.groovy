@@ -31,7 +31,8 @@ def call(body) {
                         gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
 
                         if (gitHubArtifact.isLastCommitterFromPipeline()) {
-                            exec.interrupt(Result.UNSTABLE, { "not a real change" } as CauseOfInterruption)
+                            println("not a real change")
+                            result = 'UNSTABLE'
                         } else {
                             gitHubArtifact.checkout()
                             mavenBuilder = new MavenBuilder(mvnImage, gitHubArtifact)
