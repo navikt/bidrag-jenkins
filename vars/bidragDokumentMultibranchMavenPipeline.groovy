@@ -1,5 +1,3 @@
-import hudson.model.Result
-import jenkins.model.CauseOfInterruption
 import no.nav.bidrag.dokument.GitHubArtifact
 import no.nav.bidrag.dokument.MavenBuilder
 
@@ -41,7 +39,7 @@ def call(body) {
                 }
             }
 
-          stage("build and test") {
+            stage("build and test") {
                 steps {
                     script {
                         mavenBuilder.buildAndTest("$HOME")
@@ -55,13 +53,7 @@ def call(body) {
                 }
                 steps {
                     script {
-                        String majorVersion = gitHubArtifact.fetchMajorVersion()
-                        String minorVersion = gitHubArtifact.fetchMinorVersion()
-                        String lastCommitter = gitHubArtifact.lastCommitter
-                        nextVersion = "${majorVersion}." + (minorVersion.toInteger() + 1) + "-SNAPSHOT"
-                        sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '$HOME/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
-                        sh "git commit -a -m \"updated to new dev-minor-version ${nextVersion} after release by ${lastCommitter}\""
-                        sh "git push"
+                        gitHubArtifact.updateMinorVersion("$HOME", mvnImage)
                     }
                 }
             }
@@ -72,15 +64,9 @@ def call(body) {
                 }
                 steps {
                     script {
-                        String majorVersion = gitHubArtifact.fetchMajorVersion()
-                        String minorVersion = gitHubArtifact.fetchMinorVersion()
-                        String lastCommitter = gitHubArtifact.lastCommitter
                         gitHubArtifact = new GitHubArtifact(gitHubArtifact, "develop")
                         gitHubArtifact.checkout()
-                        nextVersion = (majorVersion.toFloat() + 1) + ".${minorVersion}-SNAPSHOT"
-                        sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '$HOME/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
-                        sh "git commit -a -m \"updated to new dev-major-version ${nextVersion} after release by ${lastCommitter}\""
-                        sh "git push"
+                        gitHubArtifact.updateMajorVersion("$HOME", mvnImage)
                     }
                 }
             }

@@ -5,8 +5,8 @@ class GitHubArtifact {
     private def pom
     private String branch
     private String gitHubProjectName
+    private String lastCommitter
     private String workspace
-    public String lastCommitter
 
     GitHubArtifact(multibranchPipeline, String gitHubProjectName, String branch, String workspace) {
         this.branch = branch
@@ -80,5 +80,25 @@ class GitHubArtifact {
         execute( "echo", "last committ done by $lastCommitter")
 
         return lastCommitter.contains('navikt-ci')
+    }
+
+    void updateMinorVersion(String homeFolderInJenkins, String mvnImage) {
+        String majorVersion = fetchMajorVersion()
+        String minorVersion = fetchMinorVersion()
+        String nextVersion = "${majorVersion}." + (minorVersion.toInteger() + 1) + "-SNAPSHOT"
+        updateVersion(homeFolderInJenkins, mvnImage, nextVersion)
+   }
+
+    void updateMajorVersion(String homeFolderInJenkins, String mvnImage) {
+        String majorVersion = fetchMajorVersion()
+        String minorVersion = fetchMinorVersion()
+        String nextVersion = (majorVersion.toFloat() + 1) + ".${minorVersion}-SNAPSHOT"
+        updateVersion(homeFolderInJenkins, mvnImage, nextVersion)
+    }
+
+    private void updateVersion(String homeFolderInJenkins, String mvnImage, String nextVersion) {
+        multibranchPipeline.sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '$homeFolderInJenkins/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
+        multibranchPipeline.sh "git commit -a -m \"updated to new dev-major-version ${nextVersion} after release by ${lastCommitter}\""
+        multibranchPipeline.sh "git push"
     }
 }
