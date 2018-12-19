@@ -82,12 +82,12 @@ def call(body) {
                     }
                 }
             }
+        }
 
-            post {
-                always {
-                    if (pipelineEnvironment.branch == 'master') {
-                        gitHubArtifact.resetWorkspace()
-                    }
+        post {
+            always {
+                if (pipelineEnvironment.branch == 'master') {
+                    gitHubArtifact.resetWorkspace()
                 }
             }
         }
