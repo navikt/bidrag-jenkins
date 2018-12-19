@@ -1,3 +1,5 @@
+import no.nav.bidrag.dokument.DependentVersions
+import no.nav.bidrag.dokument.DockerImage
 import no.nav.bidrag.dokument.GitHubArtifact
 import no.nav.bidrag.dokument.MavenBuilder
 
@@ -13,6 +15,7 @@ def call(body) {
     String mvnImage = pipelineParams.mvnImage
     String gitHubProjectName = pipelineParams.gitHubProjectName
     boolean isChangeOfCode = true
+    DockerImage dockerImage
     GitHubArtifact gitHubArtifact
     MavenBuilder mavenBuilder
 
@@ -32,10 +35,16 @@ def call(body) {
                             isChangeOfCode = false
                         } else {
                             gitHubArtifact.checkout()
+                            dockerImage = new DockerImage(gitHubArtifact)
                             mavenBuilder = new MavenBuilder(mvnImage, gitHubArtifact)
                         }
                     }
                 }
+            }
+
+            stage("Verify maven dependency versions") {
+                when { expression { isChangeOfCode } }
+                steps { script { DependentVersions.verify(gitHubArtifact.fetchPom()) } }
             }
 
             stage("build and test") {
@@ -43,6 +52,15 @@ def call(body) {
                 steps {
                     script {
                         mavenBuilder.buildAndTest("$HOME")
+                    }
+                }
+            }
+
+            stage("release docker image") {
+                when { expression { isChangeOfCode } }
+                steps {
+                    script {
+
                     }
                 }
             }
@@ -68,13 +86,6 @@ def call(body) {
                         gitHubArtifact.checkout()
                         gitHubArtifact.updateMajorVersion("$HOME", mvnImage)
                     }
-                }
-            }
-
-            stage("validate NAIS and upload to nexus") {
-                when { expression { isChangeOfCode } }
-                steps {
-                    
                 }
             }
         }
