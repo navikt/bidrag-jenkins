@@ -37,11 +37,16 @@ class GitHubArtifact {
     }
 
     def fetchPom() {
-        execute("echo", "parsing pom.xml from ${workspace}")
-
         if (pom == null) {
-            pom = multibranchPipeline.readMavenPom file: 'pom.xml'
+            pom = readPomFromSourceCode()
         }
+
+        return pom
+    }
+
+    private def readPomFromSourceCode() {
+        execute("echo", "parsing pom.xml from ${workspace}")
+        def pom = multibranchPipeline.readMavenPom file: 'pom.xml'
 
         return pom
     }
@@ -63,7 +68,10 @@ class GitHubArtifact {
     }
 
     String fetchMajorVersion() {
-        fetchPom()
+        return fetchMajorVersion(fetchPom())
+    }
+
+    static String fetchMajorVersion(def pom) {
         String releaseVersion = pom.version.tokenize("-")[0]
         def tokens = releaseVersion.tokenize(".")
 
@@ -71,7 +79,10 @@ class GitHubArtifact {
     }
 
     String fetchMinorVersion() {
-        fetchPom()
+        return fetchMinorVersion(fetchPom())
+    }
+
+    static String fetchMinorVersion(def pom) {
         String releaseVersion = pom.version.tokenize("-")[0]
         def tokens = releaseVersion.tokenize(".")
 
@@ -95,11 +106,24 @@ class GitHubArtifact {
     }
 
     void updateMajorVersion(String homeFolderInJenkins, String mvnImage) {
-        String majorVersion = fetchMajorVersion()
-        String minorVersion = fetchMinorVersion()
-        String nextVersion = (majorVersion.toFloat() + 1) + ".${minorVersion}-SNAPSHOT"
-        multibranchPipeline.sh "docker run --rm -v ${workspace}:/usr/src/mymaven -w /usr/src/mymaven -v '$homeFolderInJenkins/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
-        multibranchPipeline.sh "git commit -a -m \"updated to new major version ${nextVersion} after release by ${lastCommitter}\""
-        multibranchPipeline.sh "git push"
+        String masterMajorVersion = fetchMajorVersion()
+        String developMajorVersion = fetchMajorVersionFromDevelopBranch()
+
+        // only bump major version if not previously bumped...
+        if (masterMajorVersion == developMajorVersion) {
+            String developMinorVersion = fetchMinorVersion(readPomFromSourceCode())
+            String nextVersion = (masterMajorVersion.toFloat() + 1) + ".${developMinorVersion}-SNAPSHOT"
+            multibranchPipeline.sh "docker run --rm -v ${workspace}:/usr/src/mymaven -w /usr/src/mymaven -v '$homeFolderInJenkins/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
+            multibranchPipeline.sh "git commit -a -m \"updated to new major version ${nextVersion} after release by ${lastCommitter}\""
+            multibranchPipeline.sh "git push"
+        }
+    }
+
+    private String fetchMajorVersionFromDevelopBranch() {
+        if (branch != 'develop') {
+            throw new IllegalStateException("Expected branch to be develop, was: $branch")
+        }
+
+        return fetchMajorVersion(readPomFromSourceCode())
     }
 }
