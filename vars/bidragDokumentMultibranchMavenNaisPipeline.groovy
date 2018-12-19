@@ -8,7 +8,7 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
-    println "bidragDokumentmMultibranchMavenPipeline: pipelineParams = ${pipelineParams}"
+    println "bidragDokumentmMultibranchMavenNaisPipeline: pipelineParams = ${pipelineParams}"
 
     String mvnImage = pipelineParams.mvnImage
     String gitHubProjectName = pipelineParams.gitHubProjectName
@@ -68,6 +68,13 @@ def call(body) {
                         gitHubArtifact.checkout()
                         gitHubArtifact.updateMajorVersion("$HOME", mvnImage)
                     }
+                }
+            }
+
+            stage("validate NAIS and upload to nexus") {
+                when { expression { isChangeOfCode } }
+                steps {
+                    
                 }
             }
         }
