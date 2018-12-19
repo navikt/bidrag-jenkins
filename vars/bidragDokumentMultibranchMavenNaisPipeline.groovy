@@ -13,7 +13,7 @@ def call(body) {
 
     println "bidragDokumentmMultibranchMavenNaisPipeline: pipelineParams = ${pipelineParams}"
 
-     PipelineEnvironment pipelineEnvironment = new PipelineEnvironment(
+    PipelineEnvironment pipelineEnvironment = new PipelineEnvironment(
             pipelineParams.gitHubProjectName,
             pipelineParams.mvnImage
     )
@@ -63,7 +63,11 @@ def call(body) {
             }
 
             stage("release docker image") {
-                when { expression { pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'develop' || pipelineEnvironment.hasDeploymentArea() } }
+                when {
+                    expression {
+                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'develop' || pipelineEnvironment.hasDeploymentArea()
+                    }
+                }
                 steps {
                     script {
                         gitHubArtifact.execute("echo", "this is release of docker image")
@@ -73,7 +77,9 @@ def call(body) {
 
             stage("bump minor version") {
                 when {
-                    expression { pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'develop' && gitHubArtifact.isSnapshot() }
+                    expression {
+                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'develop' && gitHubArtifact.isSnapshot()
+                    }
                 }
                 steps {
                     script {
@@ -84,7 +90,9 @@ def call(body) {
 
             stage("bump major version") {
                 when {
-                    expression { pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'master' && gitHubArtifact.isSnapshot() }
+                    expression {
+                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'master' && gitHubArtifact.isSnapshot()
+                    }
                 }
                 steps {
                     script {
@@ -94,6 +102,14 @@ def call(body) {
                     }
                 }
             }
+
+            post {
+                always {
+                    if (pipelineEnvironment.branch == 'master') {
+                        gitHubArtifact.resetWorkspace()
+                    }
+                }
+            }''
         }
     }
 }

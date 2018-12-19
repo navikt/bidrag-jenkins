@@ -9,7 +9,7 @@ class GitHubArtifact {
     }
 
     GitHubArtifact(GitHubArtifact gitHubArtifact, String branch) {
-        pipelineEnvironment = gitHubArtifact.pipelineEnvironment;
+        pipelineEnvironment = gitHubArtifact.pipelineEnvironment
         pipelineEnvironment.branch = branch
     }
 
@@ -123,5 +123,10 @@ class GitHubArtifact {
         }
 
         return fetchMajorVersion(readPomFromSourceCode())
+    }
+
+    void resetWorkspace() {
+        execute("cd ${pipelineEnvironment.workspace}")
+        execute("git reset --hard")
     }
 }
