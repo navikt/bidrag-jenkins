@@ -30,7 +30,6 @@ def call(body) {
                 steps {
                     script {
                         sh 'env'
-                        pipelineEnvironment.branch = "$BRANCH_NAME"
                         pipelineEnvironment.homeFolderJenkins = "$HOME"
                         pipelineEnvironment.multibranchPipeline = this
                         pipelineEnvironment.workspace = "$WORKSPACE"
@@ -40,7 +39,7 @@ def call(body) {
                         if (gitHubArtifact.isLastCommitterFromPipeline()) {
                             pipelineEnvironment.isNotChangeOfCode()
                         } else {
-                            gitHubArtifact.checkout()
+                            gitHubArtifact.checkout("$BRANCH_NAME")
                             dockerImage = new DockerImage(gitHubArtifact)
                             mavenBuilder = new MavenBuilder(pipelineEnvironment, gitHubArtifact)
                         }
@@ -107,9 +106,7 @@ def call(body) {
         post {
             always {
                 script {
-                    if (pipelineEnvironment.branch == 'develop') {
-                        gitHubArtifact.resetWorkspace()
-                    }
+                    gitHubArtifact.resetWorkspace()
                 }
             }
         }

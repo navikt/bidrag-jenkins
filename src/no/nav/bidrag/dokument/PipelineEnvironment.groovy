@@ -5,7 +5,6 @@ class PipelineEnvironment {
     boolean isChangeOfCode = true
     def multibranchPipeline
 
-    String branch
     String deploymentArea
     String gitHubProjectName
     String homeFolderJenkins
@@ -19,7 +18,7 @@ class PipelineEnvironment {
     }
 
     void isNotChangeOfCode() {
-        isChangeOfCode = false;
+        isChangeOfCode = false
     }
 
     boolean hasDeploymentArea() {

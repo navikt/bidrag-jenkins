@@ -8,13 +8,7 @@ class GitHubArtifact {
         this.pipelineEnvironment = pipelineEnvironment
     }
 
-    GitHubArtifact(GitHubArtifact gitHubArtifact, String branch) {
-        pipelineEnvironment = gitHubArtifact.pipelineEnvironment
-        pipelineEnvironment.branch = branch
-    }
-
-    void checkout() {
-        String branch = pipelineEnvironment.branch
+    void checkout(String branch) {
         String gitHubProjectName = pipelineEnvironment.gitHubProjectName
 
         pipelineEnvironment.multibranchPipeline.cleanWs()
@@ -99,7 +93,7 @@ class GitHubArtifact {
     void updateMajorVersion() {
         String homeFolderInJenkins = pipelineEnvironment.homeFolderJenkins
         String masterMajorVersion = fetchMajorVersion()
-        String developMajorVersion = fetchMajorVersionFromDevelopBranch()
+        String developMajorVersion = readPomFromSourceCode()
 
         // only bump major version if not previously bumped...
         if (masterMajorVersion == developMajorVersion) {
@@ -114,15 +108,6 @@ class GitHubArtifact {
         } else {
             execute("echo", "[INFO] do not bump major version in develop ($developMajorVersion) from version in master ($masterMajorVersion)")
         }
-    }
-
-    private String fetchMajorVersionFromDevelopBranch() {
-        if (pipelineEnvironment.branch != 'develop') {
-            String branch = pipelineEnvironment.branch
-            throw new IllegalStateException("Expected branch to be develop, was: $branch")
-        }
-
-        return fetchMajorVersion(readPomFromSourceCode())
     }
 
     void resetWorkspace() {
