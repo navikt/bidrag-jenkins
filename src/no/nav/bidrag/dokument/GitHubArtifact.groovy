@@ -106,10 +106,13 @@ class GitHubArtifact {
             String developMinorVersion = fetchMinorVersion(readPomFromSourceCode())
             String mvnImage = pipelineEnvironment.mvnImage
             String nextVersion = (masterMajorVersion.toFloat() + 1) + ".${developMinorVersion}-SNAPSHOT"
+            execute("echo", "[INFO] bumping major version in develop ($developMajorVersion) from version in master ($masterMajorVersion)")
 
             pipelineEnvironment.multibranchPipeline.sh "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven -w /usr/src/mymaven -v '$homeFolderInJenkins/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
             pipelineEnvironment.multibranchPipeline.sh "git commit -a -m \"updated to new major version ${nextVersion} after release by ${pipelineEnvironment.lastCommitter}\""
             pipelineEnvironment.multibranchPipeline.sh "git push"
+        } else {
+            execute("echo", "[INFO] do not bump major version in develop ($developMajorVersion) from version in master ($masterMajorVersion)")
         }
     }
 
