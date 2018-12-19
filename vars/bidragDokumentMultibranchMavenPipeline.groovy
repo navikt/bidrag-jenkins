@@ -46,12 +46,12 @@ def call(body) {
             }
 
             stage("Verify maven dependency versions") {
-                when { expression { isChangeOfCode } }
+                when { expression { pipelineEnvironment.isChangeOfCode } }
                 steps { script { DependentVersions.verify(gitHubArtifact.fetchPom()) } }
             }
 
             stage("build and test") {
-                when { expression { isChangeOfCode } }
+                when { expression { pipelineEnvironment.isChangeOfCode } }
                 steps {
                     script {
                         mavenBuilder.buildAndTest()
