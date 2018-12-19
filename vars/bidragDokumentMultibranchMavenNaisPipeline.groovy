@@ -60,7 +60,7 @@ def call(body) {
                 when { expression { isChangeOfCode } }
                 steps {
                     script {
-
+                        gitHubArtifact.execute("echo", "this is release of docker image")
                     }
                 }
             }
