@@ -106,8 +106,10 @@ def call(body) {
 
         post {
             always {
-                if (pipelineEnvironment.branch == 'master') {
-                    gitHubArtifact.resetWorkspace()
+                script {
+                    if (pipelineEnvironment.branch == 'develop') {
+                        gitHubArtifact.resetWorkspace()
+                    }
                 }
             }
         }
