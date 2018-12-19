@@ -79,8 +79,7 @@ def call(body) {
                 }
                 steps {
                     script {
-                        gitHubArtifact = new GitHubArtifact(gitHubArtifact, "develop")
-                        gitHubArtifact.checkout()
+                        gitHubArtifact.checkout('develop')
                         gitHubArtifact.updateMajorVersion()
                     }
                 }
