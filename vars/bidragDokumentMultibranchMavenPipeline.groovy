@@ -1,6 +1,7 @@
 import no.nav.bidrag.dokument.DependentVersions
 import no.nav.bidrag.dokument.GitHubArtifact
 import no.nav.bidrag.dokument.MavenBuilder
+import no.nav.bidrag.dokument.PipelineEnvironment
 
 def call(body) {
 
@@ -11,9 +12,11 @@ def call(body) {
 
     println "bidragDokumentmMultibranchMavenPipeline: pipelineParams = ${pipelineParams}"
 
-    String mvnImage = pipelineParams.mvnImage
-    String gitHubProjectName = pipelineParams.gitHubProjectName
-    boolean isChangeOfCode = true
+    PipelineEnvironment pipelineEnvironment = new PipelineEnvironment(
+            pipelineParams.gitHubProjectName,
+            pipelineParams.mvnImage
+    )
+
     GitHubArtifact gitHubArtifact
     MavenBuilder mavenBuilder
 
@@ -25,15 +28,18 @@ def call(body) {
                 steps {
                     script {
                         sh 'env'
-                        String branch = "$BRANCH_NAME"
-                        String workspace = "$WORKSPACE"
-                        gitHubArtifact = new GitHubArtifact(this, gitHubProjectName, branch, workspace)
+                        pipelineEnvironment.branch = "$BRANCH_NAME"
+                        pipelineEnvironment.homeFolderJenkins = "$HOME"
+                        pipelineEnvironment.multibranchPipeline = this
+                        pipelineEnvironment.workspace = "$WORKSPACE"
+
+                        gitHubArtifact = new GitHubArtifact(pipelineEnvironment)
 
                         if (gitHubArtifact.isLastCommitterFromPipeline()) {
-                            isChangeOfCode = false
+                            pipelineEnvironment.isNotChangeOfCode()
                         } else {
                             gitHubArtifact.checkout()
-                            mavenBuilder = new MavenBuilder(mvnImage, gitHubArtifact)
+                            mavenBuilder = new MavenBuilder(pipelineEnvironment, gitHubArtifact)
                         }
                     }
                 }
@@ -48,31 +54,31 @@ def call(body) {
                 when { expression { isChangeOfCode } }
                 steps {
                     script {
-                        mavenBuilder.buildAndTest("$HOME")
+                        mavenBuilder.buildAndTest()
                     }
                 }
             }
 
             stage("bump minor version") {
                 when {
-                    expression { isChangeOfCode && BRANCH_NAME == 'develop' && gitHubArtifact.isSnapshot() }
+                    expression { pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'develop' && gitHubArtifact.isSnapshot() }
                 }
                 steps {
                     script {
-                        gitHubArtifact.updateMinorVersion("$HOME", mvnImage)
+                        gitHubArtifact.updateMinorVersion()
                     }
                 }
             }
 
             stage("bump major version") {
                 when {
-                    expression { isChangeOfCode && BRANCH_NAME == 'master' && gitHubArtifact.isSnapshot() }
+                    expression { pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'master' && gitHubArtifact.isSnapshot() }
                 }
                 steps {
                     script {
                         gitHubArtifact = new GitHubArtifact(gitHubArtifact, "develop")
                         gitHubArtifact.checkout()
-                        gitHubArtifact.updateMajorVersion("$HOME", mvnImage)
+                        gitHubArtifact.updateMajorVersion()
                     }
                 }
             }

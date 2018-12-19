@@ -3,17 +3,19 @@ package no.nav.bidrag.dokument
 class MavenBuilder {
 
     private GitHubArtifact gitHubArtifact
-    private String mvnImage
+    private PipelineEnvironment pipelineEnvironment
 
-    MavenBuilder(String mvnImage, GitHubArtifact gitHubArtifact) {
+    MavenBuilder(PipelineEnvironment pipelineEnvironment, GitHubArtifact gitHubArtifact) {
         this.gitHubArtifact = gitHubArtifact
-        this.mvnImage = mvnImage
+        this.pipelineEnvironment = pipelineEnvironment
     }
 
-    void buildAndTest(String deployerHomeFolder) {
+    void buildAndTest() {
+        String deployerHomeFolder = pipelineEnvironment.homeFolderJenkins
+        String mvnImage = pipelineEnvironment.mvnImage
         gitHubArtifact.execute("echo", "mvnImage: $mvnImage")
 
-        String workspaceFolder = gitHubArtifact.workspaceFolder()
+        String workspaceFolder = pipelineEnvironment.workspace
         gitHubArtifact.execute("echo", "gitHubArtifact: $workspaceFolder")
 
         def pom = gitHubArtifact.fetchPom()
