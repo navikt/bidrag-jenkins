@@ -16,7 +16,6 @@ class GitHubArtifact {
     void checkout() {
         String branch = pipelineEnvironment.branch
         String gitHubProjectName = pipelineEnvironment.gitHubProjectName
-        String token = pipelineEnvironment.multibranchPipeline.token
 
         pipelineEnvironment.multibranchPipeline.cleanWs()
         pipelineEnvironment.multibranchPipeline.withCredentials([pipelineEnvironment.multibranchPipeline.string(credentialsId: 'OAUTH_TOKEN', variable: 'token')]) {
@@ -82,7 +81,7 @@ class GitHubArtifact {
     boolean isLastCommitterFromPipeline() {
         pipelineEnvironment.lastCommitter = pipelineEnvironment.multibranchPipeline.sh(script: 'git log -1 --pretty=format:"%an (%ae)"', returnStdout: true).trim()
         String lastCommitter = pipelineEnvironment.lastCommitter
-        execute("echo", "last committ done by $lastCommitter")
+        execute("echo", "last commit done by $lastCommitter")
 
         return lastCommitter.contains('navikt-ci')
     }
