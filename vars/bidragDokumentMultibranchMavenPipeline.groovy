@@ -1,3 +1,4 @@
+import no.nav.bidrag.dokument.DependentVersions
 import no.nav.bidrag.dokument.GitHubArtifact
 import no.nav.bidrag.dokument.MavenBuilder
 
@@ -36,6 +37,11 @@ def call(body) {
                         }
                     }
                 }
+            }
+
+            stage("Verify maven dependency versions") {
+                when { expression { isChangeOfCode } }
+                steps { script { DependentVersions.verify(gitHubArtifact.fetchPom()) } }
             }
 
             stage("build and test") {
