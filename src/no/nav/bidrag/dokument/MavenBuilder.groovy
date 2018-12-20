@@ -36,8 +36,6 @@ class MavenBuilder {
             pipelineEnvironment.execute "docker run --rm -v ${workspaceFolder}:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.mvnImage} mvn versions:set -B -DnewVersion=${pipelineEnvironment.mvnVersion} -DgenerateBackupPoms=false"
             pipelineEnvironment.execute "docker run --rm -v ${workspaceFolder}:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.mvnImage} mvn clean install -DskipTests -Dhendelse.environments=${pipelineEnvironment.fetchEnvironment()} -B -e"
             pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.mvnVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:${pipelineEnvironment.fetchImageVersion()} ."
-            pipelineEnvironment.execute "git commit -am \"set version to ${pipelineEnvironment.mvnVersion} (from Jenkins pipeline)\""
-            pipelineEnvironment.execute "git push"
             pipelineEnvironment.execute "git tag -a ${pipelineEnvironment.gitHubProjectName}-${pipelineEnvironment.mvnVersion}-${pipelineEnvironment.fetchEnvironment()} -m ${pipelineEnvironment.gitHubProjectName}-${pipelineEnvironment.mvnVersion}-${pipelineEnvironment.fetchEnvironment()}"
             pipelineEnvironment.execute "git push --tags"
         } else {
