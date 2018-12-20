@@ -61,19 +61,6 @@ def call(body) {
                 }
             }
 
-            stage("release docker image") {
-                when {
-                    expression {
-                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'develop' || pipelineEnvironment.hasDeploymentArea()
-                    }
-                }
-                steps {
-                    script {
-                        gitHubArtifact.execute("echo", "this is release of docker image")
-                    }
-                }
-            }
-
             stage("bump minor version") {
                 when {
                     expression {
@@ -98,6 +85,21 @@ def call(body) {
                         gitHubArtifact.checkout('develop')
                         gitHubArtifact.updateMajorVersion()
                     }
+                }
+            }
+        }
+
+        stage("release docker image") {
+            when {
+                expression {
+                    pipelineEnvironment.isChangeOfCode &&
+                            (BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' || pipelineEnvironment.hasDeploymentArea())
+                }
+            }
+            steps {
+                script {
+                    String releaseVersion = pipelineEnvironment.releaseVersion
+                    println("this is release of docker image for versjon: $releaseVersion")
                 }
             }
         }

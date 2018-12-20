@@ -10,6 +10,7 @@ class PipelineEnvironment {
     String homeFolderJenkins
     String lastCommitter
     String mvnImage
+    String releaseVersion
     String workspace
 
     PipelineEnvironment(String gitHubProjectName, String mvnImage) {
