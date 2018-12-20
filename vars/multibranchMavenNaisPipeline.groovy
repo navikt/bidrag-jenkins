@@ -41,7 +41,8 @@ def call(body) {
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
                             pipelineEnvironment.mvnVersion = gitHubArtifact.fetchVersion()
-                            dockerImage = new DockerImage(pipelineEnvironment)
+                            pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
+                            dockerImage = new DockerImage(pipelineEnvironment, "${USERNAME}", "${PASSWORD}")
                             mavenBuilder = new MavenBuilder(pipelineEnvironment)
                         }
                     }

@@ -6,6 +6,7 @@ class PipelineEnvironment {
     def multibranchPipeline
 
     String deploymentArea
+    String dockerRepo
     String gitHubProjectName
     String homeFolderJenkins
     String lastCommitter
@@ -36,5 +37,10 @@ class PipelineEnvironment {
 
     void execute(String command, String quotedArgs) {
         multibranchPipeline.sh("$command \"$quotedArgs\"")
+    }
+
+    String fetchImageVersion() {
+        String environment = deploymentArea || "q0"
+        return "$mvnVersion-$environment"
     }
 }

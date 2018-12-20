@@ -38,6 +38,7 @@ def call(body) {
                             pipelineEnvironment.isNotChangeOfCode()
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
+                            pipelineEnvironment.mvnVersion = gitHubArtifact.fetchVersion()
                             mavenBuilder = new MavenBuilder(pipelineEnvironment)
                         }
                     }
