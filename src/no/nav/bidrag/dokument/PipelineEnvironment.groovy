@@ -39,8 +39,11 @@ class PipelineEnvironment {
         multibranchPipeline.sh("$command \"$quotedArgs\"")
     }
 
+    String fetchEnvironment() {
+        return deploymentArea || "q0"
+    }
+
     String fetchImageVersion() {
-        String environment = deploymentArea || "q0"
-        return "$mvnVersion-$environment"
+        return "$mvnVersion-${fetchEnvironment()}"
     }
 }
