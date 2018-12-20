@@ -84,7 +84,7 @@ def call(body) {
 
             stage("release artifact") {
                 when { expression { pipelineEnvironment.isChangeOfCode } }
-                steps { script { mavenBuilder.releaseArtifact() } }
+                steps { script { dockerImage.releaseArtifact() } }
             }
 
             stage("release docker image") {
