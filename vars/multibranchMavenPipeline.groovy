@@ -38,7 +38,7 @@ def call(body) {
                             pipelineEnvironment.isNotChangeOfCode()
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
-                            mavenBuilder = new MavenBuilder(pipelineEnvironment, gitHubArtifact)
+                            mavenBuilder = new MavenBuilder(pipelineEnvironment)
                         }
                     }
                 }
@@ -61,7 +61,7 @@ def call(body) {
             stage("bump minor version") {
                 when {
                     expression {
-                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'develop' && gitHubArtifact.isSnapshot()
+                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'develop' && pipelineEnvironment.isSnapshot()
                     }
                 }
                 steps {
@@ -74,7 +74,7 @@ def call(body) {
             stage("bump major version") {
                 when {
                     expression {
-                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'master' && gitHubArtifact.isSnapshot()
+                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'master' && pipelineEnvironment.isSnapshot()
                     }
                 }
                 steps {

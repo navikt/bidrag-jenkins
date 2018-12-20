@@ -40,8 +40,9 @@ def call(body) {
                             pipelineEnvironment.isNotChangeOfCode()
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
-                            dockerImage = new DockerImage(gitHubArtifact)
-                            mavenBuilder = new MavenBuilder(pipelineEnvironment, gitHubArtifact)
+                            pipelineEnvironment.mvnVersion = gitHubArtifact.fetchVersion()
+                            dockerImage = new DockerImage(pipelineEnvironment)
+                            mavenBuilder = new MavenBuilder(pipelineEnvironment)
                         }
                     }
                 }
@@ -54,30 +55,22 @@ def call(body) {
 
             stage("build and test") {
                 when { expression { pipelineEnvironment.isChangeOfCode } }
-                steps {
-                    script {
-                        mavenBuilder.buildAndTest()
-                    }
-                }
+                steps { script { mavenBuilder.buildAndTest() } }
             }
 
             stage("bump minor version") {
                 when {
                     expression {
-                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'develop' && gitHubArtifact.isSnapshot()
+                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'develop' && pipelineEnvironment.isSnapshot()
                     }
                 }
-                steps {
-                    script {
-                        gitHubArtifact.updateMinorVersion()
-                    }
-                }
+                steps { script { gitHubArtifact.updateMinorVersion() } }
             }
 
             stage("bump major version") {
                 when {
                     expression {
-                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'master' && gitHubArtifact.isSnapshot()
+                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'master' && pipelineEnvironment.isSnapshot()
                     }
                 }
                 steps {
@@ -95,12 +88,7 @@ def call(body) {
                                 (BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' || pipelineEnvironment.hasDeploymentArea())
                     }
                 }
-                steps {
-                    script {
-                        String releaseVersion = pipelineEnvironment.releaseVersion
-                        println("this is release of docker image for versjon: $releaseVersion")
-                    }
-                }
+                steps { script { dockerImage.releaseNew() } }
             }
         }
 

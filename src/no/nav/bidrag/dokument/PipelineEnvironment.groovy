@@ -10,7 +10,7 @@ class PipelineEnvironment {
     String homeFolderJenkins
     String lastCommitter
     String mvnImage
-    String releaseVersion
+    String mvnVersion
     String workspace
 
     PipelineEnvironment(String gitHubProjectName, String mvnImage) {
@@ -24,5 +24,17 @@ class PipelineEnvironment {
 
     boolean hasDeploymentArea() {
         return deploymentArea != null
+    }
+
+    boolean isSnapshot() {
+        return mvnVersion.contains("-SNAPSHOT")
+    }
+
+    void execute(String command) {
+        multibranchPipeline.sh("$command")
+    }
+
+    void execute(String command, String quotedArgs) {
+        multibranchPipeline.sh("$command \"$quotedArgs\"")
     }
 }

@@ -37,12 +37,16 @@ class GitHubArtifact {
         return pom
     }
 
+    String fetchVersion() {
+        return fetchPom().version
+    }
+
     void execute(String command) {
-        pipelineEnvironment.multibranchPipeline.sh("$command")
+        pipelineEnvironment.execute(command)
     }
 
     void execute(String command, String quotedArgs) {
-        pipelineEnvironment.multibranchPipeline.sh("$command \"$quotedArgs\"")
+        pipelineEnvironment.execute("$command \"$quotedArgs\"")
     }
 
     boolean isSnapshot() {
@@ -89,7 +93,7 @@ class GitHubArtifact {
         pipelineEnvironment.multibranchPipeline.sh "git commit -a -m \"updated to new minor version ${nextVersion} after release by ${pipelineEnvironment.lastCommitter}\""
         pipelineEnvironment.multibranchPipeline.sh "git push"
 
-        pipelineEnvironment.releaseVersion = nextVersion
+        pipelineEnvironment.mvnVersion = nextVersion
     }
 
     void updateMajorVersion() {
@@ -108,7 +112,7 @@ class GitHubArtifact {
             pipelineEnvironment.multibranchPipeline.sh "git commit -a -m \"updated to new major version ${nextVersion} after release by ${pipelineEnvironment.lastCommitter}\""
             pipelineEnvironment.multibranchPipeline.sh "git push"
 
-            pipelineEnvironment.releaseVersion = nextVersion.replace("-SNAPSHOT", "")
+            pipelineEnvironment.mvnVersion = nextVersion.replace("-SNAPSHOT", "")
         } else {
             execute("echo", "[INFO] do not bump major version in develop ($developMajorVersion) from version in master ($masterMajorVersion)")
         }
