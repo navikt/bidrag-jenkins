@@ -87,19 +87,19 @@ def call(body) {
                     }
                 }
             }
-        }
 
-        stage("release docker image") {
-            when {
-                expression {
-                    pipelineEnvironment.isChangeOfCode &&
-                            (BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' || pipelineEnvironment.hasDeploymentArea())
+            stage("release docker image") {
+                when {
+                    expression {
+                        pipelineEnvironment.isChangeOfCode &&
+                                (BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' || pipelineEnvironment.hasDeploymentArea())
+                    }
                 }
-            }
-            steps {
-                script {
-                    String releaseVersion = pipelineEnvironment.releaseVersion
-                    println("this is release of docker image for versjon: $releaseVersion")
+                steps {
+                    script {
+                        String releaseVersion = pipelineEnvironment.releaseVersion
+                        println("this is release of docker image for versjon: $releaseVersion")
+                    }
                 }
             }
         }
