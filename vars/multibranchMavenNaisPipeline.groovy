@@ -71,7 +71,7 @@ def call(body) {
                         pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'develop' && pipelineEnvironment.isSnapshot()
                     }
                 }
-                steps { script { gitHubArtifact.updateMinorVersion() } }
+                steps { script { gitHubArtifact.updateMinorVersion(mavenBuilder) } }
             }
 
             stage("bump major version") {
@@ -83,7 +83,7 @@ def call(body) {
                 steps {
                     script {
                         gitHubArtifact.checkout('develop')
-                        gitHubArtifact.updateMajorVersion()
+                        gitHubArtifact.updateMajorVersion(mavenBuilder)
                     }
                 }
             }

@@ -68,7 +68,7 @@ def call(body) {
                 }
                 steps {
                     script {
-                        gitHubArtifact.updateMinorVersion()
+                        gitHubArtifact.updateMinorVersion(mavenBuilder)
                     }
                 }
             }
@@ -82,7 +82,21 @@ def call(body) {
                 steps {
                     script {
                         gitHubArtifact.checkout('develop')
-                        gitHubArtifact.updateMajorVersion()
+                        gitHubArtifact.updateMajorVersion(mavenBuilder)
+                    }
+                }
+            }
+
+            stage("deploy new maven artifact") {
+                when {
+                    expression {
+                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'master' && pipelineEnvironment.isSnapshot()
+                    }
+                }
+                steps {
+                    script {
+                        gitHubArtifact.checkout('master')
+                        mavenBuilder.deployArtifact()
                     }
                 }
             }

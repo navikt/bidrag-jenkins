@@ -72,33 +72,29 @@ class GitHubArtifact {
         return pipelineEnvironment.lastCommitter.contains('navikt-ci')
     }
 
-    void updateMinorVersion() {
-        String homeFolderInJenkins = pipelineEnvironment.homeFolderJenkins
+    void updateMinorVersion(MavenBuilder mavenBuilder) {
         String majorVersion = fetchMajorVersion()
         String minorVersion = fetchMinorVersion()
-        String mvnImage = pipelineEnvironment.mvnImage
         String nextVersion = "${majorVersion}." + (minorVersion.toInteger() + 1) + "-SNAPSHOT"
 
-        pipelineEnvironment.buildScript.sh "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven -w /usr/src/mymaven -v '$homeFolderInJenkins/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
+        mavenBuilder.updateVersion(nextVersion)
         pipelineEnvironment.buildScript.sh "git commit -a -m \"updated to new minor version ${nextVersion} after release by ${pipelineEnvironment.lastCommitter}\""
         pipelineEnvironment.buildScript.sh "git push"
 
         pipelineEnvironment.mvnVersion = nextVersion
     }
 
-    void updateMajorVersion() {
-        String homeFolderInJenkins = pipelineEnvironment.homeFolderJenkins
+    void updateMajorVersion(MavenBuilder mavenBuilder) {
         String masterMajorVersion = fetchMajorVersion()
         String developMajorVersion = readPomFromSourceCode()
 
         // only bump major version if not previously bumped...
         if (masterMajorVersion == developMajorVersion) {
             String developMinorVersion = fetchMinorVersion(readPomFromSourceCode())
-            String mvnImage = pipelineEnvironment.mvnImage
             String nextVersion = (masterMajorVersion.toFloat() + 1) + ".${developMinorVersion}-SNAPSHOT"
             pipelineEnvironment.execute("echo", "[INFO] bumping major version in develop ($developMajorVersion) from version in master ($masterMajorVersion)")
 
-            pipelineEnvironment.buildScript.sh "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven -w /usr/src/mymaven -v '$homeFolderInJenkins/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
+            mavenBuilder.updateVersion(nextVersion)
             pipelineEnvironment.buildScript.sh "git commit -a -m \"updated to new major version ${nextVersion} after release by ${pipelineEnvironment.lastCommitter}\""
             pipelineEnvironment.buildScript.sh "git push"
 
