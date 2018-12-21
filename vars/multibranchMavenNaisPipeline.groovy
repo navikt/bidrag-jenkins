@@ -2,6 +2,7 @@ import no.nav.bidrag.dokument.DependentVersions
 import no.nav.bidrag.dokument.DockerImage
 import no.nav.bidrag.dokument.GitHubArtifact
 import no.nav.bidrag.dokument.MavenBuilder
+import no.nav.bidrag.dokument.Nais
 import no.nav.bidrag.dokument.PipelineEnvironment
 
 def call(body) {
@@ -21,6 +22,7 @@ def call(body) {
     DockerImage dockerImage
     GitHubArtifact gitHubArtifact
     MavenBuilder mavenBuilder
+    Nais nais
 
     pipeline {
         agent any
@@ -40,10 +42,13 @@ def call(body) {
                             pipelineEnvironment.isNotChangeOfCode()
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
-                            pipelineEnvironment.mvnVersion = gitHubArtifact.fetchVersion()
+                            pipelineEnvironment.appConfig = "nais.yaml"
                             pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
+                            pipelineEnvironment.mvnVersion = gitHubArtifact.fetchVersion()
+                            pipelineEnvironment.nais = "/usr/bin/nais"
                             dockerImage = new DockerImage(pipelineEnvironment)
                             mavenBuilder = new MavenBuilder(pipelineEnvironment)
+                            nais = new Nais(pipelineEnvironment)
                         }
                     }
                 }
@@ -94,7 +99,12 @@ def call(body) {
                                 (BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' || pipelineEnvironment.hasDeploymentArea())
                     }
                 }
-                steps { script { dockerImage.releaseNew() } }
+                steps { script { dockerImage.publishDockerImage() } }
+            }
+
+            stage("validate nais.yaml and upload to nexus") {
+                when { expression { pipelineEnvironment.isChangeOfCode } }
+                steps { script { nais.validateAndUpload() } }
             }
         }
 

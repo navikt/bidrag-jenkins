@@ -8,7 +8,7 @@ class DockerImage {
         this.pipelineEnvironment = pipelineEnvironment
     }
 
-    void releaseNew() {
+    void publishDockerImage() {
         if (pipelineEnvironment.isSnapshot()) {
             pipelineEnvironment.multibranchPipeline.sh "docker run --rm -v `pwd`:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.mvnImage} mvn clean deploy -DskipTests -B -e"
             pipelineEnvironment.multibranchPipeline.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'nexusCredentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {

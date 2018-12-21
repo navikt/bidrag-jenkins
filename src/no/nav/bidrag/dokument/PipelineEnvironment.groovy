@@ -5,6 +5,7 @@ class PipelineEnvironment {
     boolean isChangeOfCode = true
     def multibranchPipeline
 
+    String appConfig
     String deploymentArea
     String dockerRepo
     String gitHubProjectName
@@ -12,6 +13,7 @@ class PipelineEnvironment {
     String lastCommitter
     String mvnImage
     String mvnVersion
+    String nais
     String workspace
 
     PipelineEnvironment(String gitHubProjectName, String mvnImage) {
