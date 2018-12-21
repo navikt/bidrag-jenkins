@@ -84,6 +84,7 @@ def call(body) {
                     script {
                         gitHubArtifact.checkout('develop')
                         gitHubArtifact.updateMajorVersion(mavenBuilder)
+                        gitHubArtifact.checkout('master')
                     }
                 }
             }
@@ -104,8 +105,23 @@ def call(body) {
             }
 
             stage("validate nais.yaml and upload to nexus") {
-                when { expression { pipelineEnvironment.isChangeOfCode } }
+                when {
+                    expression {
+                        pipelineEnvironment.isChangeOfCode &&
+                                (BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' || pipelineEnvironment.hasDeploymentArea())
+                    }
+                }
                 steps { script { nais.validateAndUpload() } }
+            }
+
+            stage("deploy nais application") {
+                when {
+                    expression {
+                        pipelineEnvironment.isChangeOfCode &&
+                                (BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' || pipelineEnvironment.hasDeploymentArea())
+                    }
+                }
+                steps { script { nais.deployApplication() } }
             }
         }
 

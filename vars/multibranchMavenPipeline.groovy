@@ -83,6 +83,7 @@ def call(body) {
                     script {
                         gitHubArtifact.checkout('develop')
                         gitHubArtifact.updateMajorVersion(mavenBuilder)
+                        gitHubArtifact.checkout('master')
                     }
                 }
             }
@@ -94,10 +95,7 @@ def call(body) {
                     }
                 }
                 steps {
-                    script {
-                        gitHubArtifact.checkout('master')
-                        mavenBuilder.deployArtifact()
-                    }
+                    script { mavenBuilder.deployArtifact() }
                 }
             }
         }
