@@ -11,13 +11,13 @@ class GitHubArtifact {
     void checkout(String branch) {
         String gitHubProjectName = pipelineEnvironment.gitHubProjectName
 
-        pipelineEnvironment.multibranchPipeline.cleanWs()
-        pipelineEnvironment.multibranchPipeline.withCredentials([pipelineEnvironment.multibranchPipeline.string(credentialsId: 'OAUTH_TOKEN', variable: 'token')]) {
-            pipelineEnvironment.multibranchPipeline.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
-                pipelineEnvironment.multibranchPipeline.sh(script: "git clone https://${pipelineEnvironment.multibranchPipeline.token}:x-oauth-basic@github.com/navikt/${gitHubProjectName}.git .")
-                pipelineEnvironment.multibranchPipeline.sh "echo '****** BRANCH ******'"
-                pipelineEnvironment.multibranchPipeline.sh "echo 'BRANCH CHECKOUT: ${branch}'......"
-                pipelineEnvironment.multibranchPipeline.sh(script: "git checkout ${branch}")
+        pipelineEnvironment.buildScript.cleanWs()
+        pipelineEnvironment.buildScript.withCredentials([pipelineEnvironment.buildScript.string(credentialsId: 'OAUTH_TOKEN', variable: 'token')]) {
+            pipelineEnvironment.buildScript.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
+                pipelineEnvironment.buildScript.sh(script: "git clone https://${pipelineEnvironment.buildScript.token}:x-oauth-basic@github.com/navikt/${gitHubProjectName}.git .")
+                pipelineEnvironment.buildScript.sh "echo '****** BRANCH ******'"
+                pipelineEnvironment.buildScript.sh "echo 'BRANCH CHECKOUT: ${branch}'......"
+                pipelineEnvironment.buildScript.sh(script: "git checkout ${branch}")
             }
         }
     }
@@ -32,7 +32,7 @@ class GitHubArtifact {
 
     private def readPomFromSourceCode() {
         pipelineEnvironment.println("parsing pom.xml from ${pipelineEnvironment.workspace}")
-        def pom = pipelineEnvironment.multibranchPipeline.readMavenPom file: 'pom.xml'
+        def pom = pipelineEnvironment.buildScript.readMavenPom file: 'pom.xml'
 
         return pom
     }
@@ -64,8 +64,8 @@ class GitHubArtifact {
     }
 
     boolean isLastCommitterFromPipeline() {
-        pipelineEnvironment.lastCommitter = pipelineEnvironment.multibranchPipeline.sh(script: 'git log -1 --pretty=format:"%an (%ae)"', returnStdout: true).trim()
-        String commitMessage = pipelineEnvironment.multibranchPipeline.sh(script: 'git log -1 -pretty=oneline', returnStdout: true).trim()
+        pipelineEnvironment.lastCommitter = pipelineEnvironment.buildScript.sh(script: 'git log -1 --pretty=format:"%an (%ae)"', returnStdout: true).trim()
+        String commitMessage = pipelineEnvironment.buildScript.sh(script: 'git log -1 -pretty=oneline', returnStdout: true).trim()
         pipelineEnvironment.println("last commit done by ${pipelineEnvironment.lastCommitter}")
         pipelineEnvironment.println(commitMessage)
 
@@ -79,9 +79,9 @@ class GitHubArtifact {
         String mvnImage = pipelineEnvironment.mvnImage
         String nextVersion = "${majorVersion}." + (minorVersion.toInteger() + 1) + "-SNAPSHOT"
 
-        pipelineEnvironment.multibranchPipeline.sh "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven -w /usr/src/mymaven -v '$homeFolderInJenkins/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
-        pipelineEnvironment.multibranchPipeline.sh "git commit -a -m \"updated to new minor version ${nextVersion} after release by ${pipelineEnvironment.lastCommitter}\""
-        pipelineEnvironment.multibranchPipeline.sh "git push"
+        pipelineEnvironment.buildScript.sh "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven -w /usr/src/mymaven -v '$homeFolderInJenkins/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
+        pipelineEnvironment.buildScript.sh "git commit -a -m \"updated to new minor version ${nextVersion} after release by ${pipelineEnvironment.lastCommitter}\""
+        pipelineEnvironment.buildScript.sh "git push"
 
         pipelineEnvironment.mvnVersion = nextVersion
     }
@@ -98,9 +98,9 @@ class GitHubArtifact {
             String nextVersion = (masterMajorVersion.toFloat() + 1) + ".${developMinorVersion}-SNAPSHOT"
             pipelineEnvironment.execute("echo", "[INFO] bumping major version in develop ($developMajorVersion) from version in master ($masterMajorVersion)")
 
-            pipelineEnvironment.multibranchPipeline.sh "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven -w /usr/src/mymaven -v '$homeFolderInJenkins/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
-            pipelineEnvironment.multibranchPipeline.sh "git commit -a -m \"updated to new major version ${nextVersion} after release by ${pipelineEnvironment.lastCommitter}\""
-            pipelineEnvironment.multibranchPipeline.sh "git push"
+            pipelineEnvironment.buildScript.sh "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven -w /usr/src/mymaven -v '$homeFolderInJenkins/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
+            pipelineEnvironment.buildScript.sh "git commit -a -m \"updated to new major version ${nextVersion} after release by ${pipelineEnvironment.lastCommitter}\""
+            pipelineEnvironment.buildScript.sh "git push"
 
             pipelineEnvironment.mvnVersion = nextVersion.replace("-SNAPSHOT", "")
         } else {

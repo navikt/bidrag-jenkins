@@ -29,7 +29,7 @@ def call(body) {
                     script {
                         sh 'env'
                         pipelineEnvironment.homeFolderJenkins = "$HOME"
-                        pipelineEnvironment.multibranchPipeline = this
+                        pipelineEnvironment.buildScript = this
                         pipelineEnvironment.workspace = "$WORKSPACE"
 
                         gitHubArtifact = new GitHubArtifact(pipelineEnvironment)

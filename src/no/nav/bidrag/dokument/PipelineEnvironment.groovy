@@ -4,7 +4,7 @@ class PipelineEnvironment {
 
     boolean isChangeOfCode = true
     boolean isMaster = false
-    def multibranchPipeline
+    def buildScript
 
     String appConfig
     String deploymentArea
@@ -35,11 +35,11 @@ class PipelineEnvironment {
     }
 
     void execute(String command) {
-        multibranchPipeline.sh("$command")
+        buildScript.sh("$command")
     }
 
     void execute(String command, String quotedArgs) {
-        multibranchPipeline.sh("$command \"$quotedArgs\"")
+        buildScript.sh("$command \"$quotedArgs\"")
     }
 
     String fetchEnvironment() {
@@ -51,6 +51,6 @@ class PipelineEnvironment {
     }
 
     void println(Object toPrint) {
-        multibranchPipeline.println(toPrint)
+        buildScript.println(toPrint)
     }
 }

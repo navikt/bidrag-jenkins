@@ -16,13 +16,13 @@ class Nais {
         pipelineEnvironment.execute("${pipelineEnvironment.nais} validate -f ${pipelineEnvironment.appConfig}")
 
         pipelineEnvironment.println("[INFO] Run 'nais upload' ... to Nexus!")
-        pipelineEnvironment.multibranchPipeline.withCredentials(
+        pipelineEnvironment.buildScript.withCredentials(
                 [[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]
         ) {
             pipelineEnvironment.execute(
                     "${pipelineEnvironment.nais} upload -f ${pipelineEnvironment.appConfig} -a ${pipelineEnvironment.gitHubProjectName} " +
                             "--version '${pipelineEnvironment.fetchImageVersion()}' " +
-                            "--username ${pipelineEnvironment.multibranchPipeline.USERNAME} --password '${pipelineEnvironment.multibranchPipeline.PASSWORD}' "
+                            "--username ${pipelineEnvironment.buildScript.USERNAME} --password '${pipelineEnvironment.buildScript.PASSWORD}' "
             )
         }
     }
