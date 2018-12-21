@@ -15,7 +15,7 @@ class PipelineEnvironment {
     String mvnImage
     String mvnVersion
     String nais
-    String naisCluster
+    String naisCluster = 'preprod-fss'
     String workspace
 
     PipelineEnvironment(String gitHubProjectName, String mvnImage) {
