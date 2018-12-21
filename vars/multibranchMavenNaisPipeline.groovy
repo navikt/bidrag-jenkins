@@ -47,6 +47,7 @@ def call(body) {
                             pipelineEnvironment.isMaster = "$BRANCH_NAME" == "master"
                             pipelineEnvironment.mvnVersion = gitHubArtifact.fetchVersion()
                             pipelineEnvironment.nais = "/usr/bin/nais"
+                            pipelineEnvironment.naisCluster = "${naisCluster}"
                             dockerImage = new DockerImage(pipelineEnvironment)
                             mavenBuilder = new MavenBuilder(pipelineEnvironment)
                             nais = new Nais(pipelineEnvironment)
