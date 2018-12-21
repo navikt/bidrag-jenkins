@@ -65,7 +65,7 @@ class GitHubArtifact {
 
     boolean isLastCommitterFromPipeline() {
         pipelineEnvironment.lastCommitter = pipelineEnvironment.buildScript.sh(script: 'git log -1 --pretty=format:"%an (%ae)"', returnStdout: true).trim()
-        String commitMessage = pipelineEnvironment.buildScript.sh(script: 'git log -1 -pretty=oneline', returnStdout: true).trim()
+        String commitMessage = pipelineEnvironment.buildScript.sh(script: 'git log -1 --pretty=oneline', returnStdout: true).trim()
         pipelineEnvironment.println("last commit done by ${pipelineEnvironment.lastCommitter}")
         pipelineEnvironment.println(commitMessage)
 
