@@ -15,7 +15,7 @@ class MavenBuilder {
         if (pipelineEnvironment.isSnapshot()) {
             pipelineEnvironment.println("running maven build image.")
             pipelineEnvironment.execute(
-                    "docker run --rm -v ${pipelineEnvironment.homeFolderJenkins}:/usr/src/mymaven -w /usr/src/mymaven " +
+                    "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven -w /usr/src/mymaven " +
                             "-v \"${pipelineEnvironment.homeFolderJenkins}/.m2\":/root/.m2 ${pipelineEnvironment.mvnImage} " +
                             "mvn clean install -B -e"
             )
@@ -33,7 +33,7 @@ class MavenBuilder {
         updateVersion(pipelineEnvironment.mvnVersion)
 
         pipelineEnvironment.execute(
-                "docker run --rm -v ${pipelineEnvironment.homeFolderJenkins}:/usr/src/mymaven -w /usr/src/mymaven " +
+                "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven -w /usr/src/mymaven " +
                         "-v \"${pipelineEnvironment.homeFolderJenkins}/.m2\":/root/.m2 ${pipelineEnvironment.mvnImage} " +
                         "mvn clean deploy -B -e"
         )
