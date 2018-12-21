@@ -31,9 +31,10 @@ class Nais {
         pipelineEnvironment.println("[INFO] Run 'nais deploy' ... to NAIS!")
         pipelineEnvironment.buildScript.timeout(time: 8, unit: 'MINUTES') {
             pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-                sh "${pipelineEnvironment.nais} deploy -a ${pipelineEnvironment.gitHubProjectName} " +
+                pipelineEnvironment.execute("${pipelineEnvironment.nais} deploy -a ${pipelineEnvironment.gitHubProjectName} " +
                         "-v '${pipelineEnvironment.fetchImageVersion()}' -c ${pipelineEnvironment.naisCluster} " +
                         "-u ${pipelineEnvironment.buildScript.USERNAME} -p '${pipelineEnvironment.buildScript.PASSWORD}'  "
+                )
             }
         }
 
