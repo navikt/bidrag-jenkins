@@ -48,4 +48,8 @@ class PipelineEnvironment {
     String fetchImageVersion() {
         return "$mvnVersion-${fetchEnvironment()}"
     }
+
+    void println(Object toPrint) {
+        multibranchPipeline.println(toPrint)
+    }
 }
