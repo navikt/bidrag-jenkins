@@ -3,6 +3,7 @@ package no.nav.bidrag.dokument
 class PipelineEnvironment {
 
     boolean isChangeOfCode = true
+    boolean isMaster = false
     def multibranchPipeline
 
     String appConfig
@@ -42,7 +43,7 @@ class PipelineEnvironment {
     }
 
     String fetchEnvironment() {
-        return deploymentArea || "q0"
+        return deploymentArea || ( isMaster ? "q0" : "q0" )
     }
 
     String fetchImageVersion() {

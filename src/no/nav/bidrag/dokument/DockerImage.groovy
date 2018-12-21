@@ -16,7 +16,7 @@ class DockerImage {
                 pipelineEnvironment.multibranchPipeline.sh "docker push ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:${pipelineEnvironment.fetchImageVersion()}"
             }
         } else {
-            println("POM version is not a SNAPSHOT, it is ${pipelineEnvironment.mvnVersion}. Skipping publishing!")
+            pipelineEnvironment.println("POM version is not a SNAPSHOT, it is ${pipelineEnvironment.mvnVersion}. Skipping publishing!")
         }
     }
 
@@ -29,7 +29,7 @@ class DockerImage {
             pipelineEnvironment.execute "git tag -a ${pipelineEnvironment.gitHubProjectName}-${pipelineEnvironment.mvnVersion}-${pipelineEnvironment.fetchEnvironment()} -m ${pipelineEnvironment.gitHubProjectName}-${pipelineEnvironment.mvnVersion}-${pipelineEnvironment.fetchEnvironment()}"
             pipelineEnvironment.execute "git push --tags"
         } else {
-            println("POM version is not a SNAPSHOT, it is ${pipelineEnvironment.mvnVersion}. Skipping releasing")
+            pipelineEnvironment.println("POM version is not a SNAPSHOT, it is ${pipelineEnvironment.mvnVersion}. Skipping releasing")
         }
     }
 }

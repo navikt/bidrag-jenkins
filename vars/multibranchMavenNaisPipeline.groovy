@@ -44,6 +44,7 @@ def call(body) {
                             gitHubArtifact.checkout("$BRANCH_NAME")
                             pipelineEnvironment.appConfig = "nais.yaml"
                             pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
+                            pipelineEnvironment.isMaster = "$BRANCH_NAME" == "master"
                             pipelineEnvironment.mvnVersion = gitHubArtifact.fetchVersion()
                             pipelineEnvironment.nais = "/usr/bin/nais"
                             dockerImage = new DockerImage(pipelineEnvironment)
@@ -56,7 +57,7 @@ def call(body) {
 
             stage("Verify maven dependency versions") {
                 when { expression { pipelineEnvironment.isChangeOfCode } }
-                steps { script { DependentVersions.verify(gitHubArtifact.fetchPom()) } }
+                steps { script { DependentVersions.verify(gitHubArtifact.fetchPom(), pipelineEnvironment) } }
             }
 
             stage("build and test") {

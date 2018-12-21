@@ -31,7 +31,7 @@ class GitHubArtifact {
     }
 
     private def readPomFromSourceCode() {
-        execute("echo", "parsing pom.xml from ${pipelineEnvironment.workspace}")
+        pipelineEnvironment.println("parsing pom.xml from ${pipelineEnvironment.workspace}")
         def pom = pipelineEnvironment.multibranchPipeline.readMavenPom file: 'pom.xml'
 
         return pom
@@ -39,18 +39,6 @@ class GitHubArtifact {
 
     String fetchVersion() {
         return fetchPom().version
-    }
-
-    void execute(String command) {
-        pipelineEnvironment.execute(command)
-    }
-
-    void execute(String command, String quotedArgs) {
-        pipelineEnvironment.execute("$command \"$quotedArgs\"")
-    }
-
-    boolean isSnapshot() {
-        return pom.version.contains("-SNAPSHOT")
     }
 
     String fetchMajorVersion() {
@@ -77,7 +65,9 @@ class GitHubArtifact {
 
     boolean isLastCommitterFromPipeline() {
         pipelineEnvironment.lastCommitter = pipelineEnvironment.multibranchPipeline.sh(script: 'git log -1 --pretty=format:"%an (%ae)"', returnStdout: true).trim()
-        execute("echo", "last commit done by ${pipelineEnvironment.lastCommitter}")
+        String commitMessage = pipelineEnvironment.multibranchPipeline.sh(script: 'git log -1 -pretty=oneline', returnStdout: true).trim()
+        pipelineEnvironment.println("last commit done by ${pipelineEnvironment.lastCommitter}")
+        pipelineEnvironment.println(commitMessage)
 
         return pipelineEnvironment.lastCommitter.contains('navikt-ci')
     }
@@ -106,7 +96,7 @@ class GitHubArtifact {
             String developMinorVersion = fetchMinorVersion(readPomFromSourceCode())
             String mvnImage = pipelineEnvironment.mvnImage
             String nextVersion = (masterMajorVersion.toFloat() + 1) + ".${developMinorVersion}-SNAPSHOT"
-            execute("echo", "[INFO] bumping major version in develop ($developMajorVersion) from version in master ($masterMajorVersion)")
+            pipelineEnvironment.execute("echo", "[INFO] bumping major version in develop ($developMajorVersion) from version in master ($masterMajorVersion)")
 
             pipelineEnvironment.multibranchPipeline.sh "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven -w /usr/src/mymaven -v '$homeFolderInJenkins/.m2':/root/.m2 ${mvnImage} mvn versions:set -B -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
             pipelineEnvironment.multibranchPipeline.sh "git commit -a -m \"updated to new major version ${nextVersion} after release by ${pipelineEnvironment.lastCommitter}\""
@@ -114,12 +104,12 @@ class GitHubArtifact {
 
             pipelineEnvironment.mvnVersion = nextVersion.replace("-SNAPSHOT", "")
         } else {
-            execute("echo", "[INFO] do not bump major version in develop ($developMajorVersion) from version in master ($masterMajorVersion)")
+            pipelineEnvironment.println("[INFO] do not bump major version in develop ($developMajorVersion) from version in master ($masterMajorVersion)")
         }
     }
 
     void resetWorkspace() {
-        execute("cd ${pipelineEnvironment.workspace}")
-        execute("git reset --hard")
+        pipelineEnvironment.execute("cd ${pipelineEnvironment.workspace}")
+        pipelineEnvironment.execute("git reset --hard")
     }
 }
