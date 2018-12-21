@@ -90,7 +90,10 @@ def call(body) {
             }
 
             stage("release artifact") {
-                when { expression { pipelineEnvironment.isChangeOfCode } }
+                expression {
+                    pipelineEnvironment.isChangeOfCode &&
+                            (BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' || pipelineEnvironment.hasDeploymentArea())
+                }
                 steps { script { dockerImage.releaseArtifact() } }
             }
 
