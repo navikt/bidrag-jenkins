@@ -44,6 +44,7 @@ def call(body) {
                             gitHubArtifact.checkout("$BRANCH_NAME")
                             pipelineEnvironment.appConfig = "nais.yaml"
                             pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
+                            pipelineEnvironment.isDevelop = "$BRANCH_NAME" == "develop"
                             pipelineEnvironment.isMaster = "$BRANCH_NAME" == "master"
                             pipelineEnvironment.mvnVersion = gitHubArtifact.fetchVersion()
                             pipelineEnvironment.nais = "/usr/bin/nais"
@@ -89,24 +90,14 @@ def call(body) {
                 }
             }
 
-            stage("release artifact") {
+            stage("release artifact and publish docker image") {
                 when {
                     expression {
                         pipelineEnvironment.isChangeOfCode &&
                                 (BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' || pipelineEnvironment.hasDeploymentArea())
                     }
                 }
-                steps { script { dockerImage.releaseArtifact() } }
-            }
-
-            stage("release docker image") {
-                when {
-                    expression {
-                        pipelineEnvironment.isChangeOfCode &&
-                                (BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' || pipelineEnvironment.hasDeploymentArea())
-                    }
-                }
-                steps { script { dockerImage.publishDockerImage() } }
+                steps { script { dockerImage.releaseAndPublish() } }
             }
 
             stage("validate nais.yaml and upload to nexus") {

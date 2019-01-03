@@ -3,6 +3,7 @@ package no.nav.bidrag.dokument
 class PipelineEnvironment {
 
     boolean isChangeOfCode = true
+    boolean isDevelop = false
     boolean isMaster = false
     def buildScript
 
@@ -53,5 +54,15 @@ class PipelineEnvironment {
 
     void println(Object toPrint) {
         buildScript.println(toPrint)
+    }
+
+    String createTagName() {
+        return "$gitHubProjectName-$mvnVersion-${fetchEnvironment()}"
+    }
+
+    boolean canTagGitHubArtifact() {
+        String existingTag = buildScript.sh(script: "git tag -l ${createTagName()}", returnStdout: true).trim()
+
+        return (isMaster || isDevelop) && existingTag == ""
     }
 }
