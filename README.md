@@ -11,9 +11,6 @@ Summary of workflow, git branches:
   - new features being developed
 
 Descriptions of pipelines:
-- bidragDokumentPipeline.groovy
-  - deprecated
-  - "proof of concept", ie. pipeline used at start-up of bidrag-dokument
 - multibranchMavenPipeline.groovy
   - pipeline for deploying maven artifacts to the "in-house" maven repository
 - multibranchMavenNaisPipeline.groovy
