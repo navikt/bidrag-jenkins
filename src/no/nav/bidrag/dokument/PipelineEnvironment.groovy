@@ -77,4 +77,12 @@ class PipelineEnvironment {
     boolean isMaster() {
         return branchName == "master"
     }
+
+    String fetchNamespace() {
+        return (isMaster() || isDevelop()) ? "default" : fetchEnvironment()
+    }
+
+    boolean isProd() {
+        return naisCluster() == 'prod-fss'
+    }
 }

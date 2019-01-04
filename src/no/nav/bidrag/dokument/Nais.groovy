@@ -28,11 +28,13 @@ class Nais {
     }
 
     void deployApplication() {
-        pipelineEnvironment.println("[INFO] Run 'nais deploy' ... to NAIS!")
+        String namespace = pipelineEnvironment.fetchNamespace()
+        pipelineEnvironment.println("[INFO] Run 'nais deploy' ... to NAIS using namespace: $namespace!")
+
         pipelineEnvironment.buildScript.timeout(time: 8, unit: 'MINUTES') {
             pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
                 pipelineEnvironment.execute("${pipelineEnvironment.nais} deploy -a ${pipelineEnvironment.gitHubProjectName} " +
-                        "-v '${pipelineEnvironment.fetchImageVersion()}' -c ${pipelineEnvironment.naisCluster()} " +
+                        "-v '${pipelineEnvironment.fetchImageVersion()}' -c ${pipelineEnvironment.naisCluster()} -n $namespace " +
                         "-u ${pipelineEnvironment.buildScript.USERNAME} -p '${pipelineEnvironment.buildScript.PASSWORD}'  "
                 )
             }

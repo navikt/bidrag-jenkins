@@ -72,7 +72,7 @@ def call(body) {
             stage("bump major version") {
                 when {
                     expression {
-                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'master' && pipelineEnvironment.isSnapshot()
+                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'master' && pipelineEnvironment.isSnapshot() && pipelineEnvironment.isProd()
                     }
                 }
                 steps {
