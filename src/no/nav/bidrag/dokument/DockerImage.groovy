@@ -42,12 +42,12 @@ class DockerImage {
             return true
         }
 
-        if (pipelineEnvironment.isMaster) {
-            pipelineEnvironment.println("Allready tagged dockerimage $tagName")
-        } else if (pipelineEnvironment.isDevelop) {
-            throw new IllegalStateException("$tagName allready present on develop branch?")
+        if (pipelineEnvironment.isMaster()) {
+            pipelineEnvironment.println("Allready tagged git hub artifact: $tagName")
+        } else if (pipelineEnvironment.isDevelop()) {
+            throw new IllegalStateException("tagname $tagName exists on develop branch (?)")
         } else {
-            pipelineEnvironment.println("Will not tag $tagName")
+            pipelineEnvironment.println("Will not tag $tagName on branch not being master or develop")
         }
 
         return false

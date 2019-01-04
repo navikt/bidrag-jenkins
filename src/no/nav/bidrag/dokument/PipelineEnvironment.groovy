@@ -3,12 +3,10 @@ package no.nav.bidrag.dokument
 class PipelineEnvironment {
 
     boolean isChangeOfCode = true
-    boolean isDevelop = false
-    boolean isMaster = false
     def buildScript
 
     String appConfig
-    String deploymentArea
+    String branchName
     String dockerRepo
     String gitHubProjectName
     String homeFolderJenkins
@@ -16,8 +14,9 @@ class PipelineEnvironment {
     String mvnImage
     String mvnVersion
     String nais
-    String naisCluster = 'preprod-fss'
     String workspace
+
+    private String imageVersion
 
     PipelineEnvironment(String gitHubProjectName, String mvnImage) {
         this.gitHubProjectName = gitHubProjectName
@@ -26,10 +25,6 @@ class PipelineEnvironment {
 
     void isNotChangeOfCode() {
         isChangeOfCode = false
-    }
-
-    boolean hasDeploymentArea() {
-        return deploymentArea != null
     }
 
     boolean isSnapshot() {
@@ -45,11 +40,20 @@ class PipelineEnvironment {
     }
 
     String fetchEnvironment() {
-        return deploymentArea || ( isMaster ? "q0" : "q0" )
+        return isMaster() ? "q0" : isDevelop() ? "q0" : "t0"
+    }
+
+    String naisCluster() {
+        return isMaster() ? 'preprod-fss' : 'preprod-fss'
     }
 
     String fetchImageVersion() {
-        return "$mvnVersion-${fetchEnvironment()}"
+        if (imageVersion == null) {
+            String sha = buildScript.sh(script: "git --no-pager log -1 --pretty=%h", returnStdout: true).trim()
+            imageVersion = "$mvnVersion-${fetchEnvironment()}-$sha"
+        }
+
+        return imageVersion
     }
 
     void println(Object toPrint) {
@@ -63,6 +67,14 @@ class PipelineEnvironment {
     boolean canTagGitHubArtifact() {
         String existingTag = buildScript.sh(script: "git tag -l ${createTagName()}", returnStdout: true).trim()
 
-        return (isMaster || isDevelop) && existingTag == ""
+        return (isMaster() || isDevelop()) && existingTag == ""
+    }
+
+    boolean isDevelop() {
+        return branchName == "develop"
+    }
+
+    boolean isMaster() {
+        return branchName == "master"
     }
 }

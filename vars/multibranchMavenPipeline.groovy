@@ -10,15 +10,15 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
-    println "bidragDokumentmMultibranchMavenPipeline: pipelineParams = ${pipelineParams}"
+    println "multibranchMavenPipeline: pipelineParams = ${pipelineParams}"
 
     PipelineEnvironment pipelineEnvironment = new PipelineEnvironment(
             pipelineParams.gitHubProjectName,
             pipelineParams.mvnImage
     )
 
-    GitHubArtifact gitHubArtifact
-    MavenBuilder mavenBuilder
+    GitHubArtifact gitHubArtifact = new GitHubArtifact(pipelineEnvironment)
+    MavenBuilder mavenBuilder = new MavenBuilder(pipelineEnvironment)
 
     pipeline {
         agent any
@@ -32,15 +32,12 @@ def call(body) {
                         pipelineEnvironment.buildScript = this
                         pipelineEnvironment.workspace = "$WORKSPACE"
 
-                        gitHubArtifact = new GitHubArtifact(pipelineEnvironment)
-
                         if (gitHubArtifact.isLastCommitterFromPipeline()) {
                             pipelineEnvironment.isNotChangeOfCode()
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
                             pipelineEnvironment.mvnVersion = gitHubArtifact.fetchVersion()
                             pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
-                            mavenBuilder = new MavenBuilder(pipelineEnvironment)
                         }
                     }
                 }

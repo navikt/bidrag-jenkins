@@ -12,17 +12,17 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
-    println "bidragDokumentmMultibranchMavenNaisPipeline: pipelineParams = ${pipelineParams}"
+    println "multibranchMavenNaisPipeline: pipelineParams = ${pipelineParams}"
 
     PipelineEnvironment pipelineEnvironment = new PipelineEnvironment(
             pipelineParams.gitHubProjectName,
             pipelineParams.mvnImage
     )
 
-    DockerImage dockerImage
-    GitHubArtifact gitHubArtifact
-    MavenBuilder mavenBuilder
-    Nais nais
+    DockerImage dockerImage = new DockerImage(pipelineEnvironment)
+    GitHubArtifact gitHubArtifact = new GitHubArtifact(pipelineEnvironment)
+    MavenBuilder mavenBuilder = new MavenBuilder(pipelineEnvironment)
+    Nais nais = new Nais(pipelineEnvironment)
 
     pipeline {
         agent any
@@ -36,21 +36,15 @@ def call(body) {
                         pipelineEnvironment.buildScript = this
                         pipelineEnvironment.workspace = "$WORKSPACE"
 
-                        gitHubArtifact = new GitHubArtifact(pipelineEnvironment)
-
                         if (gitHubArtifact.isLastCommitterFromPipeline()) {
                             pipelineEnvironment.isNotChangeOfCode()
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
                             pipelineEnvironment.appConfig = "nais.yaml"
+                            pipelineEnvironment.branchName = "$BRANCH_NAME"
                             pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
-                            pipelineEnvironment.isDevelop = "$BRANCH_NAME" == "develop"
-                            pipelineEnvironment.isMaster = "$BRANCH_NAME" == "master"
                             pipelineEnvironment.mvnVersion = gitHubArtifact.fetchVersion()
                             pipelineEnvironment.nais = "/usr/bin/nais"
-                            dockerImage = new DockerImage(pipelineEnvironment)
-                            mavenBuilder = new MavenBuilder(pipelineEnvironment)
-                            nais = new Nais(pipelineEnvironment)
                         }
                     }
                 }
@@ -90,32 +84,23 @@ def call(body) {
                 }
             }
 
-            stage("release artifact and publish docker image") {
+            stage("release and publish docker image") {
                 when {
-                    expression {
-                        pipelineEnvironment.isChangeOfCode &&
-                                (BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' || pipelineEnvironment.hasDeploymentArea())
-                    }
+                    expression { pipelineEnvironment.isChangeOfCode }
                 }
                 steps { script { dockerImage.releaseAndPublish() } }
             }
 
             stage("validate nais.yaml and upload to nexus") {
                 when {
-                    expression {
-                        pipelineEnvironment.isChangeOfCode &&
-                                (BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' || pipelineEnvironment.hasDeploymentArea())
-                    }
+                    expression { pipelineEnvironment.isChangeOfCode }
                 }
                 steps { script { nais.validateAndUpload() } }
             }
 
             stage("deploy nais application") {
                 when {
-                    expression {
-                        pipelineEnvironment.isChangeOfCode &&
-                                (BRANCH_NAME == 'develop' || BRANCH_NAME == 'master' || pipelineEnvironment.hasDeploymentArea())
-                    }
+                    expression { pipelineEnvironment.isChangeOfCode }
                 }
                 steps { script { nais.deployApplication() } }
             }
