@@ -43,14 +43,18 @@ class PipelineEnvironment {
         return isMaster() ? "q0" : isDevelop() ? "q0" : "t0"
     }
 
+    private String fetchTagEnvironment() {
+        return isMaster() ? 'preprod' : fetchEnvironment()
+    }
+
     String naisCluster() {
-        return isMaster() ? 'preprod-fss' : 'preprod-fss'
+        return isMaster() ? 'preprod-fss' : 'preprod-fss' // until first version is released, master goes to preprod
     }
 
     String fetchImageVersion() {
         if (imageVersion == null) {
             String sha = buildScript.sh(script: "git --no-pager log -1 --pretty=%h", returnStdout: true).trim()
-            imageVersion = "$mvnVersion-${fetchEnvironment()}-$sha"
+            imageVersion = "$mvnVersion-${fetchTagEnvironment()}-$sha"
         }
 
         return imageVersion
@@ -61,7 +65,7 @@ class PipelineEnvironment {
     }
 
     String createTagName() {
-        return "$gitHubProjectName-$mvnVersion-${fetchEnvironment()}"
+        return "$gitHubProjectName-$mvnVersion-${fetchTagEnvironment()}"
     }
 
     boolean canTagGitHubArtifact() {
