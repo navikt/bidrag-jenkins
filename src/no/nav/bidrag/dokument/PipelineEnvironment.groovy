@@ -6,21 +6,21 @@ class PipelineEnvironment {
     def buildScript
 
     String appConfig
+    String artifactVersion
     String branchName
+    String buildImage
     String dockerRepo
     String gitHubProjectName
     String homeFolderJenkins
     String lastCommitter
-    String mvnImage
-    String mvnVersion
     String nais
     String workspace
 
     private String imageVersion
 
-    PipelineEnvironment(String gitHubProjectName, String mvnImage) {
+    PipelineEnvironment(String gitHubProjectName, String buildImage) {
         this.gitHubProjectName = gitHubProjectName
-        this.mvnImage = mvnImage
+        this.buildImage = buildImage
     }
 
     void isNotChangeOfCode() {
@@ -28,7 +28,7 @@ class PipelineEnvironment {
     }
 
     boolean isSnapshot() {
-        return mvnVersion.contains("-SNAPSHOT")
+        return artifactVersion.contains("-SNAPSHOT")
     }
 
     void execute(String command) {
@@ -54,7 +54,7 @@ class PipelineEnvironment {
     String fetchImageVersion() {
         if (imageVersion == null) {
             String sha = Long.toHexString(System.currentTimeMillis())
-            imageVersion = "$mvnVersion-${fetchTagEnvironment()}-$sha"
+            imageVersion = "$artifactVersion-${fetchTagEnvironment()}-$sha"
         }
 
         return imageVersion
@@ -65,7 +65,7 @@ class PipelineEnvironment {
     }
 
     String createTagName() {
-        return "$gitHubProjectName-$mvnVersion-${fetchTagEnvironment()}"
+        return "$gitHubProjectName-$artifactVersion-${fetchTagEnvironment()}"
     }
 
     boolean canTagGitHubArtifact() {

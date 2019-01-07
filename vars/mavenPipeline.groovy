@@ -1,5 +1,6 @@
 import no.nav.bidrag.dokument.DependentVersions
 import no.nav.bidrag.dokument.GitHubArtifact
+import no.nav.bidrag.dokument.GitHubMavenArtifact
 import no.nav.bidrag.dokument.MavenBuilder
 import no.nav.bidrag.dokument.PipelineEnvironment
 
@@ -17,7 +18,7 @@ def call(body) {
             pipelineParams.mvnImage
     )
 
-    GitHubArtifact gitHubArtifact = new GitHubArtifact(pipelineEnvironment)
+    GitHubArtifact gitHubArtifact = new GitHubMavenArtifact(pipelineEnvironment)
     MavenBuilder mavenBuilder = new MavenBuilder(pipelineEnvironment)
 
     pipeline {
@@ -36,7 +37,7 @@ def call(body) {
                             pipelineEnvironment.isNotChangeOfCode()
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
-                            pipelineEnvironment.mvnVersion = gitHubArtifact.fetchVersion()
+                            pipelineEnvironment.artifactVersion = gitHubArtifact.fetchVersion()
                             pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
                         }
                     }

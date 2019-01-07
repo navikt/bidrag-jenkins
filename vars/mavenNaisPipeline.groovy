@@ -1,7 +1,9 @@
+import no.nav.bidrag.dokument.Builder
 import no.nav.bidrag.dokument.Cucumber
 import no.nav.bidrag.dokument.DependentVersions
 import no.nav.bidrag.dokument.DockerImage
 import no.nav.bidrag.dokument.GitHubArtifact
+import no.nav.bidrag.dokument.GitHubMavenArtifact
 import no.nav.bidrag.dokument.MavenBuilder
 import no.nav.bidrag.dokument.Nais
 import no.nav.bidrag.dokument.PipelineEnvironment
@@ -20,10 +22,10 @@ def call(body) {
             pipelineParams.mvnImage
     )
 
+    Builder builder = new MavenBuilder(pipelineEnvironment)
     Cucumber cucumber = new Cucumber(pipelineEnvironment)
     DockerImage dockerImage = new DockerImage(pipelineEnvironment)
-    GitHubArtifact gitHubArtifact = new GitHubArtifact(pipelineEnvironment)
-    MavenBuilder mavenBuilder = new MavenBuilder(pipelineEnvironment)
+    GitHubArtifact gitHubArtifact = new GitHubMavenArtifact(pipelineEnvironment)
     Nais nais = new Nais(pipelineEnvironment)
 
     pipeline {
@@ -43,9 +45,9 @@ def call(body) {
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
                             pipelineEnvironment.appConfig = "nais.yaml"
+                            pipelineEnvironment.artifactVersion = gitHubArtifact.fetchVersion()
                             pipelineEnvironment.branchName = "$BRANCH_NAME"
                             pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
-                            pipelineEnvironment.mvnVersion = gitHubArtifact.fetchVersion()
                             pipelineEnvironment.nais = "/usr/bin/nais"
                         }
                     }
@@ -59,7 +61,7 @@ def call(body) {
 
             stage("build and test") {
                 when { expression { pipelineEnvironment.isChangeOfCode } }
-                steps { script { mavenBuilder.buildAndTest() } }
+                steps { script { builder.buildAndTest() } }
             }
 
             stage("bump minor version (when develop)") {
@@ -68,10 +70,10 @@ def call(body) {
                         pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'develop' && pipelineEnvironment.isSnapshot()
                     }
                 }
-                steps { script { gitHubArtifact.updateMinorVersion(mavenBuilder) } }
+                steps { script { gitHubArtifact.updateMinorVersion(builder) } }
             }
 
-            stage("bump major version (when master and prod-fss)") {
+            stage("bump major version (when master and prod)") {
                 when {
                     expression {
                         pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'master' && pipelineEnvironment.isSnapshot() && pipelineEnvironment.isProd()
@@ -80,7 +82,7 @@ def call(body) {
                 steps {
                     script {
                         gitHubArtifact.checkout('develop')
-                        gitHubArtifact.updateMajorVersion(mavenBuilder)
+                        gitHubArtifact.updateMajorVersion(builder)
                         gitHubArtifact.checkout('master')
                     }
                 }

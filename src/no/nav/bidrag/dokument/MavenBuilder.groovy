@@ -1,6 +1,6 @@
 package no.nav.bidrag.dokument
 
-class MavenBuilder {
+class MavenBuilder implements Builder {
 
     private PipelineEnvironment pipelineEnvironment
 
@@ -8,6 +8,7 @@ class MavenBuilder {
         this.pipelineEnvironment = pipelineEnvironment
     }
 
+    @Override
     void buildAndTest() {
         pipelineEnvironment.println("gitHubArtifact: ${pipelineEnvironment.gitHubProjectName}")
         pipelineEnvironment.println("workspace: ${pipelineEnvironment.workspace}")
@@ -16,12 +17,12 @@ class MavenBuilder {
             pipelineEnvironment.println("running maven build image.")
             pipelineEnvironment.execute(
                     "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven -w /usr/src/mymaven " +
-                            "-v \"${pipelineEnvironment.homeFolderJenkins}/.m2\":/root/.m2 ${pipelineEnvironment.mvnImage} " +
+                            "-v \"${pipelineEnvironment.homeFolderJenkins}/.m2\":/root/.m2 ${pipelineEnvironment.buildImage} " +
                             "mvn clean install -B -e"
             )
         } else {
             pipelineEnvironment.println(
-                    "POM version is not a SNAPSHOT, it is ${pipelineEnvironment.mvnVersion}. " +
+                    "POM version is not a SNAPSHOT, it is ${pipelineEnvironment.artifactVersion}. " +
                             "Skipping build and testing of backend"
             )
         }
@@ -30,20 +31,21 @@ class MavenBuilder {
     void deployArtifact() {
         pipelineEnvironment.println("gitHubArtifact: ${pipelineEnvironment.gitHubProjectName}")
         pipelineEnvironment.println("deploying maven artifact.")
-        updateVersion(pipelineEnvironment.mvnVersion)
+        updateVersion(pipelineEnvironment.artifactVersion)
 
         pipelineEnvironment.execute(
                 "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven -w /usr/src/mymaven " +
-                        "-v \"${pipelineEnvironment.homeFolderJenkins}/.m2\":/root/.m2 ${pipelineEnvironment.mvnImage} " +
+                        "-v \"${pipelineEnvironment.homeFolderJenkins}/.m2\":/root/.m2 ${pipelineEnvironment.buildImage} " +
                         "mvn clean deploy -B -e"
         )
     }
 
+    @Override
     void updateVersion(String version) {
         pipelineEnvironment.execute(
                 "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven " +
                         "-w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 " +
-                        "${pipelineEnvironment.mvnImage} mvn versions:set -B -DnewVersion=${version} -DgenerateBackupPoms=false"
+                        "${pipelineEnvironment.buildImage} mvn versions:set -B -DnewVersion=${version} -DgenerateBackupPoms=false"
         )
     }
 }

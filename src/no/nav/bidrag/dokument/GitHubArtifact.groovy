@@ -1,8 +1,7 @@
 package no.nav.bidrag.dokument
 
-class GitHubArtifact {
-    private PipelineEnvironment pipelineEnvironment
-    private def pom
+abstract class GitHubArtifact {
+    protected PipelineEnvironment pipelineEnvironment
 
     GitHubArtifact(PipelineEnvironment pipelineEnvironment) {
         this.pipelineEnvironment = pipelineEnvironment
@@ -22,42 +21,31 @@ class GitHubArtifact {
         }
     }
 
-    def fetchPom() {
-        if (pom == null) {
-            pom = readPomFromSourceCode()
-        }
+    abstract def fetchBuildDescriptor()
 
-        return pom
-    }
-
-    private def readPomFromSourceCode() {
-        pipelineEnvironment.println("parsing pom.xml from ${pipelineEnvironment.workspace}")
-        def pom = pipelineEnvironment.buildScript.readMavenPom file: 'pom.xml'
-
-        return pom
-    }
+    abstract def fetchBuildDescriptorFromSourceCode()
 
     String fetchVersion() {
-        return fetchPom().version
+        return fetchBuildDescriptor().version
     }
 
     String fetchMajorVersion() {
-        return fetchMajorVersion(fetchPom())
+        return fetchMajorVersion(fetchBuildDescriptor())
     }
 
-    static String fetchMajorVersion(def pom) {
-        String releaseVersion = pom.version.tokenize("-")[0]
+    static String fetchMajorVersion(def buildDescriptor) {
+        String releaseVersion = buildDescriptor.version.tokenize("-")[0]
         def tokens = releaseVersion.tokenize(".")
 
         return "${tokens[0]}.${tokens[1]}"
     }
 
     String fetchMinorVersion() {
-        return fetchMinorVersion(fetchPom())
+        return fetchMinorVersion(fetchBuildDescriptor())
     }
 
-    static String fetchMinorVersion(def pom) {
-        String releaseVersion = pom.version.tokenize("-")[0]
+    static String fetchMinorVersion(def buildDescriptor) {
+        String releaseVersion = buildDescriptor.version.tokenize("-")[0]
         def tokens = releaseVersion.tokenize(".")
 
         return "${tokens[2]}"
@@ -72,33 +60,33 @@ class GitHubArtifact {
         return pipelineEnvironment.lastCommitter.contains('navikt-ci')
     }
 
-    void updateMinorVersion(MavenBuilder mavenBuilder) {
+    void updateMinorVersion(Builder builder) {
         String majorVersion = fetchMajorVersion()
         String minorVersion = fetchMinorVersion()
         String nextVersion = "${majorVersion}." + (minorVersion.toInteger() + 1) + "-SNAPSHOT"
 
-        mavenBuilder.updateVersion(nextVersion)
+        builder.updateVersion(nextVersion)
         pipelineEnvironment.buildScript.sh "git commit -a -m \"updated to new minor version ${nextVersion} after release by ${pipelineEnvironment.lastCommitter}\""
         pipelineEnvironment.buildScript.sh "git push"
 
-        pipelineEnvironment.mvnVersion = nextVersion
+        pipelineEnvironment.artifactVersion = nextVersion
     }
 
-    void updateMajorVersion(MavenBuilder mavenBuilder) {
+    void updateMajorVersion(Builder builder) {
         String masterMajorVersion = fetchMajorVersion()
-        String developMajorVersion = readPomFromSourceCode()
+        String developMajorVersion = fetchMajorVersion(fetchBuildDescriptorFromSourceCode())
 
         // only bump major version if not previously bumped...
         if (masterMajorVersion == developMajorVersion) {
-            String developMinorVersion = fetchMinorVersion(readPomFromSourceCode())
+            String developMinorVersion = fetchMinorVersion(fetchBuildDescriptorFromSourceCode())
             String nextVersion = (masterMajorVersion.toFloat() + 1) + ".${developMinorVersion}-SNAPSHOT"
             pipelineEnvironment.execute("echo", "[INFO] bumping major version in develop ($developMajorVersion) from version in master ($masterMajorVersion)")
 
-            mavenBuilder.updateVersion(nextVersion)
+            builder.updateVersion(nextVersion)
             pipelineEnvironment.buildScript.sh "git commit -a -m \"updated to new major version ${nextVersion} after release by ${pipelineEnvironment.lastCommitter}\""
             pipelineEnvironment.buildScript.sh "git push"
 
-            pipelineEnvironment.mvnVersion = nextVersion.replace("-SNAPSHOT", "")
+            pipelineEnvironment.artifactVersion = nextVersion.replace("-SNAPSHOT", "")
         } else {
             pipelineEnvironment.println("[INFO] do not bump major version in develop ($developMajorVersion) from version in master ($masterMajorVersion)")
         }
