@@ -35,7 +35,8 @@ class Nais {
             pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
                 pipelineEnvironment.execute("${pipelineEnvironment.nais} deploy -a ${pipelineEnvironment.gitHubProjectName} " +
                         "-v '${pipelineEnvironment.fetchImageVersion()}' -c ${pipelineEnvironment.naisCluster()} -n $namespace " +
-                        "-u ${pipelineEnvironment.buildScript.USERNAME} -p '${pipelineEnvironment.buildScript.PASSWORD}'  "
+                        "-u ${pipelineEnvironment.buildScript.USERNAME} -p '${pipelineEnvironment.buildScript.PASSWORD}'  " +
+                        "-e '${pipelineEnvironment.fetchEnvironment()}' "
                 )
             }
         }
