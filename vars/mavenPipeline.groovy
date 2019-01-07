@@ -10,7 +10,7 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
-    println "multibranchMavenPipeline: pipelineParams = ${pipelineParams}"
+    println "mavenPipeline: pipelineParams = ${pipelineParams}"
 
     PipelineEnvironment pipelineEnvironment = new PipelineEnvironment(
             pipelineParams.gitHubProjectName,
