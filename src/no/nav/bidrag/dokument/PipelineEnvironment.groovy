@@ -53,7 +53,7 @@ class PipelineEnvironment {
 
     String fetchImageVersion() {
         if (imageVersion == null) {
-            String sha = buildScript.sh(script: "git --no-pager log -1 --pretty=%h", returnStdout: true).trim()
+            String sha = Long.toHexString(System.currentTimeMillis())
             imageVersion = "$mvnVersion-${fetchTagEnvironment()}-$sha"
         }
 
