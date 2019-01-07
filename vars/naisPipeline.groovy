@@ -15,7 +15,7 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
-    println "mavenNaisPipeline: pipelineParams = ${pipelineParams}"
+    println "naisPipeline: pipelineParams = ${pipelineParams}"
 
     PipelineEnvironment pipelineEnvironment = new PipelineEnvironment(
             pipelineParams.gitHubProjectName,
