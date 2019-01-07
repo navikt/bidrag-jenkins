@@ -10,6 +10,7 @@ class PipelineEnvironment {
     String branchName
     String buildImage
     String dockerRepo
+    String environment
     String gitHubProjectName
     String homeFolderJenkins
     String lastCommitter
@@ -18,9 +19,10 @@ class PipelineEnvironment {
 
     private String imageVersion
 
-    PipelineEnvironment(String gitHubProjectName, String buildImage) {
+    PipelineEnvironment(String gitHubProjectName, String buildImage, String environment) {
         this.gitHubProjectName = gitHubProjectName
         this.buildImage = buildImage
+        this.environment = environment
     }
 
     void isNotChangeOfCode() {
@@ -40,6 +42,10 @@ class PipelineEnvironment {
     }
 
     String fetchEnvironment() {
+        if (environment != null) {
+            return environment
+        }
+
         return isMaster() ? "q0" : isDevelop() ? "q0" : "t0"
     }
 
