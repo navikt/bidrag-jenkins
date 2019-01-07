@@ -17,7 +17,7 @@ class Cucumber {
                 sleep(10)
 
                 try {
-                    pipelineEnvironment.buildScript.sh "docker run -e environment=${pipelineEnvironment.fetchEnvironment()} -v ${pipelineEnvironment.workspace}/cucumber:/cucumber bidrag-dokument-cucumber"
+                    pipelineEnvironment.buildScript.sh "docker run --rm -e environment=${pipelineEnvironment.fetchEnvironment()} -v ${pipelineEnvironment.workspace}/cucumber:/cucumber bidrag-dokument-cucumber"
                 } catch (Exception e) {
                     pipelineEnvironment.println('Unstable build: ' + e)
                     result = 'UNSTABLE'
