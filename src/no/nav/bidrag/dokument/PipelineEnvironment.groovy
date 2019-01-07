@@ -85,4 +85,8 @@ class PipelineEnvironment {
     boolean isProd() {
         return naisCluster() == 'prod-fss'
     }
+
+    boolean fileExists(String fileInWorkspace) {
+        return new File(workspace, fileInWorkspace).exists()
+    }
 }

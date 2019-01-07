@@ -1,3 +1,4 @@
+import no.nav.bidrag.dokument.Cucumber
 import no.nav.bidrag.dokument.DependentVersions
 import no.nav.bidrag.dokument.DockerImage
 import no.nav.bidrag.dokument.GitHubArtifact
@@ -19,6 +20,7 @@ def call(body) {
             pipelineParams.mvnImage
     )
 
+    Cucumber cucumber = new Cucumber(pipelineEnvironment)
     DockerImage dockerImage = new DockerImage(pipelineEnvironment)
     GitHubArtifact gitHubArtifact = new GitHubArtifact(pipelineEnvironment)
     MavenBuilder mavenBuilder = new MavenBuilder(pipelineEnvironment)
@@ -60,7 +62,7 @@ def call(body) {
                 steps { script { mavenBuilder.buildAndTest() } }
             }
 
-            stage("bump minor version") {
+            stage("bump minor version (when develop)") {
                 when {
                     expression {
                         pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'develop' && pipelineEnvironment.isSnapshot()
@@ -69,7 +71,7 @@ def call(body) {
                 steps { script { gitHubArtifact.updateMinorVersion(mavenBuilder) } }
             }
 
-            stage("bump major version") {
+            stage("bump major version (when master and prod-fss)") {
                 when {
                     expression {
                         pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'master' && pipelineEnvironment.isSnapshot() && pipelineEnvironment.isProd()
@@ -85,24 +87,23 @@ def call(body) {
             }
 
             stage("release and publish docker image") {
-                when {
-                    expression { pipelineEnvironment.isChangeOfCode }
-                }
+                when { expression { pipelineEnvironment.isChangeOfCode } }
                 steps { script { dockerImage.releaseAndPublish() } }
             }
 
             stage("validate nais.yaml and upload to nexus") {
-                when {
-                    expression { pipelineEnvironment.isChangeOfCode }
-                }
+                when { expression { pipelineEnvironment.isChangeOfCode } }
                 steps { script { nais.validateAndUpload() } }
             }
 
             stage("deploy nais application") {
-                when {
-                    expression { pipelineEnvironment.isChangeOfCode }
-                }
+                when { expression { pipelineEnvironment.isChangeOfCode } }
                 steps { script { nais.deployApplication() } }
+            }
+
+            stage("run cucumber integration tests") {
+                when { expression { pipelineEnvironment.isChangeOfCode } }
+                steps { script { result = cucumber.runCucumberTests() } }
             }
         }
 
