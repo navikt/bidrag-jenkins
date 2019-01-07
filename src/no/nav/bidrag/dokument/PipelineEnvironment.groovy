@@ -44,7 +44,7 @@ class PipelineEnvironment {
     }
 
     private String fetchTagEnvironment() {
-        return isMaster() ? 'preprod' : fetchEnvironment()
+        return isMaster() ? 'preprod' : fetchEnvironment() // until first version is released, master goes to preprod
     }
 
     String naisCluster() {

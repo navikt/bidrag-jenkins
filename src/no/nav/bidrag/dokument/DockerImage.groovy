@@ -47,7 +47,7 @@ class DockerImage {
         } else if (pipelineEnvironment.isDevelop()) {
             throw new IllegalStateException("tagname $tagName exists on develop branch (?)")
         } else {
-            pipelineEnvironment.println("Will not tag $tagName on branch not being master or develop")
+            pipelineEnvironment.println("Will not tag $tagName when branch not being master or develop")
         }
 
         return false
