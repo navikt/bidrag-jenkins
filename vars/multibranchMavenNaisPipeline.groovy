@@ -111,6 +111,7 @@ def call(body) {
             always {
                 script {
                     gitHubArtifact.resetWorkspace()
+                    dockerImage.deleteImagesNotUsed()
                 }
             }
         }

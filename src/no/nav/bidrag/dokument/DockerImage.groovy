@@ -52,4 +52,9 @@ class DockerImage {
 
         return false
     }
+
+    void deleteImagesNotUsed() {
+        pipelineEnvironment.execute("docker images -a | grep \"bidrag\" | grep -v \"cucumber\" | awk '{print \$3}' | xargs -r docker rmi")
+        pipelineEnvironment.execute("docker ps -a | grep \"Exited\" | awk '{print \$1}' | xargs -r docker rm")
+    }
 }
