@@ -57,7 +57,7 @@ def call(body) {
                 }
             }
 
-            stage("bump minor version") {
+            stage("bump minor version") { // when develop... major version is always bumbed manual in develop for nexus artifacts
                 when {
                     expression {
                         pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'develop' && pipelineEnvironment.isSnapshot()
@@ -66,21 +66,6 @@ def call(body) {
                 steps {
                     script {
                         gitHubArtifact.updateMinorVersion(mavenBuilder)
-                    }
-                }
-            }
-
-            stage("bump major version") {
-                when {
-                    expression {
-                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'master' && pipelineEnvironment.isSnapshot()
-                    }
-                }
-                steps {
-                    script {
-                        gitHubArtifact.checkout('develop')
-                        gitHubArtifact.updateMajorVersion(mavenBuilder)
-                        gitHubArtifact.checkout('master')
                     }
                 }
             }
