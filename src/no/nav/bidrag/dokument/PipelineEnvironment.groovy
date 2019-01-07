@@ -89,7 +89,7 @@ class PipelineEnvironment {
     }
 
     String fetchNamespace() {
-        return (isMaster() || isDevelop()) ? "default" : fetchEnvironment()
+        return fetchEnvironment() == "q0" ? "default" : fetchEnvironment()
     }
 
     boolean isProd() {
