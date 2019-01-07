@@ -56,7 +56,7 @@ def call(body) {
 
             stage("Verify maven dependency versions") {
                 when { expression { pipelineEnvironment.isChangeOfCode } }
-                steps { script { DependentVersions.verify(gitHubArtifact.fetchPom(), pipelineEnvironment) } }
+                steps { script { DependentVersions.verify(gitHubArtifact.fetchBuildDescriptor(), pipelineEnvironment) } }
             }
 
             stage("build and test") {
