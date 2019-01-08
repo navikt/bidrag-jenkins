@@ -20,7 +20,7 @@ def call(body) {
     PipelineEnvironment pipelineEnvironment = new PipelineEnvironment(
             pipelineParams.gitHubProjectName,
             pipelineParams.buildImage,
-            pipelineParams.environemnt
+            pipelineParams.environment
     )
 
     Builder builder = new MavenBuilder(pipelineEnvironment)
