@@ -20,7 +20,7 @@ class Cucumber {
                     pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
                         pipelineEnvironment.execute(
                             "docker run --rm -e environment=${pipelineEnvironment.fetchEnvironment()} " + 
-                            "-e fasit_user=${pipelineEnvironment.buildScript.USERNAME} -e fasit_pass=${pipelineEnvironment.buildScript.PASSWORD} " +
+                            "-e fasit_user=${pipelineEnvironment.buildScript.USERNAME} -e fasit_pass='${pipelineEnvironment.buildScript.PASSWORD}' " +
                             "-v ${pipelineEnvironment.workspace}/cucumber:/cucumber bidrag-dokument-cucumber"
                         )
                     }
