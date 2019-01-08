@@ -17,7 +17,7 @@ class Cucumber {
                 sleep(10)
 
                 try {
-                    pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'nexusCredentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                    pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
                         pipelineEnvironment.execute(
                             "docker run --rm -e environment=${pipelineEnvironment.fetchEnvironment()} " + 
                             "-e fasit_user=${pipelineEnvironment.buildScript.USERNAME} -e fasit_pass=${pipelineEnvironment.buildScript.PASSWORD} " +
