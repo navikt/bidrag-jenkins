@@ -18,7 +18,11 @@ class Cucumber {
 
                 try {
                     pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'nexusCredentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-                        pipelineEnvironment.buildScript.sh "docker run --rm -e environment=${pipelineEnvironment.fetchEnvironment()} -e fasit_user=${USERNAME} -e fasit_pass=${PASSWORD} -v ${pipelineEnvironment.workspace}/cucumber:/cucumber bidrag-dokument-cucumber"
+                        pipelineEnvironment.execute(
+                            "docker run --rm -e environment=${pipelineEnvironment.fetchEnvironment()} " + 
+                            "-e fasit_user=${pipelineEnvironment.buildScript.USERNAME} -e fasit_pass=${pipelineEnvironment.buildScript.PASSWORD} " +
+                            "-v ${pipelineEnvironment.workspace}/cucumber:/cucumber bidrag-dokument-cucumber"
+                        )
                     }
                 } catch (Exception e) {
                     pipelineEnvironment.println('Unstable build: ' + e)
