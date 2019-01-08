@@ -52,35 +52,18 @@ def call(body) {
 
             stage("build and test") {
                 when { expression { pipelineEnvironment.isChangeOfCode } }
-                steps {
-                    script {
-                        mavenBuilder.buildAndTest()
-                    }
-                }
+                steps { script { mavenBuilder.buildAndTest() } }
             }
 
-            stage("bump minor version") { // when develop... major version is always bumbed manual in develop for nexus artifacts
-                when {
-                    expression {
-                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'develop' && pipelineEnvironment.isSnapshot()
-                    }
-                }
-                steps {
-                    script {
-                        gitHubArtifact.updateMinorVersion(mavenBuilder)
-                    }
-                }
+            // major version is always bumbed manual in develop for nexus artifacts
+            stage("bump minor version") {
+                when { expression { pipelineEnvironment.isChangeOfCodeOnDevelop() } }
+                steps { script { gitHubArtifact.updateMinorVersion(mavenBuilder) } }
             }
 
             stage("deploy new maven artifact") {
-                when {
-                    expression {
-                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'master' && pipelineEnvironment.isSnapshot()
-                    }
-                }
-                steps {
-                    script { mavenBuilder.deployArtifact() }
-                }
+                when { expression { pipelineEnvironment.isChangeOfCodeOnMaster() } }
+                steps { script { mavenBuilder.deployArtifact() } }
             }
         }
 

@@ -99,4 +99,16 @@ class PipelineEnvironment {
     boolean fileExists(String fileInWorkspace) {
         return new File(workspace, fileInWorkspace).exists()
     }
+
+    boolean isChangeOfCodeOnDevelop() {
+        return isChangeOfCode && isSnapshot() && branchName == 'develop'
+    }
+
+    boolean isChangeOfCodeOnMaster() {
+        return isChangeOfCode && isSnapshot() && branchName == 'master'
+    }
+
+    boolean isChangeOfCodeOnMasterAndNaisClusterIsProdFss() {
+        return isChangeOfCodeOnMaster() && isProd()
+    }
 }

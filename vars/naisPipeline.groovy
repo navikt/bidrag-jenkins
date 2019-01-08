@@ -57,7 +57,9 @@ def call(body) {
 
             stage("Verify maven dependency versions") {
                 when { expression { pipelineEnvironment.isChangeOfCode } }
-                steps { script { DependentVersions.verify(gitHubArtifact.fetchBuildDescriptor(), pipelineEnvironment) } }
+                steps {
+                    script { DependentVersions.verify(gitHubArtifact.fetchBuildDescriptor(), pipelineEnvironment) }
+                }
             }
 
             stage("build and test") {
@@ -66,20 +68,12 @@ def call(body) {
             }
 
             stage("bump minor version (when develop)") {
-                when {
-                    expression {
-                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'develop' && pipelineEnvironment.isSnapshot()
-                    }
-                }
+                when { expression { pipelineEnvironment.isChangeOfCodeOnDevelop() } }
                 steps { script { gitHubArtifact.updateMinorVersion(builder) } }
             }
 
             stage("bump major version (when master and prod)") {
-                when {
-                    expression {
-                        pipelineEnvironment.isChangeOfCode && BRANCH_NAME == 'master' && pipelineEnvironment.isSnapshot() && pipelineEnvironment.isProd()
-                    }
-                }
+                when { expression { pipelineEnvironment.isChangeOfCodeOnMasterAndNaisClusterIsProdFss() } }
                 steps {
                     script {
                         gitHubArtifact.checkout('develop')
