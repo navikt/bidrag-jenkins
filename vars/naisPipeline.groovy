@@ -1,12 +1,4 @@
-import no.nav.bidrag.dokument.Builder
-import no.nav.bidrag.dokument.Cucumber
-import no.nav.bidrag.dokument.DependentVersions
-import no.nav.bidrag.dokument.DockerImage
-import no.nav.bidrag.dokument.GitHubArtifact
-import no.nav.bidrag.dokument.GitHubMavenArtifact
-import no.nav.bidrag.dokument.MavenBuilder
-import no.nav.bidrag.dokument.Nais
-import no.nav.bidrag.dokument.PipelineEnvironment
+import no.nav.bidrag.dokument.*
 
 def call(body) {
 
@@ -20,13 +12,14 @@ def call(body) {
     PipelineEnvironment pipelineEnvironment = new PipelineEnvironment(
             pipelineParams.gitHubProjectName,
             pipelineParams.buildImage,
-            pipelineParams.environment
+            pipelineParams.environment,
+            pipelineParams.buildType
     )
 
-    Builder builder = new MavenBuilder(pipelineEnvironment)
+    Builder builder = pipelineEnvironment.initBuilder()
     Cucumber cucumber = new Cucumber(pipelineEnvironment)
     DockerImage dockerImage = new DockerImage(pipelineEnvironment)
-    GitHubArtifact gitHubArtifact = new GitHubMavenArtifact(pipelineEnvironment)
+    GitHubArtifact gitHubArtifact = pipelineEnvironment.initGitHubArtifact()
     Nais nais = new Nais(pipelineEnvironment)
 
     pipeline {
@@ -57,9 +50,7 @@ def call(body) {
 
             stage("Verify maven dependency versions") {
                 when { expression { pipelineEnvironment.isChangeOfCode } }
-                steps {
-                    script { DependentVersions.verify(gitHubArtifact.fetchBuildDescriptor(), pipelineEnvironment) }
-                }
+                steps { script { builder.verifySnapshotDependencies(gitHubArtifact) } }
             }
 
             stage("build and test") {

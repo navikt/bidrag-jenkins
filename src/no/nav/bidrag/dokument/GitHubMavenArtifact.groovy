@@ -8,16 +8,7 @@ class GitHubMavenArtifact extends GitHubArtifact {
     }
 
     @Override
-    def fetchBuildDescriptor() {
-        if (pom == null) {
-            pom = fetchBuildDescriptorFromSourceCode()
-        }
-
-        return pom
-    }
-
-    @Override
-    def fetchBuildDescriptorFromSourceCode() {
+    def readBuildDescriptorFromSourceCode() {
         pipelineEnvironment.println("parsing pom.xml from ${pipelineEnvironment.workspace}")
         def pom = pipelineEnvironment.buildScript.readMavenPom file: 'pom.xml'
 

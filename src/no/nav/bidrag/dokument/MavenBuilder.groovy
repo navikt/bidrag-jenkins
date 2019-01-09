@@ -48,4 +48,12 @@ class MavenBuilder implements Builder {
                         "${pipelineEnvironment.buildImage} mvn versions:set -B -DnewVersion=${version} -DgenerateBackupPoms=false"
         )
     }
+
+    @Override
+    void verifySnapshotDependencies(GitHubArtifact gitHubArtifact) {
+        pipelineEnvironment.println "Verifying that no snapshot dependencies is being used."
+        pipelineEnvironment.println gitHubArtifact.fetchBuildDescriptor().getProperties().values().toString()
+
+        DependentVersions.verify(gitHubArtifact.fetchBuildDescriptor())
+    }
 }

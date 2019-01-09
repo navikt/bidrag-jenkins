@@ -16,7 +16,7 @@ def call(body) {
     PipelineEnvironment pipelineEnvironment = new PipelineEnvironment(
             pipelineParams.gitHubProjectName,
             pipelineParams.mvnImage,
-            null
+            null, 'maven'
     )
 
     GitHubArtifact gitHubArtifact = new GitHubMavenArtifact(pipelineEnvironment)

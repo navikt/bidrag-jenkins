@@ -1,6 +1,7 @@
 package no.nav.bidrag.dokument
 
 abstract class GitHubArtifact {
+    private def buildDescriptor
     protected PipelineEnvironment pipelineEnvironment
 
     GitHubArtifact(PipelineEnvironment pipelineEnvironment) {
@@ -21,9 +22,15 @@ abstract class GitHubArtifact {
         }
     }
 
-    abstract def fetchBuildDescriptor()
+    def fetchBuildDescriptor() {
+        if (buildDescriptor == null) {
+            buildDescriptor = readBuildDescriptorFromSourceCode()
+        }
 
-    abstract def fetchBuildDescriptorFromSourceCode()
+        return buildDescriptor
+    }
+
+    abstract def readBuildDescriptorFromSourceCode()
 
     String fetchVersion() {
         return fetchBuildDescriptor().version
@@ -74,12 +81,11 @@ abstract class GitHubArtifact {
 
     void updateMajorVersion(Builder builder) {
         String masterMajorVersion = fetchMajorVersion()
-        String developMajorVersion = fetchMajorVersion(fetchBuildDescriptorFromSourceCode())
+        String developMajorVersion = fetchMajorVersion(readBuildDescriptorFromSourceCode())
 
         // only bump major version if not previously bumped...
         if (masterMajorVersion == developMajorVersion) {
-            String developMinorVersion = fetchMinorVersion(fetchBuildDescriptorFromSourceCode())
-            String nextVersion = (masterMajorVersion.toFloat() + 1) + ".${developMinorVersion}-SNAPSHOT"
+            String nextVersion = (masterMajorVersion.toFloat() + 1) + ".0-SNAPSHOT"
             pipelineEnvironment.execute("echo", "[INFO] bumping major version in develop ($developMajorVersion) from version in master ($masterMajorVersion)")
 
             builder.updateVersion(nextVersion)
