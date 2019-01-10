@@ -143,4 +143,8 @@ class PipelineEnvironment {
 
         throw new IllegalStateException("unknown build type: " + buildType)
     }
+
+    boolean isAutmatedBuild(def userId) {
+        return userId == null
+    }
 }

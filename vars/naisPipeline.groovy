@@ -40,7 +40,11 @@ def call(body) {
                         pipelineEnvironment.buildScript = this
                         pipelineEnvironment.workspace = "$WORKSPACE"
 
-                        if (gitHubArtifact.isLastCommitterFromPipeline()) {
+                        boolean isAutomatedBuild = pipelineEnvironment.isAutmatedBuild(
+                                currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)
+                        )
+
+                        if (isAutomatedBuild && gitHubArtifact.isLastCommitterFromPipeline()) {
                             pipelineEnvironment.isNotChangeOfCode()
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
