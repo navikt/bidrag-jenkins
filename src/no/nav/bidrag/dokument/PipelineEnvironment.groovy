@@ -1,5 +1,11 @@
 package no.nav.bidrag.dokument
 
+import no.nav.bidrag.dokument.maven.GitHubMavenArtifact
+import no.nav.bidrag.dokument.maven.MavenBuilder
+import no.nav.bidrag.dokument.node.FileLineReaderWriter
+import no.nav.bidrag.dokument.node.GitHubNodeArtifact
+import no.nav.bidrag.dokument.node.NodeBuilder
+
 class PipelineEnvironment {
 
     boolean isChangeOfCode = true
@@ -132,7 +138,7 @@ class PipelineEnvironment {
         }
 
         if (buildType == 'node') {
-            return new GitHubNodeArtifact(this)
+            return new GitHubNodeArtifact(this, new FileLineReaderWriter(this))
         }
 
         throw new IllegalStateException("unknown build type: " + buildType)

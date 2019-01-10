@@ -1,7 +1,9 @@
-package no.nav.bidrag.dokument;
+package no.nav.bidrag.dokument.maven
+
+import no.nav.bidrag.dokument.GitHubArtifact
+import no.nav.bidrag.dokument.PipelineEnvironment
 
 class GitHubMavenArtifact extends GitHubArtifact {
-    private def pom
 
     GitHubMavenArtifact(PipelineEnvironment pipelineEnvironment) {
         super(pipelineEnvironment)

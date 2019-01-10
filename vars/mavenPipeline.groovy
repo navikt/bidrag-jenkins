@@ -1,7 +1,7 @@
 import no.nav.bidrag.dokument.DependentVersions
 import no.nav.bidrag.dokument.GitHubArtifact
-import no.nav.bidrag.dokument.GitHubMavenArtifact
-import no.nav.bidrag.dokument.MavenBuilder
+import no.nav.bidrag.dokument.maven.GitHubMavenArtifact
+import no.nav.bidrag.dokument.maven.MavenBuilder
 import no.nav.bidrag.dokument.PipelineEnvironment
 
 def call(body) {

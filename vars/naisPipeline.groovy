@@ -50,7 +50,7 @@ def call(body) {
 
             stage("Verify maven dependency versions") {
                 when { expression { pipelineEnvironment.isChangeOfCode } }
-                steps { script { builder.verifySnapshotDependencies(gitHubArtifact) } }
+                steps { script { builder.verifySnapshotDependencies(gitHubArtifact.fetchBuildDescriptor()) } }
             }
 
             stage("build and test") {

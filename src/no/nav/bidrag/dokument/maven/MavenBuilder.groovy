@@ -1,4 +1,8 @@
-package no.nav.bidrag.dokument
+package no.nav.bidrag.dokument.maven
+
+import no.nav.bidrag.dokument.Builder
+import no.nav.bidrag.dokument.DependentVersions
+import no.nav.bidrag.dokument.PipelineEnvironment
 
 class MavenBuilder implements Builder {
 
@@ -50,10 +54,10 @@ class MavenBuilder implements Builder {
     }
 
     @Override
-    void verifySnapshotDependencies(GitHubArtifact gitHubArtifact) {
+    void verifySnapshotDependencies(def buildDescriptor) {
         pipelineEnvironment.println "Verifying that no snapshot dependencies is being used."
-        pipelineEnvironment.println gitHubArtifact.fetchBuildDescriptor().getProperties().values().toString()
+        pipelineEnvironment.println buildDescriptor().getProperties().values().toString()
 
-        DependentVersions.verify(gitHubArtifact.fetchBuildDescriptor())
+        DependentVersions.verify(buildDescriptor)
     }
 }

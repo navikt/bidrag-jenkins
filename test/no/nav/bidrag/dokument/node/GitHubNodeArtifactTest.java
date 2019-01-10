@@ -1,5 +1,6 @@
-package no.nav.bidrag.dokument;
+package no.nav.bidrag.dokument.node;
 
+import no.nav.bidrag.dokument.PipelineEnvironment;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -8,9 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * in order to use this unit test, the following jars must be added to the classpath:
  * - assertj-core
- * - jackson-annotations
- * - jackson-core
- * - jackson-databind
  * - jaxb-api (only if jdk > 1.8)
  * - junit-jupiter-api
  */
@@ -21,12 +19,12 @@ class GitHubNodeArtifactTest {
     @Test
     void shouldUpdateVersion() {
         GitHubNodeArtifact gitHubNodeArtifact = initGitHubNodeArtifactWithPipelineEnvironment();
-        GitHubNodeArtifact.PackageJsonDescriptor packageJsonDescriptor = (GitHubNodeArtifact.PackageJsonDescriptor) gitHubNodeArtifact.readBuildDescriptorFromSourceCode();
+        PackageJsonDescriptor packageJsonDescriptor = (PackageJsonDescriptor) gitHubNodeArtifact.readBuildDescriptorFromSourceCode();
 
         String version = packageJsonDescriptor.getVersion();
         System.out.println(version);
 
-        assertThat(version).isNotNull();
+        assertThat(version).startsWith("1.0");
     }
 
     private GitHubNodeArtifact initGitHubNodeArtifactWithPipelineEnvironment() {

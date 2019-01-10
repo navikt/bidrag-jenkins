@@ -1,7 +1,12 @@
-package no.nav.bidrag.dokument
+package no.nav.bidrag.dokument.node
+
+import no.nav.bidrag.dokument.Builder
+import no.nav.bidrag.dokument.PipelineEnvironment
 
 class NodeBuilder implements Builder {
     private PipelineEnvironment pipelineEnvironment
+
+    FileLineReaderWriter fileLineReaderWriter
 
     NodeBuilder(PipelineEnvironment pipelineEnvironment) {
         this.pipelineEnvironment = pipelineEnvironment
@@ -23,27 +28,9 @@ class NodeBuilder implements Builder {
 
     @Override
     void updateVersion(String nextVersion) {
-        File packageJson = new File(pipelineEnvironment.workspace, 'package.json')
-        List<String> allLinesInPackageJson = readAllLines(new FileReader(packageJson))
+        List<String> allLinesInPackageJson = fileLineReaderWriter.readAllLines('package.json')
         ArrayList<String> linesWithModifiedVersion = modifyVersion(allLinesInPackageJson, nextVersion)
-//        updatePackageJson(linesWithModifiedVersion, new FileWriter(packageJson))
-    }
-
-    static List<String> readAllLines(FileReader fileReader) {
-        BufferedReader bufferedReader = new BufferedReader(fileReader)
-        List<String> lines = new ArrayList<>()
-        String line
-
-        try {
-            while ((line = bufferedReader.readLine()) != null) {
-                lines.add(line)
-            }
-        } finally {
-            bufferedReader.close()
-            fileReader.close()
-        }
-
-        return lines
+        fileLineReaderWriter.update(linesWithModifiedVersion, 'package.json')
     }
 
     private static ArrayList<String> modifyVersion(List<String> allLinesInPackageJson, String nextVersion) {
@@ -51,7 +38,7 @@ class NodeBuilder implements Builder {
 
         for (String line : allLinesInPackageJson) {
             if (line.trim().startsWith("\"version\"")) {
-                String nextVersionLine = "  \"version\": \"$nextVersion\","
+                String nextVersionLine = "   \"version\": \"$nextVersion\","
                 linesWithModifiedVersion.add(nextVersionLine)
             } else {
                 linesWithModifiedVersion.add(line)
@@ -63,21 +50,12 @@ class NodeBuilder implements Builder {
         return linesWithModifiedVersion
     }
 
-    private static void updatePackageJson(List<String> lines, FileWriter fileWriter) {
-        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)
-
-        try {
-            for (String line : lines) {
-                bufferedWriter.writeLine(line)
-            }
-        } finally {
-            bufferedWriter.close()
-            fileWriter.close()
-        }
-    }
-
     @Override
-    void verifySnapshotDependencies(GitHubArtifact gitHubArtifact) {
+    void verifySnapshotDependencies(def buildDescriptor) {
+        PackageJsonDescriptor packageJsonDescriptor = (PackageJsonDescriptor) buildDescriptor
 
+        if (packageJsonDescriptor.hasSnapshotDependencies()) {
+            throw new IllegalStateException('package.json contains snapshot dependencies: ' + packageJsonDescriptor)
+        }
     }
 }
