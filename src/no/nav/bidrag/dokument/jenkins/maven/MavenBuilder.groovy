@@ -56,7 +56,7 @@ class MavenBuilder implements Builder {
     @Override
     void verifySnapshotDependencies(def buildDescriptor) {
         pipelineEnvironment.println "Verifying that no snapshot dependencies is being used."
-        pipelineEnvironment.println buildDescriptor().getProperties().values().toString()
+        pipelineEnvironment.println buildDescriptor.getProperties().values().toString()
 
         DependentVersions.verify(buildDescriptor)
     }

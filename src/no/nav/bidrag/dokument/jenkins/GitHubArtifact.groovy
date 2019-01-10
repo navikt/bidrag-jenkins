@@ -1,7 +1,7 @@
 package no.nav.bidrag.dokument.jenkins
 
 abstract class GitHubArtifact {
-    private def buildDescriptor
+    protected def buildDescriptor
     protected PipelineEnvironment pipelineEnvironment
 
     GitHubArtifact(PipelineEnvironment pipelineEnvironment) {

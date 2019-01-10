@@ -1,4 +1,3 @@
-import no.nav.bidrag.dokument.*
 import no.nav.bidrag.dokument.jenkins.Builder
 import no.nav.bidrag.dokument.jenkins.Cucumber
 import no.nav.bidrag.dokument.jenkins.DockerImage
