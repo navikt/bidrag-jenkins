@@ -1,4 +1,10 @@
-package no.nav.bidrag.dokument
+package no.nav.bidrag.dokument.jenkins
+
+import no.nav.bidrag.dokument.jenkins.maven.GitHubMavenArtifact
+import no.nav.bidrag.dokument.jenkins.maven.MavenBuilder
+import no.nav.bidrag.dokument.jenkins.node.FileLineReaderWriter
+import no.nav.bidrag.dokument.jenkins.node.GitHubNodeArtifact
+import no.nav.bidrag.dokument.jenkins.node.NodeBuilder
 
 class PipelineEnvironment {
 
@@ -9,6 +15,7 @@ class PipelineEnvironment {
     String artifactVersion
     String branchName
     String buildImage
+    String buildType
     String dockerRepo
     String environment
     String gitHubProjectName
@@ -19,10 +26,11 @@ class PipelineEnvironment {
 
     private String imageVersion
 
-    PipelineEnvironment(String gitHubProjectName, String buildImage, String environment) {
+    PipelineEnvironment(String gitHubProjectName, String buildImage, String environment, String buildType) {
         this.gitHubProjectName = gitHubProjectName
         this.buildImage = buildImage
         this.environment = environment
+        this.buildType = buildType
     }
 
     void isNotChangeOfCode() {
@@ -92,7 +100,7 @@ class PipelineEnvironment {
         return fetchEnvironment() == "q0" ? "default" : fetchEnvironment()
     }
 
-    boolean isProd() {
+    private boolean isProd() {
         return naisCluster() == 'prod-fss'
     }
 
@@ -110,5 +118,33 @@ class PipelineEnvironment {
 
     boolean isChangeOfCodeOnMasterAndNaisClusterIsProdFss() {
         return isChangeOfCodeOnMaster() && isProd()
+    }
+
+    Builder initBuilder() {
+        if (buildType == null || buildType == 'maven') {
+            return new MavenBuilder(this)
+        }
+
+        if (buildType == 'node') {
+            return new NodeBuilder(this)
+        }
+
+        throw new IllegalStateException("unknown build type: " + buildType)
+    }
+
+    GitHubArtifact initGitHubArtifact() {
+        if (buildType == null || buildType == 'maven') {
+            return new GitHubMavenArtifact(this)
+        }
+
+        if (buildType == 'node') {
+            return new GitHubNodeArtifact(this, new FileLineReaderWriter(this))
+        }
+
+        throw new IllegalStateException("unknown build type: " + buildType)
+    }
+
+    boolean isAutmatedBuild(def userId) {
+        return userId == null
     }
 }

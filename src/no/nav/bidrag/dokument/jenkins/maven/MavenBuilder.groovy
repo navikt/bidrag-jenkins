@@ -1,4 +1,8 @@
-package no.nav.bidrag.dokument
+package no.nav.bidrag.dokument.jenkins.maven
+
+import no.nav.bidrag.dokument.jenkins.Builder
+import no.nav.bidrag.dokument.jenkins.DependentVersions
+import no.nav.bidrag.dokument.jenkins.PipelineEnvironment
 
 class MavenBuilder implements Builder {
 
@@ -47,5 +51,13 @@ class MavenBuilder implements Builder {
                         "-w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 " +
                         "${pipelineEnvironment.buildImage} mvn versions:set -B -DnewVersion=${version} -DgenerateBackupPoms=false"
         )
+    }
+
+    @Override
+    void verifySnapshotDependencies(def buildDescriptor) {
+        pipelineEnvironment.println "Verifying that no snapshot dependencies is being used."
+        pipelineEnvironment.println buildDescriptor().getProperties().values().toString()
+
+        DependentVersions.verify(buildDescriptor)
     }
 }

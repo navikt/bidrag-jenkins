@@ -1,23 +1,16 @@
-package no.nav.bidrag.dokument;
+package no.nav.bidrag.dokument.jenkins.maven
+
+import no.nav.bidrag.dokument.jenkins.GitHubArtifact
+import no.nav.bidrag.dokument.jenkins.PipelineEnvironment
 
 class GitHubMavenArtifact extends GitHubArtifact {
-    private def pom
 
     GitHubMavenArtifact(PipelineEnvironment pipelineEnvironment) {
         super(pipelineEnvironment)
     }
 
     @Override
-    def fetchBuildDescriptor() {
-        if (pom == null) {
-            pom = fetchBuildDescriptorFromSourceCode()
-        }
-
-        return pom
-    }
-
-    @Override
-    def fetchBuildDescriptorFromSourceCode() {
+    def readBuildDescriptorFromSourceCode() {
         pipelineEnvironment.println("parsing pom.xml from ${pipelineEnvironment.workspace}")
         def pom = pipelineEnvironment.buildScript.readMavenPom file: 'pom.xml'
 
