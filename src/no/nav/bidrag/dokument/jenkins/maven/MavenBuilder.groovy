@@ -1,8 +1,8 @@
-package no.nav.bidrag.dokument.maven
+package no.nav.bidrag.dokument.jenkins.maven
 
-import no.nav.bidrag.dokument.Builder
-import no.nav.bidrag.dokument.DependentVersions
-import no.nav.bidrag.dokument.PipelineEnvironment
+import no.nav.bidrag.dokument.jenkins.Builder
+import no.nav.bidrag.dokument.jenkins.DependentVersions
+import no.nav.bidrag.dokument.jenkins.PipelineEnvironment
 
 class MavenBuilder implements Builder {
 

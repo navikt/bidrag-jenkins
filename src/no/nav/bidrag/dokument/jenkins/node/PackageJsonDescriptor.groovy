@@ -1,4 +1,4 @@
-package no.nav.bidrag.dokument.node
+package no.nav.bidrag.dokument.jenkins.node
 
 class PackageJsonDescriptor {
     private List<String> lines

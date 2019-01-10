@@ -1,7 +1,7 @@
-package no.nav.bidrag.dokument.maven
+package no.nav.bidrag.dokument.jenkins.maven
 
-import no.nav.bidrag.dokument.GitHubArtifact
-import no.nav.bidrag.dokument.PipelineEnvironment
+import no.nav.bidrag.dokument.jenkins.GitHubArtifact
+import no.nav.bidrag.dokument.jenkins.PipelineEnvironment
 
 class GitHubMavenArtifact extends GitHubArtifact {
 

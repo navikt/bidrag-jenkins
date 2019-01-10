@@ -1,4 +1,10 @@
 import no.nav.bidrag.dokument.*
+import no.nav.bidrag.dokument.jenkins.Builder
+import no.nav.bidrag.dokument.jenkins.Cucumber
+import no.nav.bidrag.dokument.jenkins.DockerImage
+import no.nav.bidrag.dokument.jenkins.GitHubArtifact
+import no.nav.bidrag.dokument.jenkins.Nais
+import no.nav.bidrag.dokument.jenkins.PipelineEnvironment
 
 def call(body) {
 

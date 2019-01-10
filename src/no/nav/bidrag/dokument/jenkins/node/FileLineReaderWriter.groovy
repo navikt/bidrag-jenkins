@@ -1,6 +1,6 @@
-package no.nav.bidrag.dokument.node
+package no.nav.bidrag.dokument.jenkins.node
 
-import no.nav.bidrag.dokument.PipelineEnvironment
+import no.nav.bidrag.dokument.jenkins.PipelineEnvironment
 
 class FileLineReaderWriter {
     private PipelineEnvironment pipelineEnvironment

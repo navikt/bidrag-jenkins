@@ -1,8 +1,8 @@
-package no.nav.bidrag.dokument.node;
+package no.nav.bidrag.dokument.jenkins.node;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import no.nav.bidrag.dokument.PipelineEnvironment;
+import no.nav.bidrag.dokument.jenkins.PipelineEnvironment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;

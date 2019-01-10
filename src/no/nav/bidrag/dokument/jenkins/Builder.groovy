@@ -1,4 +1,4 @@
-package no.nav.bidrag.dokument
+package no.nav.bidrag.dokument.jenkins
 
 interface Builder {
     void buildAndTest()
