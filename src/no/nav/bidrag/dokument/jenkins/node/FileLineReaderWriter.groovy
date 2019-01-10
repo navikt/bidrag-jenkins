@@ -10,14 +10,16 @@ class FileLineReaderWriter {
     }
 
     List<String> readAllLines(String fileName) {
-        def fileReader = new FileReader(new File(pipelineEnvironment.workspace, fileName))
+        def file = new File(pipelineEnvironment.workspace, fileName)
+        pipelineEnvironment.println("reading ${file.getAbsolutePath()} - exists: ${file.exists()}")
+
+        def fileReader = new FileReader(file)
         def bufferedReader = new BufferedReader(fileReader)
         def lines = new ArrayList<>()
         String line
 
         try {
             while ((line = bufferedReader.readLine()) != null) {
-                println(line)
                 lines.add(line)
             }
         } finally {

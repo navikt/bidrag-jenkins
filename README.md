@@ -6,7 +6,7 @@ Supported build types:
 - maven
 - node
 
-Summary of workflow, git branches:
+Summary of workflow of naisPipeline using git branches:
 - master
   - the production code which reflects the code in the production environment
   - deploys to preprod-fss in default namespace until first release is done
