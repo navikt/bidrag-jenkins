@@ -66,7 +66,7 @@ def call(body) {
             }
 
             stage("deploy new maven artifact") {
-                when { expression { pipelineEnvironment.isMasterBranch() } }
+                when { expression { pipelineEnvironment.isMaster() } }
                 steps { script { result = mavenBuilder.deployArtifact() } }
             }
         }

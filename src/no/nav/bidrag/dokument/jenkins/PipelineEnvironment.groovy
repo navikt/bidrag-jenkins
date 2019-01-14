@@ -117,7 +117,7 @@ class PipelineEnvironment {
     }
 
     boolean isChangeOfCodeOnMaster() {
-        return isChangeOfCode && isSnapshot() && branchName == 'master'
+        return isChangeOfCode && isSnapshot() && isMaster()
     }
 
     boolean isChangeOfCodeOnMasterAndNaisClusterIsProdFss() {
