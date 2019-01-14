@@ -8,7 +8,7 @@ import no.nav.bidrag.dokument.jenkins.node.NodeBuilder
 
 class PipelineEnvironment {
 
-    boolean isChangeOfCode = true
+    boolean canRunPipeline = true
     def buildScript
 
     String appConfig
@@ -33,8 +33,8 @@ class PipelineEnvironment {
         this.buildType = buildType
     }
 
-    void isNotChangeOfCode() {
-        isChangeOfCode = false
+    void doNotRunPipeline() {
+        canRunPipeline = false
     }
 
     boolean isSnapshot() {
@@ -113,11 +113,11 @@ class PipelineEnvironment {
     }
 
     boolean isChangeOfCodeOnDevelop() {
-        return isChangeOfCode && isSnapshot() && branchName == 'develop'
+        return canRunPipeline && isSnapshot() && branchName == 'develop'
     }
 
     boolean isChangeOfCodeOnMaster() {
-        return isChangeOfCode && isSnapshot() && isMaster()
+        return canRunPipeline && isSnapshot() && isMaster()
     }
 
     boolean isChangeOfCodeOnMasterAndNaisClusterIsProdFss() {

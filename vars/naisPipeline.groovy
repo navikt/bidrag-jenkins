@@ -44,7 +44,7 @@ def call(body) {
                         )
 
                         if (isAutomatedBuild && gitHubArtifact.isLastCommitterFromPipeline()) {
-                            pipelineEnvironment.isNotChangeOfCode()
+                            pipelineEnvironment.doNotRunPipeline()
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
                             pipelineEnvironment.appConfig = "nais.yaml"
@@ -58,12 +58,12 @@ def call(body) {
             }
 
             stage("Verify maven dependency versions") {
-                when { expression { pipelineEnvironment.isChangeOfCode } }
+                when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { builder.verifySnapshotDependencies(gitHubArtifact.fetchBuildDescriptor()) } }
             }
 
             stage("build and test") {
-                when { expression { pipelineEnvironment.isChangeOfCode } }
+                when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { builder.buildAndTest() } }
             }
 
@@ -84,22 +84,22 @@ def call(body) {
             }
 
             stage("release and publish docker image") {
-                when { expression { pipelineEnvironment.isChangeOfCode } }
+                when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { dockerImage.releaseAndPublish() } }
             }
 
             stage("validate nais.yaml and upload to nexus") {
-                when { expression { pipelineEnvironment.isChangeOfCode } }
+                when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { nais.validateAndUpload() } }
             }
 
             stage("deploy nais application") {
-                when { expression { pipelineEnvironment.isChangeOfCode } }
+                when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { nais.deployApplication() } }
             }
 
             stage("run cucumber integration tests") {
-                when { expression { pipelineEnvironment.isChangeOfCode } }
+                when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { result = cucumber.runCucumberTests() } }
             }
         }

@@ -39,7 +39,7 @@ def call(body) {
                         )
 
                         if (isAutomatedBuild && gitHubArtifact.isLastCommitterFromPipeline()) {
-                            pipelineEnvironment.isNotChangeOfCode()
+                            pipelineEnvironment.doNotRunPipeline()
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
                             pipelineEnvironment.artifactVersion = gitHubArtifact.fetchVersion()
@@ -50,12 +50,12 @@ def call(body) {
             }
 
             stage("Verify maven dependency versions") {
-                when { expression { pipelineEnvironment.isChangeOfCode } }
+                when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { DependentVersions.verify(gitHubArtifact.fetchBuildDescriptor()) } }
             }
 
             stage("build and test") {
-                when { expression { pipelineEnvironment.isChangeOfCode } }
+                when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { mavenBuilder.buildAndTest() } }
             }
 
