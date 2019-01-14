@@ -43,6 +43,7 @@ def call(body) {
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
                             pipelineEnvironment.artifactVersion = gitHubArtifact.fetchVersion()
+                            pipelineEnvironment.branchName = "$BRANCH_NAME"
                             pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
                         }
                     }
