@@ -39,7 +39,7 @@ def call(body) {
                         pipelineEnvironment.buildScript = this
                         pipelineEnvironment.workspace = "$WORKSPACE"
 
-                        boolean isAutomatedBuild = pipelineEnvironment.isAutmatedBuild(
+                        boolean isAutomatedBuild = PipelineEnvironment.isAutmatedBuild(
                                 currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)
                         )
 
