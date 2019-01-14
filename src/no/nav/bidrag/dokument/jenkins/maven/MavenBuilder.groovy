@@ -32,16 +32,25 @@ class MavenBuilder implements Builder {
         }
     }
 
-    void deployArtifact() {
-        pipelineEnvironment.println("gitHubArtifact: ${pipelineEnvironment.gitHubProjectName}")
-        pipelineEnvironment.println("deploying maven artifact.")
-        updateVersion(pipelineEnvironment.artifactVersion)
+    String deployArtifact() {
+        try {
+            String stableVersion = pipelineEnvironment.fetchStableVersion()
+            pipelineEnvironment.println("gitHubArtifact: ${pipelineEnvironment.gitHubProjectName}")
+            pipelineEnvironment.println("deploying maven artifact ($stableVersion).")
+            updateVersion(stableVersion)
 
-        pipelineEnvironment.execute(
-                "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven -w /usr/src/mymaven " +
-                        "-v \"${pipelineEnvironment.homeFolderJenkins}/.m2\":/root/.m2 ${pipelineEnvironment.buildImage} " +
-                        "mvn clean deploy -B -e"
-        )
+            pipelineEnvironment.execute(
+                    "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven -w /usr/src/mymaven " +
+                            "-v \"${pipelineEnvironment.homeFolderJenkins}/.m2\":/root/.m2 ${pipelineEnvironment.buildImage} " +
+                            "mvn clean deploy -B -e"
+            )
+        } catch(Exception e) {
+            pipelineEnvironment.println('unable to deploy artifiact: ' + e)
+
+            return 'UNSTABLE'
+        }
+
+        return 'SUCCESS'
     }
 
     @Override

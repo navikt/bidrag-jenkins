@@ -74,6 +74,10 @@ class PipelineEnvironment {
         return imageVersion
     }
 
+    String fetchStableVersion() {
+        return artifactVersion.replace("-SNAPSHOT", "")
+    }
+
     void println(Object toPrint) {
         buildScript.println(toPrint)
     }
