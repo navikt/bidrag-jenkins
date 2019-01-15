@@ -37,7 +37,7 @@ class NodeBuilder implements Builder {
         def deps = buildDescriptor.dependencies.keySet().iterator()
 
         while(deps.hasNext()) {
-            if (deps.next.contains("-SNAPSHOT")) {
+            if (deps.next().contains("-SNAPSHOT")) {
                 throw new IllegalStateException("package.json contains snapshot dependencies: " + buildDescriptor.toString())
             }
         }
