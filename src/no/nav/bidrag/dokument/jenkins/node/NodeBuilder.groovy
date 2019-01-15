@@ -6,8 +6,6 @@ import no.nav.bidrag.dokument.jenkins.PipelineEnvironment
 class NodeBuilder implements Builder {
     private PipelineEnvironment pipelineEnvironment
 
-    FileLineReaderWriter fileLineReaderWriter
-
     NodeBuilder(PipelineEnvironment pipelineEnvironment) {
         this.pipelineEnvironment = pipelineEnvironment
     }
@@ -28,34 +26,20 @@ class NodeBuilder implements Builder {
 
     @Override
     void updateVersion(String nextVersion) {
-        List<String> allLinesInPackageJson = fileLineReaderWriter.readAllLines('package.json')
-        ArrayList<String> linesWithModifiedVersion = modifyVersion(allLinesInPackageJson, nextVersion)
-        fileLineReaderWriter.update(linesWithModifiedVersion, 'package.json')
-    }
-
-    private static ArrayList<String> modifyVersion(List<String> allLinesInPackageJson, String nextVersion) {
-        List<String> linesWithModifiedVersion = new ArrayList<>()
-
-        for (String line : allLinesInPackageJson) {
-            if (line.trim().startsWith("\"version\"")) {
-                String nextVersionLine = "   \"version\": \"$nextVersion\","
-                linesWithModifiedVersion.add(nextVersionLine)
-            } else {
-                linesWithModifiedVersion.add(line)
-            }
-        }
-
-        linesWithModifiedVersion.forEach({ s -> println(s) })
-
-        return linesWithModifiedVersion
+        def json = pipelineEnvironment.buildScript.readJSON file: 'package.json'
+        pipelineEnvironment.execute("echo", "existing json.version = ${json.version}, next json.version = $nextVersion")
+        json.version = nextVersion
+        pipelineEnvironment.buildScript.writeJSON file: 'package.json', pretty: 4
     }
 
     @Override
     void verifySnapshotDependencies(def buildDescriptor) {
-        PackageJsonDescriptor packageJsonDescriptor = (PackageJsonDescriptor) buildDescriptor
+        def deps = buildDescriptor.dependencies.keySet().iterator()
 
-        if (packageJsonDescriptor.hasSnapshotDependencies()) {
-            throw new IllegalStateException('package.json contains snapshot dependencies: ' + packageJsonDescriptor)
+        while(deps.hasNext()) {
+            if (deps.next.contains("-SNAPSHOT")) {
+                throw new IllegalStateException("package.json contains snapshot dependencies: " + buildDescriptor.toString())
+            }
         }
     }
 }

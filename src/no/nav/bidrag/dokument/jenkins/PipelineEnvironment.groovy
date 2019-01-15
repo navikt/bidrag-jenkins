@@ -2,7 +2,7 @@ package no.nav.bidrag.dokument.jenkins
 
 import no.nav.bidrag.dokument.jenkins.maven.GitHubMavenArtifact
 import no.nav.bidrag.dokument.jenkins.maven.MavenBuilder
-import no.nav.bidrag.dokument.jenkins.node.FileLineReaderWriter
+
 import no.nav.bidrag.dokument.jenkins.node.GitHubNodeArtifact
 import no.nav.bidrag.dokument.jenkins.node.NodeBuilder
 
@@ -138,7 +138,7 @@ class PipelineEnvironment {
         }
 
         if (buildType == 'node') {
-            return new GitHubNodeArtifact(this, new FileLineReaderWriter(this))
+            return new GitHubNodeArtifact(this)
         }
 
         throw new IllegalStateException("unknown build type: " + buildType)
