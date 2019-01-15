@@ -54,11 +54,7 @@ class PipelineEnvironment {
             return environment
         }
 
-        return isMaster() ? "q0" : isDevelop() ? "q0" : "t0"
-    }
-
-    private String fetchTagEnvironment() {
-        return isMaster() ? 'preprod' : fetchEnvironment() // until first version is released, master goes to preprod
+        return isMaster() ? "q4" : isDevelop() ? "q0" : "q1"
     }
 
     String naisCluster() {
@@ -68,7 +64,7 @@ class PipelineEnvironment {
     String fetchImageVersion() {
         if (imageVersion == null) {
             String sha = Long.toHexString(System.currentTimeMillis())
-            imageVersion = "$artifactVersion-${fetchTagEnvironment()}-$sha"
+            imageVersion = "$artifactVersion-${fetchEnvironment()}-$sha"
         }
 
         return imageVersion
@@ -83,7 +79,7 @@ class PipelineEnvironment {
     }
 
     String createTagName() {
-        return "$gitHubProjectName-$artifactVersion-${fetchTagEnvironment()}"
+        return "$gitHubProjectName-$artifactVersion-${fetchEnvironment()}"
     }
 
     boolean canTagGitHubArtifact() {
