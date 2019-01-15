@@ -62,7 +62,7 @@ def call(body) {
 
             // major version is always bumbed manual in develop for nexus artifacts
             stage("bump minor version") {
-                when { expression { pipelineEnvironment.isChangeOfCodeOnDevelop() } }
+                when { expression { pipelineEnvironment.canRunPipelineOnDevelop() } }
                 steps { script { gitHubArtifact.updateMinorVersion(mavenBuilder) } }
             }
 

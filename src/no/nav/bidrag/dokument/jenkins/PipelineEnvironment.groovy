@@ -112,16 +112,16 @@ class PipelineEnvironment {
         return new File(workspace, fileInWorkspace).exists()
     }
 
-    boolean isChangeOfCodeOnDevelop() {
-        return canRunPipeline && isSnapshot() && branchName == 'develop'
+    boolean canRunPipelineOnDevelop() {
+        return canRunPipeline && branchName == 'develop'
     }
 
-    boolean isChangeOfCodeOnMaster() {
-        return canRunPipeline && isSnapshot() && isMaster()
+    boolean canRunPipelineOnMaster() {
+        return canRunPipeline && isMaster()
     }
 
-    boolean isChangeOfCodeOnMasterAndNaisClusterIsProdFss() {
-        return isChangeOfCodeOnMaster() && isProd()
+    boolean canRunPipelineOnMasterAndNaisClusterIsProdFss() {
+        return canRunPipelineOnMaster() && isProd()
     }
 
     Builder initBuilder() {

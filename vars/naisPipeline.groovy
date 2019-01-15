@@ -68,12 +68,12 @@ def call(body) {
             }
 
             stage("bump minor version (when develop)") {
-                when { expression { pipelineEnvironment.isChangeOfCodeOnDevelop() } }
+                when { expression { pipelineEnvironment.canRunPipelineOnDevelop() } }
                 steps { script { gitHubArtifact.updateMinorVersion(builder) } }
             }
 
             stage("bump major version (when master and prod)") {
-                when { expression { pipelineEnvironment.isChangeOfCodeOnMasterAndNaisClusterIsProdFss() } }
+                when { expression { pipelineEnvironment.canRunPipelineOnMasterAndNaisClusterIsProdFss() } }
                 steps {
                     script {
                         gitHubArtifact.checkout('develop')
