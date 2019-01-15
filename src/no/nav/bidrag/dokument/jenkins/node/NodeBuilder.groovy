@@ -29,7 +29,7 @@ class NodeBuilder implements Builder {
         def json = pipelineEnvironment.buildScript.readJSON file: 'package.json'
         pipelineEnvironment.execute("echo", "existing json.version = ${json.version}, next json.version = $nextVersion")
         json.version = nextVersion
-        pipelineEnvironment.buildScript.writeJSON file: 'package.json', pretty: 4
+        pipelineEnvironment.buildScript.writeJSON file: 'package.json', json:json, pretty: 4
     }
 
     @Override
