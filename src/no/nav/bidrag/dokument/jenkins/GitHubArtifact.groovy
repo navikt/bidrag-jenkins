@@ -53,9 +53,12 @@ abstract class GitHubArtifact {
         return fetchMinorVersion(fetchBuildDescriptor())
     }
 
-    static String fetchMinorVersion(def buildDescriptor) {
+    String fetchMinorVersion(def buildDescriptor) {
+        pipelineEnvironment.println("buildDescriptor: $buildDescriptor")
         String releaseVersion = buildDescriptor.version.tokenize("-")[0]
         def tokens = releaseVersion.tokenize(".")
+
+        pipelineEnvironment.println("fetching minor version from $releaseVersion")
 
         return "${tokens[2]}"
     }
