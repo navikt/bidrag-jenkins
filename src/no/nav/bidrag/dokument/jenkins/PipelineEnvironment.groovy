@@ -144,8 +144,8 @@ class PipelineEnvironment {
         return new File(workspace, fileInWorkspace).exists()
     }
 
-    boolean canRunPipelineOnDevelop() {
-        return canRunPipeline && branchName == 'develop'
+    boolean canRunPipelineOnDevelop(boolean isLastCommitFromPipeline) {
+        return canRunPipeline && branchName == 'develop' && !isLastCommitFromPipeline
     }
 
     boolean canRunPipelineOnMaster() {

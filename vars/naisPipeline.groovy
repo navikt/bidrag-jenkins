@@ -67,8 +67,8 @@ def call(body) {
                 steps { script { builder.buildAndTest() } }
             }
 
-            stage("bump minor version (when develop)") {
-                when { expression { pipelineEnvironment.canRunPipelineOnDevelop() } }
+            stage("bump minor version (when develop and last commit is not from pipeline)") {
+                when { expression { pipelineEnvironment.canRunPipelineOnDevelop(gitHubArtifact.isLastCommitterFromPipeline()) } }
                 steps { script { gitHubArtifact.updateMinorVersion(builder) } }
             }
 
