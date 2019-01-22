@@ -21,10 +21,12 @@ class PipelineEnvironment {
     String gitHubProjectName
     String homeFolderJenkins
     String lastCommitter
-    String nais
+    String naisBinary
     String workspace
 
+    private String buildId
     private String imageVersion
+    private def build
 
     PipelineEnvironment(String gitHubProjectName, String buildImage, String environment, String buildType) {
         this.gitHubProjectName = gitHubProjectName
@@ -33,8 +35,42 @@ class PipelineEnvironment {
         this.buildType = buildType
     }
 
-    void doNotRunPipeline() {
+    void doNotRunPipeline(String buildId) {
         canRunPipeline = false
+        this.buildId = buildId
+        println("will delete build $buildId on $gitHubProjectName/$branchName")
+    }
+
+    void deleteBuildWhenPipelineIsNotExecuted(def items) {
+        if (!canRunPipeline && buildId != null) {
+            fetchBuild(items)
+            build.delete()
+        }
+    }
+
+    void fetchBuild(def items) {
+        items.each {
+            println("Item: $it")
+
+            if (it.name == gitHubProjectName) {
+                def buildFolder = it.getItemByBranchName(branchName)
+                println("branch: $buildFolder")
+                fetchBuildById(buildFolder, buildId)
+            }
+        }
+
+        if (build == null) {
+            throw new IllegalStateException("unable to find $buildId on $gitHubProjectName/$branchName")
+        }
+    }
+
+    private void fetchBuildById(def buildFolder, String buildId) {
+        buildFolder.getBuilds().each {
+            if (it.getId() == buildId) {
+                println("build: $it, result=$it.result, id=$it.id")
+                build = it
+            }
+        }
     }
 
     boolean isSnapshot() {

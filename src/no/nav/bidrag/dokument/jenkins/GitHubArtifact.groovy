@@ -8,6 +8,10 @@ abstract class GitHubArtifact {
         this.pipelineEnvironment = pipelineEnvironment
     }
 
+    void checkout() {
+        checkout(pipelineEnvironment.branchName)
+    }
+
     void checkout(String branch) {
         String gitHubProjectName = pipelineEnvironment.gitHubProjectName
 

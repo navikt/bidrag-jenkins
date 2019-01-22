@@ -44,14 +44,14 @@ def call(body) {
                         )
 
                         if (isAutomatedBuild && gitHubArtifact.isLastCommitterFromPipeline()) {
-                            pipelineEnvironment.doNotRunPipeline()
+                            pipelineEnvironment.doNotRunPipeline("$BUILD_ID")
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
                             pipelineEnvironment.appConfig = "nais.yaml"
                             pipelineEnvironment.artifactVersion = gitHubArtifact.fetchVersion()
                             pipelineEnvironment.branchName = "$BRANCH_NAME"
                             pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
-                            pipelineEnvironment.nais = "/usr/bin/nais"
+                            pipelineEnvironment.naisBinary = "/usr/bin/nais"
                         }
                     }
                 }
@@ -109,6 +109,7 @@ def call(body) {
                 script {
                     gitHubArtifact.resetWorkspace()
                     dockerImage.deleteImagesNotUsed()
+                    pipelineEnvironment.deleteBuildWhenPipelineIsNotExecuted(Jenkins.instance.items)
                 }
             }
         }

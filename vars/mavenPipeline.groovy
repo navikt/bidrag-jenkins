@@ -30,6 +30,7 @@ def call(body) {
                 steps {
                     script {
                         sh 'env'
+                        pipelineEnvironment.branchName = "$BRANCH_NAME"
                         pipelineEnvironment.homeFolderJenkins = "$HOME"
                         pipelineEnvironment.buildScript = this
                         pipelineEnvironment.workspace = "$WORKSPACE"
@@ -39,11 +40,10 @@ def call(body) {
                         )
 
                         if (isAutomatedBuild && gitHubArtifact.isLastCommitterFromPipeline()) {
-                            pipelineEnvironment.doNotRunPipeline()
+                            pipelineEnvironment.doNotRunPipeline("$BUILD_ID")
                         } else {
-                            gitHubArtifact.checkout("$BRANCH_NAME")
+                            gitHubArtifact.checkout()
                             pipelineEnvironment.artifactVersion = gitHubArtifact.fetchVersion()
-                            pipelineEnvironment.branchName = "$BRANCH_NAME"
                             pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
                         }
                     }
@@ -76,6 +76,7 @@ def call(body) {
             always {
                 script {
                     gitHubArtifact.resetWorkspace()
+                    pipelineEnvironment.deleteBuildWhenPipelineIsNotExecuted(Jenkins.instance.items)
                 }
             }
         }
