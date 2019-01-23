@@ -57,7 +57,7 @@ def call(body) {
                 }
             }
 
-            stage("Verify maven dependency versions") {
+            stage("Verify dependency versions") {
                 when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { builder.verifySnapshotDependencies(gitHubArtifact.fetchBuildDescriptor()) } }
             }
