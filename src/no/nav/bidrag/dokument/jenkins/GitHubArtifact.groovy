@@ -68,12 +68,19 @@ abstract class GitHubArtifact {
     }
 
     boolean isLastCommitterFromPipeline() {
-        pipelineEnvironment.lastCommitter = pipelineEnvironment.buildScript.sh(script: 'git log -1 --pretty=format:"%an (%ae)"', returnStdout: true).trim()
         String commitMessage = pipelineEnvironment.buildScript.sh(script: 'git log -1 --pretty=oneline', returnStdout: true).trim()
-        pipelineEnvironment.println("last commit done by ${pipelineEnvironment.lastCommitter}")
+        pipelineEnvironment.println("last commit done by ${fetchLastCommitter()}")
         pipelineEnvironment.println(commitMessage)
 
         return pipelineEnvironment.lastCommitter.contains('navikt-ci')
+    }
+
+    String fetchLastCommitter() {
+        if (pipelineEnvironment.lastCommitter == null) {
+            pipelineEnvironment.lastCommitter = pipelineEnvironment.buildScript.sh(script: 'git log -1 --pretty=format:"%an (%ae)"', returnStdout: true).trim()
+        }
+
+        return pipelineEnvironment.lastCommitter
     }
 
     void updateMinorVersion(Builder builder) {
@@ -98,7 +105,7 @@ abstract class GitHubArtifact {
             pipelineEnvironment.execute("echo", "[INFO] bumping major version in develop ($developMajorVersion) from version in master ($masterMajorVersion)")
 
             builder.updateVersion(nextVersion)
-            pipelineEnvironment.buildScript.sh "git commit -a -m \"updated to new major version ${nextVersion} after release by ${pipelineEnvironment.lastCommitter}\""
+            pipelineEnvironment.buildScript.sh "git commit -a -m \"updated to new major version ${nextVersion} after release by ${fetchLastCommitter()}\""
             pipelineEnvironment.buildScript.sh "git push"
 
             pipelineEnvironment.artifactVersion = nextVersion.replace("-SNAPSHOT", "")
