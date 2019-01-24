@@ -17,7 +17,7 @@ class PipelineEnvironment {
     String buildImage
     String buildType
     String dockerRepo
-    String environment
+    String environmentInDevelopBranch
     String gitHubProjectName
     String homeFolderJenkins
     String lastCommitter
@@ -28,10 +28,10 @@ class PipelineEnvironment {
     private String imageVersion
     private def build
 
-    PipelineEnvironment(String gitHubProjectName, String buildImage, String environment, String buildType) {
+    PipelineEnvironment(String gitHubProjectName, String buildImage, String environmentInDevelopBranch, String buildType) {
         this.gitHubProjectName = gitHubProjectName
         this.buildImage = buildImage
-        this.environment = environment
+        this.environmentInDevelopBranch = environmentInDevelopBranch
         this.buildType = buildType
     }
 
@@ -86,8 +86,8 @@ class PipelineEnvironment {
     }
 
     String fetchEnvironment() {
-        if (environment != null) {
-            return environment
+        if (environmentInDevelopBranch != null && isDevelop()) {
+            return environmentInDevelopBranch
         }
 
         return isMaster() ? "q4" : isDevelop() ? "q0" : "q1"

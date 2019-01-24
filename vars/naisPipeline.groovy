@@ -17,7 +17,7 @@ def call(body) {
     PipelineEnvironment pipelineEnvironment = new PipelineEnvironment(
             pipelineParams.gitHubProjectName,
             pipelineParams.buildImage,
-            pipelineParams.environment,
+            pipelineParams.environmentInDevelopBranch,
             pipelineParams.buildType
     )
 
