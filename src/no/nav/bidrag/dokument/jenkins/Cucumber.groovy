@@ -14,7 +14,7 @@ class Cucumber {
         try {
             if (pipelineEnvironment.fileExists('cucumber')) {
                 pipelineEnvironment.println("[INFO] Run cucumber tests")
-                sleep(10)
+                sleep(10000)
 
                 try {
                     pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
