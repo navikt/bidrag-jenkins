@@ -1,9 +1,9 @@
-import no.nav.bidrag.dokument.jenkins.Builder
-import no.nav.bidrag.dokument.jenkins.Cucumber
-import no.nav.bidrag.dokument.jenkins.DockerImage
-import no.nav.bidrag.dokument.jenkins.GitHubArtifact
-import no.nav.bidrag.dokument.jenkins.Nais
-import no.nav.bidrag.dokument.jenkins.PipelineEnvironment
+import no.nav.bidrag.jenkins.Builder
+import no.nav.bidrag.jenkins.Cucumber
+import no.nav.bidrag.jenkins.DockerImage
+import no.nav.bidrag.jenkins.GitHubArtifact
+import no.nav.bidrag.jenkins.Nais
+import no.nav.bidrag.jenkins.PipelineEnvironment
 
 def call(body) {
 

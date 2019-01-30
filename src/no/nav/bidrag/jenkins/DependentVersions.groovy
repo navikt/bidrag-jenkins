@@ -1,4 +1,4 @@
-package no.nav.bidrag.dokument.jenkins
+package no.nav.bidrag.jenkins
 
 class DependentVersions {
     static void verify(pom) {

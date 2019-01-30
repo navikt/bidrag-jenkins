@@ -1,8 +1,8 @@
-import no.nav.bidrag.dokument.jenkins.DependentVersions
-import no.nav.bidrag.dokument.jenkins.GitHubArtifact
-import no.nav.bidrag.dokument.jenkins.PipelineEnvironment
-import no.nav.bidrag.dokument.jenkins.maven.GitHubMavenArtifact
-import no.nav.bidrag.dokument.jenkins.maven.MavenBuilder
+import no.nav.bidrag.jenkins.DependentVersions
+import no.nav.bidrag.jenkins.GitHubArtifact
+import no.nav.bidrag.jenkins.PipelineEnvironment
+import no.nav.bidrag.jenkins.maven.GitHubMavenArtifact
+import no.nav.bidrag.jenkins.maven.MavenBuilder
 
 def call(body) {
 

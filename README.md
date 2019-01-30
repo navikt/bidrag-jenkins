@@ -1,4 +1,4 @@
-# bidrag-dokument-jenkins
+# bidrag-jenkins
 
 This is the shared library for automated continuous integration for bidrag-dokument.
 

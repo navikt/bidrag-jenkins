@@ -1,10 +1,10 @@
-package no.nav.bidrag.dokument.jenkins
+package no.nav.bidrag.jenkins
 
-import no.nav.bidrag.dokument.jenkins.maven.GitHubMavenArtifact
-import no.nav.bidrag.dokument.jenkins.maven.MavenBuilder
+import no.nav.bidrag.jenkins.maven.GitHubMavenArtifact
+import no.nav.bidrag.jenkins.maven.MavenBuilder
 
-import no.nav.bidrag.dokument.jenkins.node.GitHubNodeArtifact
-import no.nav.bidrag.dokument.jenkins.node.NodeBuilder
+import no.nav.bidrag.jenkins.node.GitHubNodeArtifact
+import no.nav.bidrag.jenkins.node.NodeBuilder
 
 class PipelineEnvironment {
 

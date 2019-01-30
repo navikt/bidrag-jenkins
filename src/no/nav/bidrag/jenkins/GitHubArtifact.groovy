@@ -1,4 +1,4 @@
-package no.nav.bidrag.dokument.jenkins
+package no.nav.bidrag.jenkins
 
 abstract class GitHubArtifact {
     protected def buildDescriptor

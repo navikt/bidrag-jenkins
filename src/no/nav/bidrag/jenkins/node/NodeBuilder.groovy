@@ -1,7 +1,7 @@
-package no.nav.bidrag.dokument.jenkins.node
+package no.nav.bidrag.jenkins.node
 
-import no.nav.bidrag.dokument.jenkins.Builder
-import no.nav.bidrag.dokument.jenkins.PipelineEnvironment
+import no.nav.bidrag.jenkins.Builder
+import no.nav.bidrag.jenkins.PipelineEnvironment
 
 class NodeBuilder implements Builder {
     private PipelineEnvironment pipelineEnvironment
