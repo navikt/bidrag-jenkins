@@ -35,6 +35,7 @@ def call(body) {
                 steps {
                     script {
                         sh 'env'
+                        pipelineEnvironment.branchName = "$BRANCH_NAME"
                         pipelineEnvironment.homeFolderJenkins = "$HOME"
                         pipelineEnvironment.buildScript = this
                         pipelineEnvironment.workspace = "$WORKSPACE"
@@ -49,7 +50,6 @@ def call(body) {
                             gitHubArtifact.checkout("$BRANCH_NAME")
                             pipelineEnvironment.appConfig = "nais.yaml"
                             pipelineEnvironment.artifactVersion = gitHubArtifact.fetchVersion()
-                            pipelineEnvironment.branchName = "$BRANCH_NAME"
                             pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
                             pipelineEnvironment.naisBinary = "/usr/bin/nais"
                         }
