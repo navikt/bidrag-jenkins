@@ -16,7 +16,7 @@ class Cucumber {
 
         while(maxRetries-- > 0) {
 
-            println "#${maxRetries} Running ${kubectl}"
+            println "#${maxRetries} Running kubectl"
 
             /*
             NAME                               READY     STATUS    RESTARTS   AGE
