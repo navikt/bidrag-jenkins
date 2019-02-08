@@ -24,6 +24,7 @@ class PipelineEnvironment {
     String naisBinary
     String workspace
 
+    private GitHubArtifact githubArtifact
     private String buildId
     private String imageVersion
     private def build
@@ -140,10 +141,6 @@ class PipelineEnvironment {
         return naisCluster() == 'prod-fss'
     }
 
-    boolean fileExists(String fileInWorkspace) {
-        return new File(workspace, fileInWorkspace).exists()
-    }
-
     boolean canRunPipelineOnDevelop(boolean isLastCommitFromPipeline) {
         return canRunPipeline && branchName == 'develop' && !isLastCommitFromPipeline
     }
@@ -169,12 +166,18 @@ class PipelineEnvironment {
     }
 
     GitHubArtifact initGitHubArtifact() {
-        if (buildType == null || buildType == 'maven') {
-            return new GitHubMavenArtifact(this)
+        if (githubArtifact == null) {
+            if (buildType == null || buildType == 'maven') {
+                githubArtifact = new GitHubMavenArtifact(this)
+            }
+
+            if (buildType == 'node') {
+                githubArtifact = new GitHubNodeArtifact(this)
+            }
         }
 
-        if (buildType == 'node') {
-            return new GitHubNodeArtifact(this)
+        if (githubArtifact != null) {
+            return githubArtifact
         }
 
         throw new IllegalStateException("unknown build type: " + buildType)
@@ -182,5 +185,9 @@ class PipelineEnvironment {
 
     static boolean isAutmatedBuild(def userId) {
         return userId == null
+    }
+
+    void checkoutCucumberFeatureOrUseMaster() {
+        initGitHubArtifact().checkoutCucumber(branchName)
     }
 }

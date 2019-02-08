@@ -12,22 +12,6 @@ abstract class GitHubArtifact {
         checkout(pipelineEnvironment.branchName)
     }
 
-    void checkoutCucumber(String branch) {
-        String gitHubProjectName = "bidrag-cucumber"
-
-        pipelineEnvironment.buildScript.withCredentials(
-                [[$class: 'UsernamePasswordMultiBinding', credentialsId: 'jenkinsPipeline', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-            pipelineEnvironment.buildScript.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
-                pipelineEnvironment.buildScript.sh(script: "git clone https://${pipelineEnvironment.buildScript.USERNAME}:${pipelineEnvironment.buildScript.PASSWORD}@github.com/navikt/${gitHubProjectName}.git bidrag-cucumber")
-
-                # TODO: Gjør smart testing på branch for å sjekke ut riktig cucumber branch ...
-                pipelineEnvironment.buildScript.sh "echo '****** BRANCH ******'"
-                pipelineEnvironment.buildScript.sh "echo 'BRANCH CHECKOUT: ${branch}'......"
-                pipelineEnvironment.buildScript.sh(script: "git checkout ${branch}")
-            }
-        }
-    }
-
     void checkout(String branch) {
         String gitHubProjectName = pipelineEnvironment.gitHubProjectName
 
@@ -40,6 +24,22 @@ abstract class GitHubArtifact {
                 pipelineEnvironment.buildScript.sh "echo '****** BRANCH ******'"
                 pipelineEnvironment.buildScript.sh "echo 'BRANCH CHECKOUT: ${branch}'......"
                 pipelineEnvironment.buildScript.sh(script: "git checkout ${branch}")
+            }
+        }
+    }
+
+    void checkoutCucumber(String branch) {
+        pipelineEnvironment.buildScript.withCredentials(
+                [[$class: 'UsernamePasswordMultiBinding', credentialsId: 'jenkinsPipeline', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+            pipelineEnvironment.buildScript.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
+                pipelineEnvironment.buildScript.sh(script: "git clone https://${pipelineEnvironment.buildScript.USERNAME}:${pipelineEnvironment.buildScript.PASSWORD}@github.com/navikt/bidrag-cucumber.git bidrag-cucumber")
+
+                pipelineEnvironment.buildScript.sh "cd bidrag-cucumber"
+                pipelineEnvironment.buildScript.sh "echo '****** BRANCH ******'"
+                pipelineEnvironment.buildScript.sh "echo 'BRANCH CHECKOUT: ${branch}'......"
+                pipelineEnvironment.buildScript.sh(script: "git checkout ${branch}")
+
+                // hvis branch ikke finnes, så kjører den på default clonet branch (master)
             }
         }
     }
