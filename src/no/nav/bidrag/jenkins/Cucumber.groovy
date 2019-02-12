@@ -11,27 +11,25 @@ class Cucumber {
         String result = 'SUCCESS'
 
         // Only throw an exception when cucumber miss json file, else only fail this step
-        try {
-            pipelineEnvironment.println("[INFO] Run cucumber tests")
-            sleep(10000)
+        pipelineEnvironment.println("[INFO] Run cucumber tests")
+        sleep(10000)
 
-            pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+        pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
 
-                try {
-                    runBidragCucumberWithDocker()
-                } catch (Exception e) {
-                    pipelineEnvironment.println('Unstable build: ' + e)
-                    result = 'UNSTABLE'
-                }
-
-                writeCucumberReports()
-            } catch (Exception e ) {
-                pipelineEnvironment.println("Failed build: " + e)
-                result = 'FAIL'
+            try {
+                runBidragCucumberWithDocker()
+            } catch (Exception e) {
+                pipelineEnvironment.println('Unstable build: ' + e)
+                result = 'UNSTABLE'
             }
 
-            return result
+            writeCucumberReports()
+        } catch (Exception e ) {
+            pipelineEnvironment.println("Failed build: " + e)
+            result = 'FAIL'
         }
+
+        return result
     }
 
     private void runBidragCucumberWithDocker() {
