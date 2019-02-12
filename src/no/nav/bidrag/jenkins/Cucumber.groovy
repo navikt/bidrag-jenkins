@@ -39,12 +39,13 @@ class Cucumber {
         // GitHubArtifact will do the magic of matching current branch to bidrag-cucumber branch
         pipelineEnvironment.checkoutCucumberFeatureOrUseMaster()
 
-        // Instead of linking ./cucumber to the container link the project specific sub-dir to run test for current project (-v param)
+        // Set 'project' env variable to select features prefixed with project name
         pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
             pipelineEnvironment.execute(
                     "docker run --rm -e environment=${pipelineEnvironment.fetchEnvironment()} " +
                             "-e fasit_user=${pipelineEnvironment.buildScript.USERNAME} -e fasit_pass='${pipelineEnvironment.buildScript.PASSWORD}' " +
-                            "-v ${pipelineEnvironment.workspace}/bidrag-cucumber/cucumber/${pipelineEnvironment.gitHubProjectName}:/cucumber bidrag-cucumber"
+                            "-e project=${pipelineEnvironment.gitHubProjectName}" +
+                            "-v ${pipelineEnvironment.workspace}/bidrag-cucumber/cucumber:/cucumber bidrag-cucumber"
             )
         }
     }
