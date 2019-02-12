@@ -40,7 +40,7 @@ abstract class GitHubArtifact {
 
                 // ingen retur status til jenkins - param false
                 // det betyr at hvis branch ikke finnes, så kjører den på default clonet branch (master)
-                pipelineEnvironment.buildScript.sh(script: "git checkout ${branch}", false)
+                pipelineEnvironment.buildScript.sh(script: "git checkout ${branch}", returnStatus:false)
             }
         }
     }
