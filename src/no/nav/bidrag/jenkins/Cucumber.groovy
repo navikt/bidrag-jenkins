@@ -14,13 +14,14 @@ class Cucumber {
         pipelineEnvironment.println("[INFO] Run cucumber tests")
         sleep(10000)
 
-        pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-
-            try {
-                runBidragCucumberWithDocker()
-            } catch (Exception e) {
-                pipelineEnvironment.println('Unstable build: ' + e)
-                result = 'UNSTABLE'
+        try {
+            pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                try {
+                    runBidragCucumberWithDocker()
+                } catch (Exception e) {
+                    pipelineEnvironment.println('Unstable build: ' + e)
+                    result = 'UNSTABLE'
+                }
             }
 
             writeCucumberReports()
