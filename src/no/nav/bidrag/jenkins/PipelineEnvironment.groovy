@@ -188,6 +188,6 @@ class PipelineEnvironment {
     }
 
     void checkoutCucumberFeatureOrUseMaster() {
-        initGitHubArtifact().checkoutCucumber(branchName)
+        initGitHubArtifact().checkoutCucumberFeatureOrUseMaster(branchName)
     }
 }

@@ -28,7 +28,7 @@ abstract class GitHubArtifact {
         }
     }
 
-    void checkoutCucumber(String branch) {
+    void checkoutCucumberFeatureOrUseMaster(String branch) {
         pipelineEnvironment.buildScript.withCredentials(
                 [[$class: 'UsernamePasswordMultiBinding', credentialsId: 'jenkinsPipeline', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
             pipelineEnvironment.buildScript.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
@@ -37,9 +37,10 @@ abstract class GitHubArtifact {
                 pipelineEnvironment.buildScript.sh "cd bidrag-cucumber"
                 pipelineEnvironment.buildScript.sh "echo '****** BRANCH ******'"
                 pipelineEnvironment.buildScript.sh "echo 'BRANCH CHECKOUT: ${branch}'......"
-                pipelineEnvironment.buildScript.sh(script: "git checkout ${branch}")
 
-                // hvis branch ikke finnes, så kjører den på default clonet branch (master)
+                // ingen retur status til jenkins - param false
+                // det betyr at hvis branch ikke finnes, så kjører den på default clonet branch (master)
+                pipelineEnvironment.buildScript.sh(script: "git checkout ${branch}", false)
             }
         }
     }
