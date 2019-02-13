@@ -51,7 +51,7 @@ class Cucumber {
 
     private void writeCucumberReports() {
         pipelineEnvironment.buildScript.cucumber buildStatus: 'UNSTABLE',
-                fileIncludePattern: 'cucumber/*.json',
+                fileIncludePattern: 'bidrag-cucumber/cucumber/*.json',
                 trendsLimit: 10,
                 classifications: [
                         [
