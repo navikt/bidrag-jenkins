@@ -33,8 +33,9 @@ class MavenBuilder implements Builder {
     }
 
     String deployArtifact() {
+        String stableVersion = pipelineEnvironment.fetchStableVersion()
+
         try {
-            String stableVersion = pipelineEnvironment.fetchStableVersion()
             pipelineEnvironment.println("gitHubArtifact: ${pipelineEnvironment.gitHubProjectName}")
             pipelineEnvironment.println("deploying maven artifact ($stableVersion).")
             updateVersion(stableVersion)
@@ -49,6 +50,9 @@ class MavenBuilder implements Builder {
 
             return 'UNSTABLE'
         }
+
+        pipelineEnvironment.execute "git tag -a $stableVersion -m $stableVersion"
+        pipelineEnvironment.execute "git push --tags"
 
         return 'SUCCESS'
     }
