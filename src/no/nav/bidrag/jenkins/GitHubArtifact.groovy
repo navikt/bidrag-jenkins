@@ -23,6 +23,7 @@ abstract class GitHubArtifact {
                 pipelineEnvironment.buildScript.sh(script: "git clone https://${pipelineEnvironment.buildScript.USERNAME}:${pipelineEnvironment.buildScript.PASSWORD}@github.com/navikt/${gitHubProjectName}.git .")
                 pipelineEnvironment.buildScript.sh "echo '****** BRANCH ******'"
                 pipelineEnvironment.buildScript.sh "echo 'BRANCH CHECKOUT: ${branch}'......"
+                pipelineEnvironment.buildScript.sh "echo 'BRANCH CHECKOUT: ${branch}'......"
                 pipelineEnvironment.buildScript.sh(script: "git checkout ${branch}")
             }
         }
@@ -35,12 +36,13 @@ abstract class GitHubArtifact {
                 pipelineEnvironment.buildScript.sh(script: "git clone https://${pipelineEnvironment.buildScript.USERNAME}:${pipelineEnvironment.buildScript.PASSWORD}@github.com/navikt/bidrag-cucumber.git bidrag-cucumber")
 
                 pipelineEnvironment.buildScript.sh "cd bidrag-cucumber"
+                pipelineEnvironment.buildScript.sh "echo 'pwd:' && pwd"
                 pipelineEnvironment.buildScript.sh "echo '****** BRANCH ******'"
                 pipelineEnvironment.buildScript.sh "echo 'BRANCH CHECKOUT: ${branch}'......"
 
                 // ingen retur status til jenkins - param false
                 // det betyr at hvis branch ikke finnes, så kjører den på default clonet branch (master)
-                pipelineEnvironment.buildScript.sh(script: "git checkout ${branch}", returnStatus:false)
+                pipelineEnvironment.buildScript.sh(script: "git checkout ${branch}", returnStatus: false)
             }
         }
     }
