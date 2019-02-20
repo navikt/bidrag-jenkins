@@ -32,8 +32,8 @@ abstract class GitHubArtifact {
         pipelineEnvironment.buildScript.withCredentials(
                 [[$class: 'UsernamePasswordMultiBinding', credentialsId: 'jenkinsPipeline', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
             pipelineEnvironment.buildScript.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
-                pipelineEnvironment.buildScript.sh(script:
-                        "./cloneBidragCucumberBranch.sh ${pipelineEnvironment.buildScript.USERNAME} ${pipelineEnvironment.buildScript.PASSWORD} ${branch}"
+                pipelineEnvironment.buildScript.sh(script: "${pipelineEnvironment.workspace}@libs/bidrag-jenkins/resources/no/nav/bidrag/jenkins/cloneBidragCucumberBranch.sh " +
+                        "${pipelineEnvironment.buildScript.USERNAME} ${pipelineEnvironment.buildScript.PASSWORD} ${branch}"
                 )
             }
         }
