@@ -33,16 +33,9 @@ abstract class GitHubArtifact {
         pipelineEnvironment.buildScript.withCredentials(
                 [[$class: 'UsernamePasswordMultiBinding', credentialsId: 'jenkinsPipeline', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
             pipelineEnvironment.buildScript.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
-                pipelineEnvironment.buildScript.sh(script: "git clone https://${pipelineEnvironment.buildScript.USERNAME}:${pipelineEnvironment.buildScript.PASSWORD}@github.com/navikt/bidrag-cucumber.git bidrag-cucumber")
-
-                pipelineEnvironment.buildScript.sh "cd bidrag-cucumber"
-                pipelineEnvironment.buildScript.sh "echo 'pwd:' && pwd"
-                pipelineEnvironment.buildScript.sh "echo '****** BRANCH ******'"
-                pipelineEnvironment.buildScript.sh "echo 'BRANCH CHECKOUT: ${branch}'......"
-
-                // ingen retur status til jenkins - param false
-                // det betyr at hvis branch ikke finnes, så kjører den på default clonet branch (master)
-                pipelineEnvironment.buildScript.sh(script: "git checkout ${branch}", returnStatus: false)
+                pipelineEnvironment.buildScript.sh(script:
+                        "cloneBidragCucumberBranch ${pipelineEnvironment.buildScript.USERNAME} ${pipelineEnvironment.buildScript.PASSWORD} ${branch}"
+                )
             }
         }
     }
