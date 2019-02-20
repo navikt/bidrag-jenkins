@@ -8,9 +8,8 @@ if [[ ${STATUS} -eq 0 ]]
   CUCUMBER_BRANCH=$2
 
   cd bidrag-cucumber
-  echo 'pwd:' && pwd
-  echo '****** BRANCH ******'
-  echo 'BRANCH CHECKOUT: '${CUCUMBER_BRANCH}
+  echo 'cloned bidrag-cucumber master to: '${PWD}
+  echo 'checkout cucumber branch "'${CUCUMBER_BRANCH}'" for integration testing'
 
   git checkout ${CUCUMBER_BRANCH}
   exit 0
