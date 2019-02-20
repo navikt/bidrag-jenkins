@@ -5,7 +5,7 @@ STATUS=$?
 
 if [[ ${STATUS} -eq 0 ]]
   then
-  CUCUMBER_BRANCH=$2
+  CUCUMBER_BRANCH=$3
 
   cd bidrag-cucumber
   echo 'cloned bidrag-cucumber master to: '${PWD}
