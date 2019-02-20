@@ -5,12 +5,14 @@ STATUS=$?
 
 if [[ ${STATUS} -eq 0 ]]
   then
+  CUCUMBER_BRANCH=$2
+
   cd bidrag-cucumber
   echo 'pwd:' && pwd
   echo '****** BRANCH ******'
-  echo 'BRANCH CHECKOUT: $2......'
+  echo 'BRANCH CHECKOUT: '${CUCUMBER_BRANCH}
 
-  git checkout $2
+  git checkout ${CUCUMBER_BRANCH}
   exit 0
 fi
 
