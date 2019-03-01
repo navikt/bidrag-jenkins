@@ -47,7 +47,7 @@ class Cucumber {
                     "docker run --rm -e environment=${pipelineEnvironment.fetchEnvironment()} " +
                             "-e fasit_user=${pipelineEnvironment.buildScript.USERNAME} -e fasit_pass='${pipelineEnvironment.buildScript.PASSWORD}' " +
                             "-e test_user=${pipelineEnvironment.buildScript.TEST_USER} -e test_pass='${pipelineEnvironment.buildScript.TEST_PASS}' " +
-                            "-e project=${pipelineEnvironment.gitHubProjectName} " +
+                            "-e project=${pipelineEnvironment.gitHubProjectName}. " +
                             "-v ${pipelineEnvironment.workspace}/bidrag-cucumber/cucumber:/cucumber bidrag-cucumber"
             )
         }
