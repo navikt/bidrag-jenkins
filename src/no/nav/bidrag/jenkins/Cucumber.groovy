@@ -40,8 +40,8 @@ class Cucumber {
 
         // Set 'project' env variable to select features prefixed with project name
         pipelineEnvironment.buildScript.withCredentials([
-                usernamePassword(credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'),
-                usernamePassword(credentialsId: 'testUser', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS')
+                [$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'],
+                [$class: 'UsernamePasswordMultiBinding', credentialsId: 'testUser', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS']
             ]) {
             pipelineEnvironment.execute(
                     "docker run --rm -e environment=${pipelineEnvironment.fetchEnvironment()} " +
