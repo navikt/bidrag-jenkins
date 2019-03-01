@@ -94,8 +94,8 @@ class PipelineEnvironment {
         return isMaster() ? "q4" : isDevelop() ? "q0" : "q1"
     }
 
-    String naisCluster() {
-        return isMaster() ? 'preprod-fss' : 'preprod-fss' // until first version is released, master goes to preprod
+    static String naisCluster() {
+        return 'preprod-fss'
     }
 
     String fetchImageVersion() {
@@ -137,20 +137,8 @@ class PipelineEnvironment {
         return isDevelop() ? "default" : fetchEnvironment()
     }
 
-    private boolean isProd() {
-        return naisCluster() == 'prod-fss'
-    }
-
     boolean canRunPipelineOnDevelop(boolean isLastCommitFromPipeline) {
         return canRunPipeline && branchName == 'develop' && !isLastCommitFromPipeline
-    }
-
-    boolean canRunPipelineOnMaster() {
-        return canRunPipeline && isMaster()
-    }
-
-    boolean canRunPipelineOnMasterAndNaisClusterIsProdFss() {
-        return canRunPipelineOnMaster() && isProd()
     }
 
     Builder initBuilder() {

@@ -106,25 +106,6 @@ abstract class GitHubArtifact {
         pipelineEnvironment.artifactVersion = nextVersion
     }
 
-    void updateMajorVersion(Builder builder) {
-        String masterMajorVersion = fetchMajorVersion()
-        String developMajorVersion = fetchMajorVersion(readBuildDescriptorFromSourceCode())
-
-        // only bump major version if not previously bumped...
-        if (masterMajorVersion == developMajorVersion) {
-            String nextVersion = (masterMajorVersion.toFloat() + 1) + ".0-SNAPSHOT"
-            pipelineEnvironment.execute("echo", "[INFO] bumping major version in develop ($developMajorVersion) from version in master ($masterMajorVersion)")
-
-            builder.updateVersion(nextVersion)
-            pipelineEnvironment.buildScript.sh "git commit -a -m \"updated to new major version ${nextVersion} after release by ${fetchLastCommitter()}\""
-            pipelineEnvironment.buildScript.sh "git push"
-
-            pipelineEnvironment.artifactVersion = nextVersion.replace("-SNAPSHOT", "")
-        } else {
-            pipelineEnvironment.println("[INFO] do not bump major version in develop ($developMajorVersion) from version in master ($masterMajorVersion)")
-        }
-    }
-
     void resetWorkspace() {
         pipelineEnvironment.execute("cd ${pipelineEnvironment.workspace}")
         pipelineEnvironment.execute("git reset --hard")

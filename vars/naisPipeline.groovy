@@ -67,20 +67,10 @@ def call(body) {
                 steps { script { builder.buildAndTest() } }
             }
 
+            // major versions are always edited manually: todo: tag final versions when master...
             stage("bump minor version (when develop and last commit is not from pipeline)") {
                 when { expression { pipelineEnvironment.canRunPipelineOnDevelop(gitHubArtifact.isLastCommitterFromPipeline()) } }
                 steps { script { gitHubArtifact.updateMinorVersion(builder) } }
-            }
-
-            stage("bump major version (when master and prod)") {
-                when { expression { pipelineEnvironment.canRunPipelineOnMasterAndNaisClusterIsProdFss() } }
-                steps {
-                    script {
-                        gitHubArtifact.checkout('develop')
-                        gitHubArtifact.updateMajorVersion(builder)
-                        gitHubArtifact.checkout('master')
-                    }
-                }
             }
 
             stage("release and publish docker image") {
