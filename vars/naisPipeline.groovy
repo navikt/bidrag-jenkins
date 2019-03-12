@@ -100,6 +100,7 @@ def call(body) {
                     gitHubArtifact.resetWorkspace()
                     dockerImage.deleteImagesNotUsed()
                     pipelineEnvironment.deleteBuildWhenPipelineIsNotExecuted(Jenkins.instance.items)
+                    sh (script:"chown -R jenkins.jenkins ${pipelineEnvironment.workspace}", returnStatus:true)
                 }
             }
         }
