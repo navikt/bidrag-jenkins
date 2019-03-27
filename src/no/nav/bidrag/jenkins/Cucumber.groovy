@@ -43,12 +43,16 @@ class Cucumber {
                 [$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'],
                 [$class: 'UsernamePasswordMultiBinding', credentialsId: 'testUser', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS']
             ]) {
+            pipelineEnvironment.buildScript.dir('bidrag-cucumber') {
+                pipelineEnvironment.execute('npm install')
+            }
             pipelineEnvironment.execute(
                     "docker run --rm -e environment=${pipelineEnvironment.fetchEnvironment()} " +
+                            "-e NODE_TLS_REJECT_UNAUTHORIZED=0 " +
                             "-e fasit_user=${pipelineEnvironment.buildScript.USERNAME} -e fasit_pass='${pipelineEnvironment.buildScript.PASSWORD}' " +
                             "-e test_user=${pipelineEnvironment.buildScript.TEST_USER} -e test_pass='${pipelineEnvironment.buildScript.TEST_PASS}' " +
                             "-e project=${pipelineEnvironment.gitHubProjectName}. " +
-                            "-v ${pipelineEnvironment.workspace}/bidrag-cucumber/cucumber:/cucumber bidrag-cucumber"
+                            "-v ${pipelineEnvironment.workspace}/bidrag-cucumber:/src -w src node:latest npm start"
             )
         }
     }
