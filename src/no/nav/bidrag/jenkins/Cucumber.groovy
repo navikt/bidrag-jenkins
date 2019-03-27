@@ -52,7 +52,7 @@ class Cucumber {
                             "-e fasit_user=${pipelineEnvironment.buildScript.USERNAME} -e fasit_pass='${pipelineEnvironment.buildScript.PASSWORD}' " +
                             "-e test_user=${pipelineEnvironment.buildScript.TEST_USER} -e test_pass='${pipelineEnvironment.buildScript.TEST_PASS}' " +
                             "-e project=${pipelineEnvironment.gitHubProjectName}. " +
-                            "-v ${pipelineEnvironment.workspace}/bidrag-cucumber:/src -w src node:latest npm start"
+                            "-v ${pipelineEnvironment.workspace}/bidrag-cucumber:/src -w /src node:latest npm start"
             )
         }
     }
