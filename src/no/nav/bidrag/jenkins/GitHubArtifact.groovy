@@ -86,6 +86,10 @@ abstract class GitHubArtifact {
         return pipelineEnvironment.lastCommitter.contains('navikt-ci')
     }
 
+    boolean isNotLastCommitterFromPipeline() {
+        return !isLastCommitterFromPipeline()
+    }
+
     String fetchLastCommitter() {
         if (pipelineEnvironment.lastCommitter == null) {
             pipelineEnvironment.lastCommitter = pipelineEnvironment.buildScript.sh(script: 'git log -1 --pretty=format:"%an (%ae)"', returnStdout: true).trim()

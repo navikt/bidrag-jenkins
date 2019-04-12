@@ -62,7 +62,7 @@ def call(body) {
 
             // major version is always bumbed manual in develop for nexus artifacts
             stage("bump minor version (when last commit is not pipeline)") {
-                when { expression { pipelineEnvironment.isMaster() && gitHubArtifact.isLastCommitterFromPipeline() } }
+                when { expression { pipelineEnvironment.isMaster() && gitHubArtifact.isNotLastCommitterFromPipeline() } }
                 steps { script { gitHubArtifact.updateMinorVersion(mavenBuilder) } }
             }
 
