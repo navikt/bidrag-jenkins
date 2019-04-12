@@ -30,8 +30,9 @@ Descriptions of pipelines:
    platform
   - before any code is submitted to the production area, all branches will be deployed
    to the "nais cluster" called pre-prod
-  - the master branch will be deployed the to q0 environment under the default namespace
+  - the master branch will be deployed the to q4 environment using the namespace q4
    (kubernetes)
   - the develop branch will be deployed to the q0 environment under the default namespace
    (kubernetes)
-  - the feature branches will be dployed to the t0 environment using the namespace t0
+  - the feature branches will be deployed to the q1 environment using the namespace q1
+   (kubernetes)
