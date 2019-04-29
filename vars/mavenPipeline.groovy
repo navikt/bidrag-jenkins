@@ -60,7 +60,7 @@ def call(body) {
                 steps { script { mavenBuilder.buildAndTest() } }
             }
 
-            // major/minor version is always bumbed manual in develop for nexus artifacts
+            // major/minor version is always bumped manual in develop for nexus artifacts
             stage("bump patch version on develop (when not pipeline commit)") {
                 when { expression { pipelineEnvironment.isMaster() && gitHubArtifact.isNotLastCommitterFromPipeline() } }
                 steps { script { gitHubArtifact.updateMinorVersion(mavenBuilder) } }
