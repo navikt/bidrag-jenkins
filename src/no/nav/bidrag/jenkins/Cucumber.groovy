@@ -26,6 +26,7 @@ class Cucumber {
             Integer oldpods = 0
             Integer newpods = 0
             String str = pipelineEnvironment.buildScript.sh(script: "kubectl -n ${ns} get pod -l app=${app}", returnStdout:true)
+            pipelineEnvironment.println str
             str.tokenize("\n").each {
                 List line = it.tokenize(" ")
                 if(line.size() == 5) {
@@ -33,7 +34,6 @@ class Cucumber {
                     String status = line.get(2)
                     if(status == "Running") {
                         String desc = pipelineEnvironment.buildScript.sh(script: "kubectl -n ${ns} describe pod ${podId}", returnStdout:true)
-                        pipelineEnvironment.println desc
                         desc.tokenize("\n").each {
                             // APP_VERSION:                   1.0.176-SNAPSHOT-q0-16899879708
                             if(it.trim().startsWith("APP_VERSION:")) {
@@ -41,15 +41,15 @@ class Cucumber {
                                 if(appVersion != currentImageVersion) {
                                     oldpods++
                                 } else {
-                                    pipelineEnvironment.println "Fant ${podId} med forventet APP_VERSION ${appVersion}"
                                     newpods++
                                 }
                             }
                         }
-                        pipelineEnvironment.println "Gamle PODer: ${oldpods}, Nye PODer: ${newpods}"
                     }
                 }
             }
+            pipelineEnvironment.println "Gamle PODer: ${oldpods}, Nye PODer: ${newpods}"
+            
             // Vent til alle gamle poder er stoppet og minst en ny går før retur
             if(oldpods == 0 && newpods > 0) {
                 return true
