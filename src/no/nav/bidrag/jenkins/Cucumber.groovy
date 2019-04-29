@@ -11,7 +11,7 @@ class Cucumber {
         String app = pipelineEnvironment.gitHubProjectName
         String currentImageVersion = pipelineEnvironment.fetchImageVersion()
         String ns = pipelineEnvironment.fetchNamespace()
-        Integer sleepInterval = 5000
+        Integer sleepInterval = 15000
         Integer maxRetries = 20
 
         while(maxRetries-- > 0) {
@@ -33,12 +33,12 @@ class Cucumber {
                     String status = line.get(2)
                     if(status == "Running") {
                         String desc = pipelineEnvironment.buildScript.sh(script: "kubectl -n ${ns} describe pod ${podId}", returnStdout:true)
+                        pipelineEnvironment.println desc
                         desc.tokenize("\n").each {
                             // APP_VERSION:                   1.0.176-SNAPSHOT-q0-16899879708
                             if(it.trim().startsWith("APP_VERSION:")) {
                                 String appVersion = it.tokenize(':').get(1).trim()
                                 if(appVersion != currentImageVersion) {
-                                    pipelineEnvironment.println "Fant ${podId} med gammel APP_VERSION ${appVersion}"
                                     oldpods++
                                 } else {
                                     pipelineEnvironment.println "Fant ${podId} med forventet APP_VERSION ${appVersion}"
@@ -46,6 +46,7 @@ class Cucumber {
                                 }
                             }
                         }
+                        pipelineEnvironment.println "Gamle PODer: ${oldpods}, Nye PODer: ${newpods}"
                     }
                 }
             }
@@ -53,7 +54,6 @@ class Cucumber {
             if(oldpods == 0 && newpods > 0) {
                 return true
             }
-            println "Sleeping ${sleepInterval}"
             sleep(sleepInterval)
         }
         return false
