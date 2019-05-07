@@ -70,7 +70,7 @@ def call(body) {
             // major/minor versions are always edited manually: todo: tag final versions when master...
             stage("bump patch version on develop (when not pipeline commit)") {
                 when { expression { pipelineEnvironment.canRunPipelineOnDevelop(gitHubArtifact.isLastCommitterFromPipeline()) } }
-                steps { script { gitHubArtifact.updateMinorVersion(builder) } }
+                steps { script { gitHubArtifact.updatePatchVersion(builder) } }
             }
 
             stage("release and publish docker image") {

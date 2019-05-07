@@ -64,16 +64,16 @@ abstract class GitHubArtifact {
         return "${tokens[0]}.${tokens[1]}"
     }
 
-    String fetchMinorVersion() {
-        return fetchMinorVersion(fetchBuildDescriptor())
+    String fetchPatchVersion() {
+        return fetchPatchVersion(fetchBuildDescriptor())
     }
 
-    String fetchMinorVersion(def buildDescriptor) {
+    String fetchPatchVersion(def buildDescriptor) {
         pipelineEnvironment.println("buildDescriptor: $buildDescriptor")
         String releaseVersion = buildDescriptor.version.tokenize("-")[0]
         def tokens = releaseVersion.tokenize(".")
 
-        pipelineEnvironment.println("fetching minor version from $releaseVersion")
+        pipelineEnvironment.println("fetching patch version from $releaseVersion")
 
         return "${tokens[2]}"
     }
@@ -98,13 +98,13 @@ abstract class GitHubArtifact {
         return pipelineEnvironment.lastCommitter
     }
 
-    void updateMinorVersion(Builder builder) {
+    void updatePatchVersion(Builder builder) {
         String majorVersion = fetchMajorVersion()
-        String minorVersion = fetchMinorVersion()
-        String nextVersion = "${majorVersion}." + (minorVersion.toInteger() + 1) + "-SNAPSHOT"
+        String patchVersion = fetchPatchVersion()
+        String nextVersion = "${majorVersion}." + (patchVersion.toInteger() + 1) + "-SNAPSHOT"
 
         builder.updateVersion(nextVersion)
-        pipelineEnvironment.buildScript.sh "git commit -a -m \"updated to new minor version ${nextVersion} after release by ${pipelineEnvironment.lastCommitter}\""
+        pipelineEnvironment.buildScript.sh "git commit -a -m \"updated to new patch version ${nextVersion} after release by ${pipelineEnvironment.lastCommitter}\""
         pipelineEnvironment.buildScript.sh "git push"
 
         pipelineEnvironment.artifactVersion = nextVersion
