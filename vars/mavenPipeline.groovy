@@ -61,8 +61,8 @@ def call(body) {
             }
 
             stage("deploy new maven artifact (when not pipeline commit)") {
-                when { expression { pipelineEnvironment.isMaster() } }
-                steps { script { result = mavenBuilder.deployArtifact() && gitHubArtifact.isNotLastCommitterFromPipeline() } }
+                when { expression { pipelineEnvironment.isMaster() && gitHubArtifact.isNotLastCommitterFromPipeline() } }
+                steps { script { result = mavenBuilder.deployArtifact() } }
             }
 
             // major/minor version is always bumped manual in develop for nexus artifacts
