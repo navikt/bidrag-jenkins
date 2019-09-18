@@ -19,7 +19,7 @@ Summary of workflow of naisPipeline using git branches:
   - can be triggered automatically
 - feature branches
   - new features being developed
-  - deploys to preprod-fss with t0 namespace
+  - deploys to preprod-fss with q1 namespace
   - can be triggered automatically
 
 Descriptions of pipelines:
