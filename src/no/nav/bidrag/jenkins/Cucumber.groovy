@@ -159,7 +159,7 @@ class Cucumber {
                 [$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'],
                 [$class: 'UsernamePasswordMultiBinding', credentialsId: 'testUser', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS']
         ]) {
-            pipelineEnvironment.buildScript.dir('bidrag-cucumber') {
+            pipelineEnvironment.buildScript.dir('bidrag-cucumber-kotlin') {
                 pipelineEnvironment.execute('mvn clean test')
             }
         }
