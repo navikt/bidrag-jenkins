@@ -150,16 +150,12 @@ class Cucumber {
     }
 
     private void runBidragCucumberOnDockerWithKotlin() {
-        // Checkout bidrag-cucumber -> ./bidrag-cucumber
-        // GitHubArtifact will do the magic of matching current branch to bidrag-cucumber branch
-        pipelineEnvironment.checkoutCucumberFeatureOrUseMaster()
-
         // Set 'project' env variable to select features prefixed with project name
         pipelineEnvironment.buildScript.withCredentials([
                 [$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'],
                 [$class: 'UsernamePasswordMultiBinding', credentialsId: 'testUser', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS']
         ]) {
-            pipelineEnvironment.buildScript.dir('bidrag-cucumber-kotlin') {
+            pipelineEnvironment.buildScript.dir('bidrag-cucumber') {
                 pipelineEnvironment.execute('mvn clean test')
             }
         }
