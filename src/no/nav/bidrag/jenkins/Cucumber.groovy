@@ -14,7 +14,7 @@ class Cucumber {
         Integer sleepInterval = 15000
         Integer maxRetries = 20
 
-        while(maxRetries-- > 0) {
+        while (maxRetries-- > 0) {
 
             pipelineEnvironment.println "#${maxRetries} Checking POD status for app ${app}"
 
@@ -25,20 +25,20 @@ class Cucumber {
             */
             Integer oldpods = 0
             Integer newpods = 0
-            String str = pipelineEnvironment.buildScript.sh(script: "kubectl -n ${ns} get pod -l app=${app}", returnStdout:true)
+            String str = pipelineEnvironment.buildScript.sh(script: "kubectl -n ${ns} get pod -l app=${app}", returnStdout: true)
             pipelineEnvironment.println str
             str.tokenize("\n").each {
                 List line = it.tokenize(" ")
-                if(line.size() == 5) {
+                if (line.size() == 5) {
                     String podId = line.get(0)
                     String status = line.get(2)
-                    if(status == "Running") {
-                        String desc = pipelineEnvironment.buildScript.sh(script: "kubectl -n ${ns} describe pod ${podId}", returnStdout:true)
+                    if (status == "Running") {
+                        String desc = pipelineEnvironment.buildScript.sh(script: "kubectl -n ${ns} describe pod ${podId}", returnStdout: true)
                         desc.tokenize("\n").each {
                             // APP_VERSION:                   1.0.176-SNAPSHOT-q0-16899879708
-                            if(it.trim().startsWith("APP_VERSION:")) {
+                            if (it.trim().startsWith("APP_VERSION:")) {
                                 String appVersion = it.tokenize(':').get(1).trim()
-                                if(appVersion != currentImageVersion) {
+                                if (appVersion != currentImageVersion) {
                                     oldpods++
                                 } else {
                                     newpods++
@@ -49,9 +49,9 @@ class Cucumber {
                 }
             }
             pipelineEnvironment.println "Gamle PODer: ${oldpods}, Nye PODer: ${newpods}"
-            
+
             // Vent til alle gamle poder er stoppet og minst en ny går før retur
-            if(oldpods == 0 && newpods > 0) {
+            if (oldpods == 0 && newpods > 0) {
                 return true
             }
             sleep(sleepInterval)
@@ -66,8 +66,8 @@ class Cucumber {
         pipelineEnvironment.println("[INFO] Run cucumber tests")
 
         pipelineEnvironment.buildScript.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088',
-            'NO_PROXY=localhost,127.0.0.1,10.33.43.41,.local,.adeo.no,.nav.no,.devillo.no,.oera.no,.nais.preprod.local,.nais-iapp.preprod.local,.nais.oera-q.local']) {
-            if(!waitForCurrentBuildToDeploy()) {
+                                                 'NO_PROXY=localhost,127.0.0.1,10.33.43.41,.local,.adeo.no,.nav.no,.devillo.no,.oera.no,.nais.preprod.local,.nais-iapp.preprod.local,.nais.oera-q.local']) {
+            if (!waitForCurrentBuildToDeploy()) {
                 throw new IllegalStateException("Timeout waiting for current build to deploy")
             }
         }
@@ -82,7 +82,7 @@ class Cucumber {
             }
 
             writeCucumberReports()
-        } catch (Exception e ) {
+        } catch (Exception e) {
             pipelineEnvironment.println("Failed build: " + e)
             result = 'FAIL'
         }
@@ -99,7 +99,7 @@ class Cucumber {
         pipelineEnvironment.buildScript.withCredentials([
                 [$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'],
                 [$class: 'UsernamePasswordMultiBinding', credentialsId: 'testUser', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS']
-            ]) {
+        ]) {
             pipelineEnvironment.buildScript.dir('bidrag-cucumber') {
                 pipelineEnvironment.execute('npm install')
             }
@@ -124,5 +124,44 @@ class Cucumber {
                                 'value': 'Firefox'
                         ]
                 ]
+    }
+
+    String runCucumberKotlinTests() {
+        String result = 'SUCCESS'
+
+        // Only throw an exception when cucumber miss json file, else only fail this step
+        pipelineEnvironment.println("[INFO] Run cucumber tests for kotlin")
+
+        try {
+            pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                try {
+                    runBidragCucumberOnDockerWithKotlin()
+                } catch (Exception e) {
+                    pipelineEnvironment.println('Unstable build: ' + e)
+                    result = 'UNSTABLE'
+                }
+            }
+        } catch (Exception e) {
+            pipelineEnvironment.println("Failed build: " + e)
+            result = 'FAIL'
+        }
+
+        return result
+    }
+
+    private void runBidragCucumberOnDockerWithKotlin() {
+        // Checkout bidrag-cucumber -> ./bidrag-cucumber
+        // GitHubArtifact will do the magic of matching current branch to bidrag-cucumber branch
+        pipelineEnvironment.checkoutCucumberFeatureOrUseMaster()
+
+        // Set 'project' env variable to select features prefixed with project name
+        pipelineEnvironment.buildScript.withCredentials([
+                [$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'],
+                [$class: 'UsernamePasswordMultiBinding', credentialsId: 'testUser', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS']
+        ]) {
+            pipelineEnvironment.buildScript.dir('bidrag-cucumber') {
+                pipelineEnvironment.execute('mvn clean test')
+            }
+        }
     }
 }

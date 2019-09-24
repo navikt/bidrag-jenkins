@@ -178,4 +178,8 @@ class PipelineEnvironment {
     void checkoutCucumberFeatureOrUseMaster() {
         initGitHubArtifact().checkoutCucumberFeatureOrUseMaster(branchName)
     }
+
+    boolean canRunPipelineWithMaven() {
+        return canRunPipeline && githubArtifact instanceof GitHubMavenArtifact
+    }
 }

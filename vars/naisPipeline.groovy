@@ -68,7 +68,7 @@ def call(body) {
             }
 
             // major/minor versions are always edited manually: todo: tag final versions when master...
-            stage("bump patch version on develop (when not pipeline commit)") {
+            stage("bump patch version on develop") {
                 when { expression { pipelineEnvironment.canRunPipelineOnDevelop(gitHubArtifact.isLastCommitterFromPipeline()) } }
                 steps { script { gitHubArtifact.updatePatchVersion(builder) } }
             }
@@ -88,9 +88,14 @@ def call(body) {
                 steps { script { nais.deployApplication() } }
             }
 
-            stage("run cucumber integration tests") {
+            stage("run cucumber") {
                 when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { result = cucumber.runCucumberTests() } }
+            }
+
+            stage("run cucumber for kotlin") {
+                when { expression { pipelineEnvironment.canRunPipelineWithMaven() } }
+                steps { script { result = cucumber.runCucumberKotlinTests() } }
             }
         }
 
