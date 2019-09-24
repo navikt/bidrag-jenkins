@@ -129,13 +129,12 @@ class Cucumber {
     String runCucumberKotlinTests() {
         String result = 'SUCCESS'
 
-        // Only throw an exception when cucumber miss json file, else only fail this step
         pipelineEnvironment.println("[INFO] Run cucumber tests for kotlin")
 
         try {
             pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
                 try {
-                    runBidragCucumberOnDockerWithKotlin()
+                    runBidragCucumberWithKotlin()
                 } catch (Exception e) {
                     pipelineEnvironment.println('Unstable build: ' + e)
                     result = 'UNSTABLE'
@@ -149,13 +148,14 @@ class Cucumber {
         return result
     }
 
-    private void runBidragCucumberOnDockerWithKotlin() {
+    private void runBidragCucumberWithKotlin() {
         // Set 'project' env variable to select features prefixed with project name
         pipelineEnvironment.buildScript.withCredentials([
                 [$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'],
                 [$class: 'UsernamePasswordMultiBinding', credentialsId: 'testUser', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS']
         ]) {
             pipelineEnvironment.buildScript.dir('bidrag-cucumber') {
+                pipelineEnvironment.buildScript.sh "pwd"
                 pipelineEnvironment.execute('mvn clean test')
             }
         }
