@@ -91,5 +91,7 @@ class Cucumber {
     }
 
     private void runBidragCucumberWithKotlin() {
+        pipelineEnvironment.buildScript.sh "cd ${pipelineEnvironment.path_cucumber}"
+        pipelineEnvironment.buildScript.sh "mvn clean test"
     }
 }
