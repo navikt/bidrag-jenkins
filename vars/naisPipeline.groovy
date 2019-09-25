@@ -33,11 +33,11 @@ def call(body) {
                         pipelineEnvironment.branchName = "$BRANCH_NAME"
                         pipelineEnvironment.homeFolderJenkins = "$HOME"
                         pipelineEnvironment.buildScript = this
-                        pipelineEnvironment.workspace = "$WORKSPACE"
+                        pipelineEnvironment.path_cucumber = "$JENKINS_HOME" + "/workspace/bidrag-cucumber"
+                        pipelineEnvironment.path_workspace = "$WORKSPACE"
+                        gitHubArtifact.checkoutGlobalCucumberFeatureOrUseMaster()
 
-                        boolean isAutomatedBuild = PipelineEnvironment.isAutmatedBuild(
-                                currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)
-                        )
+                        boolean isAutomatedBuild = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) == null
 
                         if (isAutomatedBuild && gitHubArtifact.isLastCommitterFromPipeline()) {
                             pipelineEnvironment.doNotRunPipeline("$BUILD_ID")
@@ -95,13 +95,7 @@ def call(body) {
 
             stage("run cucumber tests with kotlin") {
                 when { expression { pipelineEnvironment.canRunPipelineWithMaven() } }
-                steps {
-                    script {
-                        sh 'echo "run cucumber with kotlin"'
-                        sh 'pwd'
-                        result = cucumber.runCucumberKotlinTests()
-                    }
-                }
+                steps { script { result = cucumber.runCucumberKotlinTests() } }
             }
         }
 
@@ -109,6 +103,7 @@ def call(body) {
             always {
                 script {
                     gitHubArtifact.resetWorkspace()
+                    gitHubArtifact.resetCucumber()
                     dockerImage.deleteImagesNotUsed()
                     pipelineEnvironment.deleteBuildWhenPipelineIsNotExecuted(Jenkins.instance.items)
                 }

@@ -51,7 +51,7 @@ class Cucumber {
                             "-e fasit_user=${pipelineEnvironment.buildScript.USERNAME} -e fasit_pass='${pipelineEnvironment.buildScript.PASSWORD}' " +
                             "-e test_user=${pipelineEnvironment.buildScript.TEST_USER} -e test_pass='${pipelineEnvironment.buildScript.TEST_PASS}' " +
                             "-e project=${pipelineEnvironment.gitHubProjectName}. " +
-                            "-v ${pipelineEnvironment.workspace}/bidrag-cucumber:/src -w /src node:latest npm start"
+                            "-v ${pipelineEnvironment.path_workspace}/bidrag-cucumber:/src -w /src node:latest npm start"
             )
         }
     }
@@ -91,15 +91,5 @@ class Cucumber {
     }
 
     private void runBidragCucumberWithKotlin() {
-        // Set 'project' env variable to select features prefixed with project name
-        pipelineEnvironment.buildScript.withCredentials([
-                [$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'],
-                [$class: 'UsernamePasswordMultiBinding', credentialsId: 'testUser', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS']
-        ]) {
-            pipelineEnvironment.buildScript.dir('bidrag-cucumber') {
-                pipelineEnvironment.buildScript.sh "pwd"
-                pipelineEnvironment.execute('mvn clean test')
-            }
-        }
     }
 }

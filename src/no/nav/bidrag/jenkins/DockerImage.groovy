@@ -17,7 +17,7 @@ class DockerImage {
 
     void releaseAndPublish() {
         if (pipelineEnvironment.isSnapshot()) {
-            String workspaceFolder = pipelineEnvironment.workspace
+            String workspaceFolder = pipelineEnvironment.path_workspace
 
             if (pipelineEnvironment.buildImage != null) {
                 pipelineEnvironment.execute "docker run --rm -v $workspaceFolder:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.buildImage} mvn versions:set -B -DnewVersion=${pipelineEnvironment.artifactVersion} -DgenerateBackupPoms=false"
