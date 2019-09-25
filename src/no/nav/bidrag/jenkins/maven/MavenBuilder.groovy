@@ -73,4 +73,13 @@ class MavenBuilder implements Builder {
 
         DependentVersions.verify(buildDescriptor)
     }
+
+    void executeMavenTest(String testPath) {
+        pipelineEnvironment.buildScript.sh "cd ${testPath}"
+        pipelineEnvironment.execute(
+                "docker run --rm -v ${testPath}:/usr/src/mymaven -w /usr/src/mymaven " +
+                        "-v \"${pipelineEnvironment.homeFolderJenkins}/.m2\":/root/.m2 ${pipelineEnvironment.buildImage} " +
+                        "mvn clean test"
+        )
+    }
 }

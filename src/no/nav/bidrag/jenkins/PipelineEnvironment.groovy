@@ -154,6 +154,10 @@ class PipelineEnvironment {
         throw new IllegalStateException("unknown build type: " + buildType)
     }
 
+    MavenBuilder initMavenBuilder() {
+        return new MavenBuilder(this)
+    }
+
     GitHubArtifact initGitHubArtifact() {
         if (githubArtifact == null) {
             if (buildType == null || buildType == 'maven') {

@@ -40,8 +40,6 @@ class Nais {
                 )
             }
         }
-
-        pipelineEnvironment.println("[INFO] Ferdig :)")
     }
 
     void waitForDeploAndOldPodsTerminated() {
@@ -51,6 +49,8 @@ class Nais {
                 throw new IllegalStateException("Timeout waiting for current build to deploy")
             }
         }
+
+        pipelineEnvironment.println("[INFO] Deployet NAIS app. Bare nye apper kjører")
     }
 
     private boolean waitForCurrentBuildToDeploy() {
