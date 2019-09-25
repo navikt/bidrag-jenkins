@@ -42,7 +42,6 @@ abstract class GitHubArtifact {
     void checkoutGlobalCucumberFeatureOrUseMaster() {
         pipelineEnvironment.buildScript.sh "echo 'CUCUMBER from github...'"
 
-        pipelineEnvironment.buildScript.sh(script: "git clone https://${pipelineEnvironment.buildScript.USERNAME}:${pipelineEnvironment.buildScript.PASSWORD}@github.com/navikt/bidrag-cucumber")
         pipelineEnvironment.buildScript.withCredentials(
                 [[$class: 'UsernamePasswordMultiBinding', credentialsId: 'jenkinsPipeline', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
             pipelineEnvironment.buildScript.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
