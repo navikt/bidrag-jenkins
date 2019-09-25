@@ -1,9 +1,4 @@
-import no.nav.bidrag.jenkins.Builder
-import no.nav.bidrag.jenkins.Cucumber
-import no.nav.bidrag.jenkins.DockerImage
-import no.nav.bidrag.jenkins.GitHubArtifact
-import no.nav.bidrag.jenkins.Nais
-import no.nav.bidrag.jenkins.PipelineEnvironment
+import no.nav.bidrag.jenkins.*
 
 def call(body) {
 
@@ -95,7 +90,13 @@ def call(body) {
 
             stage("run cucumber with kotlin") {
                 when { expression { pipelineEnvironment.canRunPipelineWithMaven() } }
-                steps { script { result = cucumber.runCucumberKotlinTests() } }
+                steps {
+                    script {
+                        sh 'echo "run cucumber with kotlin"'
+                        sh 'pwd'
+                        result = cucumber.runCucumberKotlinTests()
+                    }
+                }
             }
         }
 
