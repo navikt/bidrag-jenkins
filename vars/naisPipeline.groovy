@@ -83,12 +83,17 @@ def call(body) {
                 steps { script { nais.deployApplication() } }
             }
 
-            stage("wait for deploy and run cucumber") {
+            stage("wait for deploy and old pods terminated") {
+                when { expression { pipelineEnvironment.canRunPipeline } }
+                steps { script { nais.waitForDeploAndOldPodsTerminated() } }
+            }
+
+            stage("run cucumber tests") {
                 when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { result = cucumber.runCucumberTests() } }
             }
 
-            stage("run cucumber with kotlin") {
+            stage("run cucumber tests with kotlin") {
                 when { expression { pipelineEnvironment.canRunPipelineWithMaven() } }
                 steps {
                     script {
