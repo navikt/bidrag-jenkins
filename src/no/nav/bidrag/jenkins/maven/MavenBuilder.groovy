@@ -15,12 +15,12 @@ class MavenBuilder implements Builder {
     @Override
     void buildAndTest() {
         pipelineEnvironment.println("gitHubArtifact: ${pipelineEnvironment.gitHubProjectName}")
-        pipelineEnvironment.println("workspace: ${pipelineEnvironment.workspace}")
+        pipelineEnvironment.println("workspace: ${pipelineEnvironment.path_workspace}")
 
         if (pipelineEnvironment.isSnapshot()) {
             pipelineEnvironment.println("running maven build image.")
             pipelineEnvironment.execute(
-                    "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven -w /usr/src/mymaven " +
+                    "docker run --rm -v ${pipelineEnvironment.path_workspace}:/usr/src/mymaven -w /usr/src/mymaven " +
                             "-v \"${pipelineEnvironment.homeFolderJenkins}/.m2\":/root/.m2 ${pipelineEnvironment.buildImage} " +
                             "mvn clean install -B -e"
             )
@@ -41,7 +41,7 @@ class MavenBuilder implements Builder {
             updateVersion(stableVersion)
 
             pipelineEnvironment.execute(
-                    "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven -w /usr/src/mymaven " +
+                    "docker run --rm -v ${pipelineEnvironment.path_workspace}:/usr/src/mymaven -w /usr/src/mymaven " +
                             "-v \"${pipelineEnvironment.homeFolderJenkins}/.m2\":/root/.m2 ${pipelineEnvironment.buildImage} " +
                             "mvn clean deploy -B -e"
             )
@@ -60,7 +60,7 @@ class MavenBuilder implements Builder {
     @Override
     void updateVersion(String version) {
         pipelineEnvironment.execute(
-                "docker run --rm -v ${pipelineEnvironment.workspace}:/usr/src/mymaven " +
+                "docker run --rm -v ${pipelineEnvironment.path_workspace}:/usr/src/mymaven " +
                         "-w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 " +
                         "${pipelineEnvironment.buildImage} mvn versions:set -B -DnewVersion=${version} -DgenerateBackupPoms=false"
         )
@@ -72,5 +72,14 @@ class MavenBuilder implements Builder {
         pipelineEnvironment.println buildDescriptor.getProperties().values().toString()
 
         DependentVersions.verify(buildDescriptor)
+    }
+
+    void executeMavenTest(String testPath) {
+        pipelineEnvironment.buildScript.sh "cd ${testPath}"
+        pipelineEnvironment.execute(
+                "docker run --rm -v ${testPath}:/usr/src/mymaven -w /usr/src/mymaven " +
+                        "-v \"${pipelineEnvironment.homeFolderJenkins}/.m2\":/root/.m2 ${pipelineEnvironment.buildImage} " +
+                        "mvn clean test"
+        )
     }
 }

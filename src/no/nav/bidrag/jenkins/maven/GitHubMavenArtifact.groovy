@@ -11,7 +11,7 @@ class GitHubMavenArtifact extends GitHubArtifact {
 
     @Override
     def readBuildDescriptorFromSourceCode() {
-        pipelineEnvironment.println("parsing pom.xml from ${pipelineEnvironment.workspace}")
+        pipelineEnvironment.println("parsing pom.xml from ${pipelineEnvironment.path_workspace}")
         def pom = pipelineEnvironment.buildScript.readMavenPom file: 'pom.xml'
 
         return pom

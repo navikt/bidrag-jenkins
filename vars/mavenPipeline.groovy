@@ -33,11 +33,9 @@ def call(body) {
                         pipelineEnvironment.branchName = "$BRANCH_NAME"
                         pipelineEnvironment.homeFolderJenkins = "$HOME"
                         pipelineEnvironment.buildScript = this
-                        pipelineEnvironment.workspace = "$WORKSPACE"
+                        pipelineEnvironment.path_workspace = "$WORKSPACE"
 
-                        boolean isAutomatedBuild = PipelineEnvironment.isAutmatedBuild(
-                                currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)
-                        )
+                        boolean isAutomatedBuild = urrentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) == null
 
                         if (isAutomatedBuild && gitHubArtifact.isLastCommitterFromPipeline()) {
                             pipelineEnvironment.doNotRunPipeline("$BUILD_ID")

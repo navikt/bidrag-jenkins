@@ -22,7 +22,9 @@ class PipelineEnvironment {
     String homeFolderJenkins
     String lastCommitter
     String naisBinary
-    String workspace
+    String path_cucumber
+    String path_jenkins_workspace
+    String path_workspace
 
     private GitHubArtifact githubArtifact
     private String buildId
@@ -153,6 +155,10 @@ class PipelineEnvironment {
         throw new IllegalStateException("unknown build type: " + buildType)
     }
 
+    MavenBuilder initMavenBuilder() {
+        return new MavenBuilder(this)
+    }
+
     GitHubArtifact initGitHubArtifact() {
         if (githubArtifact == null) {
             if (buildType == null || buildType == 'maven') {
@@ -171,11 +177,11 @@ class PipelineEnvironment {
         throw new IllegalStateException("unknown build type: " + buildType)
     }
 
-    static boolean isAutmatedBuild(def userId) {
-        return userId == null
-    }
-
     void checkoutCucumberFeatureOrUseMaster() {
         initGitHubArtifact().checkoutCucumberFeatureOrUseMaster(branchName)
+    }
+
+    boolean canRunPipelineWithMaven() {
+        return canRunPipeline && githubArtifact instanceof GitHubMavenArtifact
     }
 }

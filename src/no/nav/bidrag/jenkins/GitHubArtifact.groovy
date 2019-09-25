@@ -32,9 +32,32 @@ abstract class GitHubArtifact {
         pipelineEnvironment.buildScript.withCredentials(
                 [[$class: 'UsernamePasswordMultiBinding', credentialsId: 'jenkinsPipeline', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
             pipelineEnvironment.buildScript.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
-                pipelineEnvironment.buildScript.sh(script: "${pipelineEnvironment.workspace}@libs/bidrag-jenkins/resources/cloneBidragCucumberBranch.sh " +
+                pipelineEnvironment.buildScript.sh(script: "${pipelineEnvironment.path_workspace}@libs/bidrag-jenkins/resources/cloneBidragCucumberBranch.sh " +
                         "${pipelineEnvironment.buildScript.USERNAME} ${pipelineEnvironment.buildScript.PASSWORD} ${branch}"
                 )
+            }
+        }
+    }
+
+    void checkoutGlobalCucumberFeatureOrUseMaster() {
+        pipelineEnvironment.buildScript.sh "echo 'CUCUMBER from github...'"
+
+        pipelineEnvironment.buildScript.withCredentials(
+                [[$class: 'UsernamePasswordMultiBinding', credentialsId: 'jenkinsPipeline', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+            pipelineEnvironment.buildScript.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
+
+                boolean bidragCucumberDoesNotExist = !new File(pipelineEnvironment.path_cucumber).exists()
+
+                if (bidragCucumberDoesNotExist) {
+                    pipelineEnvironment.buildScript.sh "ch ${pipelineEnvironment.path_jenkins_workspace}"
+                    pipelineEnvironment.buildScript.sh "echo 'CUCUMBER CLONE: ${pipelineEnvironment.path_jenkins_workspace}......'"
+                    pipelineEnvironment.buildScript.sh(script: "git clone https://${pipelineEnvironment.buildScript.USERNAME}:${pipelineEnvironment.buildScript.PASSWORD}@github.com/navikt/bidrag-cucumber")
+                }
+
+                pipelineEnvironment.buildScript.sh "cd ${pipelineEnvironment.path_cucumber}"
+                pipelineEnvironment.buildScript.sh "echo 'CUCUMBER BRANCH CHECKOU (${pipelineEnvironment.branchName})to ${pipelineEnvironment.path_cucumber}...'"
+                pipelineEnvironment.buildScript.sh(script: "git pull")
+                pipelineEnvironment.buildScript.sh(script: "git checkout ${pipelineEnvironment.branchName}")
             }
         }
     }
@@ -111,7 +134,12 @@ abstract class GitHubArtifact {
     }
 
     void resetWorkspace() {
-        pipelineEnvironment.execute("cd ${pipelineEnvironment.workspace}")
+        pipelineEnvironment.execute("cd ${pipelineEnvironment.path_workspace}")
+        pipelineEnvironment.execute("git reset --hard")
+    }
+
+    void resetCucumber() {
+        pipelineEnvironment.execute("cd ${pipelineEnvironment.path_cucumber}")
         pipelineEnvironment.execute("git reset --hard")
     }
 }

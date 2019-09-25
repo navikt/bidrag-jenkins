@@ -11,7 +11,7 @@ class GitHubNodeArtifact extends GitHubArtifact {
 
     @Override
     def readBuildDescriptorFromSourceCode() {
-        pipelineEnvironment.println("reading package.json from ${pipelineEnvironment.workspace}")
+        pipelineEnvironment.println("reading package.json from ${pipelineEnvironment.path_workspace}")
         def packageJson = pipelineEnvironment.buildScript.readJSON file: 'package.json'
         pipelineEnvironment.println('package.json:\n' + packageJson)
 

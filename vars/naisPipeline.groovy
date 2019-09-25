@@ -1,9 +1,4 @@
-import no.nav.bidrag.jenkins.Builder
-import no.nav.bidrag.jenkins.Cucumber
-import no.nav.bidrag.jenkins.DockerImage
-import no.nav.bidrag.jenkins.GitHubArtifact
-import no.nav.bidrag.jenkins.Nais
-import no.nav.bidrag.jenkins.PipelineEnvironment
+import no.nav.bidrag.jenkins.*
 
 def call(body) {
 
@@ -38,20 +33,23 @@ def call(body) {
                         pipelineEnvironment.branchName = "$BRANCH_NAME"
                         pipelineEnvironment.homeFolderJenkins = "$HOME"
                         pipelineEnvironment.buildScript = this
-                        pipelineEnvironment.workspace = "$WORKSPACE"
+                        pipelineEnvironment.path_jenkins_workspace = "$JENKINS_HOME" + "/workspace"
+                        pipelineEnvironment.path_cucumber = pipelineEnvironment.path_jenkins_workspace + "/bidrag-cucumber"
+                        pipelineEnvironment.path_workspace = "$WORKSPACE"
 
-                        boolean isAutomatedBuild = PipelineEnvironment.isAutmatedBuild(
-                                currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)
-                        )
+                        boolean isAutomatedBuild = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) == null
 
                         if (isAutomatedBuild && gitHubArtifact.isLastCommitterFromPipeline()) {
                             pipelineEnvironment.doNotRunPipeline("$BUILD_ID")
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
+
                             pipelineEnvironment.appConfig = "nais.yaml"
                             pipelineEnvironment.artifactVersion = gitHubArtifact.fetchVersion()
                             pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
                             pipelineEnvironment.naisBinary = "/usr/bin/nais"
+
+                            gitHubArtifact.checkoutGlobalCucumberFeatureOrUseMaster()
                         }
                     }
                 }
@@ -68,7 +66,7 @@ def call(body) {
             }
 
             // major/minor versions are always edited manually: todo: tag final versions when master...
-            stage("bump patch version on develop (when not pipeline commit)") {
+            stage("bump patch version on develop") {
                 when { expression { pipelineEnvironment.canRunPipelineOnDevelop(gitHubArtifact.isLastCommitterFromPipeline()) } }
                 steps { script { gitHubArtifact.updatePatchVersion(builder) } }
             }
@@ -88,9 +86,19 @@ def call(body) {
                 steps { script { nais.deployApplication() } }
             }
 
-            stage("run cucumber integration tests") {
+            stage("wait for deploy and termination of old pods") {
+                when { expression { pipelineEnvironment.canRunPipeline } }
+                steps { script { nais.waitForDeploAndOldPodsTerminated() } }
+            }
+
+            stage("run cucumber tests") {
                 when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { result = cucumber.runCucumberTests() } }
+            }
+
+            stage("run cucumber tests with kotlin") {
+                when { expression { pipelineEnvironment.canRunPipelineWithMaven() } }
+                steps { script { result = cucumber.runCucumberKotlinTests() } }
             }
         }
 
@@ -98,6 +106,7 @@ def call(body) {
             always {
                 script {
                     gitHubArtifact.resetWorkspace()
+                    gitHubArtifact.resetCucumber()
                     dockerImage.deleteImagesNotUsed()
                     pipelineEnvironment.deleteBuildWhenPipelineIsNotExecuted(Jenkins.instance.items)
                 }
