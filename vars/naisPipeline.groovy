@@ -36,7 +36,6 @@ def call(body) {
                         pipelineEnvironment.path_jenkins_workspace = "$JENKINS_HOME" + "/workspace"
                         pipelineEnvironment.path_cucumber = pipelineEnvironment.path_jenkins_workspace + "/bidrag-cucumber"
                         pipelineEnvironment.path_workspace = "$WORKSPACE"
-                        gitHubArtifact.checkoutGlobalCucumberFeatureOrUseMaster()
 
                         boolean isAutomatedBuild = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) == null
 
@@ -44,10 +43,13 @@ def call(body) {
                             pipelineEnvironment.doNotRunPipeline("$BUILD_ID")
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
+
                             pipelineEnvironment.appConfig = "nais.yaml"
                             pipelineEnvironment.artifactVersion = gitHubArtifact.fetchVersion()
                             pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
                             pipelineEnvironment.naisBinary = "/usr/bin/nais"
+
+                            gitHubArtifact.checkoutGlobalCucumberFeatureOrUseMaster()
                         }
                     }
                 }
