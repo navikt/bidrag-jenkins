@@ -33,7 +33,8 @@ def call(body) {
                         pipelineEnvironment.branchName = "$BRANCH_NAME"
                         pipelineEnvironment.homeFolderJenkins = "$HOME"
                         pipelineEnvironment.buildScript = this
-                        pipelineEnvironment.path_cucumber = "$JENKINS_HOME" + "/workspace/bidrag-cucumber"
+                        pipelineEnvironment.path_jenkins_workspace = "$JENKINS_HOME" + "/workspace"
+                        pipelineEnvironment.path_cucumber = pipelineEnvironment.path_jenkins_workspace + "/bidrag-cucumber"
                         pipelineEnvironment.path_workspace = "$WORKSPACE"
                         gitHubArtifact.checkoutGlobalCucumberFeatureOrUseMaster()
 

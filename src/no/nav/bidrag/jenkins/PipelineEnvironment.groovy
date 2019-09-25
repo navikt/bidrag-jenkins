@@ -23,6 +23,7 @@ class PipelineEnvironment {
     String lastCommitter
     String naisBinary
     String path_cucumber
+    String path_jenkins_workspace
     String path_workspace
 
     private GitHubArtifact githubArtifact

@@ -40,14 +40,25 @@ abstract class GitHubArtifact {
     }
 
     void checkoutGlobalCucumberFeatureOrUseMaster() {
-        pipelineEnvironment.buildScript.sh "cd ${pipelineEnvironment.path_cucumber}"
         pipelineEnvironment.buildScript.withCredentials(
                 [[$class: 'UsernamePasswordMultiBinding', credentialsId: 'jenkinsPipeline', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
             pipelineEnvironment.buildScript.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088']) {
-                pipelineEnvironment.buildScript.sh "echo '****** CUCUMER BRANCH ******'"
+                cloneBidragCucumberWhenNotExists()
+                pipelineEnvironment.buildScript.sh "cd ${pipelineEnvironment.path_cucumber}"
                 pipelineEnvironment.buildScript.sh "echo 'CUCUMBER BRANCH CHECKOUT: ${pipelineEnvironment.branchName}'......"
+                pipelineEnvironment.buildScript.sh(script: "git pull")
                 pipelineEnvironment.buildScript.sh(script: "git checkout ${pipelineEnvironment.branchName}")
             }
+        }
+    }
+
+    private void cloneBidragCucumberWhenNotExists() {
+        boolean bidragCucumberDoesNotExist = !new File(pipelineEnvironment.path_cucumber).exists()
+
+        if (bidragCucumberDoesNotExist) {
+            pipelineEnvironment.buildScript.sh "ch ${pipelineEnvironment.path_jenkins_workspace}"
+            pipelineEnvironment.buildScript.sh "echo 'CUCUMBER CLONE......'"
+            pipelineEnvironment.buildScript.sh(script: "git clone https://${pipelineEnvironment.buildScript.USERNAME}:${pipelineEnvironment.buildScript.PASSWORD}@github.com/navikt/bidrag-cucumber")
         }
     }
 
