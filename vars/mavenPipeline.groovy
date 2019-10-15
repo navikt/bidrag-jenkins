@@ -35,7 +35,7 @@ def call(body) {
                         pipelineEnvironment.buildScript = this
                         pipelineEnvironment.path_workspace = "$WORKSPACE"
 
-                        boolean isAutomatedBuild = urrentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) == null
+                        boolean isAutomatedBuild = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) == null
 
                         if (isAutomatedBuild && gitHubArtifact.isLastCommitterFromPipeline()) {
                             pipelineEnvironment.doNotRunPipeline("$BUILD_ID")
