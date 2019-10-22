@@ -96,10 +96,10 @@ def call(body) {
                 steps { script { result = cucumber.runCucumberTests() } }
             }
 
-            stage("run cucumber tests with kotlin") {
-                when { expression { pipelineEnvironment.canRunPipelineWithMaven() } }
-                steps { script { result = cucumber.runCucumberKotlinTests() } }
-            }
+//            stage("run cucumber tests for backend") {
+//                when { expression { pipelineEnvironment.canRunPipelineWithMaven() } }
+//                steps { script { result = cucumber.runCucumberKotlinTests() } }
+//            }
         }
 
         post {
