@@ -113,4 +113,8 @@ class Nais {
 
         return false
     }
+
+    def applyNaiserator() {
+
+    }
 }
