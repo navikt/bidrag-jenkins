@@ -115,6 +115,6 @@ class Nais {
     }
 
     def applyNaiserator() {
-
+        sh 'kubectl apply -f nais.yaml'
     }
 }
