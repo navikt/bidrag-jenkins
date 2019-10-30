@@ -114,8 +114,8 @@ class Nais {
         return false
     }
 
-    static def applyNaiserator() {
-        PipelineEnvironment.buildScript.sh 'echo apply nais.yaml with kubectl'
-        PipelineEnvironment.buildScript.sh 'kubectl apply -f nais.yaml'
+    def applyNaiserator() {
+        pipelineEnvironment.println("apply nais.yaml with kubectl")
+        pipelineEnvironment.execute("kubectl apply -f nais.yaml")
     }
 }
