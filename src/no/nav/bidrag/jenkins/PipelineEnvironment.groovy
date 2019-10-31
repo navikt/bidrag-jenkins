@@ -198,7 +198,7 @@ class PipelineEnvironment {
         ]) {
             new MavenBuilder().executeMavenTest(
                     path_cucumber,
-                    "${buildScript.USERNAME}", "${buildScript.PASSWORD}",
+                    "${buildScript.USERNAME}", "${buildScript.USER_AUTH}",
                     "${buildScript.TEST_USER}", "${buildScript.TEST_PASS}"
             )
         }
