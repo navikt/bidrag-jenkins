@@ -79,7 +79,13 @@ class MavenBuilder implements Builder {
         pipelineEnvironment.execute(
                 "docker run --rm -v ${testPath}:/usr/src/mymaven -w /usr/src/mymaven " +
                         "-v \"${pipelineEnvironment.homeFolderJenkins}/.m2\":/root/.m2 ${pipelineEnvironment.buildImage} " +
-                        "mvn clean test"
+                        "mvn clean install " +
+                        "-DENVIRONMENT=${pipelineEnvironment.fetchEnvironment()} " +
+                        "-DUSERNAME=${pipelineEnvironment.buildScript.USERNAME} " +
+                        "-DUSER_AUTH=${pipelineEnvironment.buildScript.PASSWORD} " +
+                        "-DTEST_USER=${pipelineEnvironment.buildScript.TEST_USER} " +
+                        "-DTEST_AUTH=${pipelineEnvironment.buildScript.TEST_PASS} " +
+                        "-Dcucumber.options='--tags \"@${pipelineEnvironment.gitHubProjectName}\"'"
         )
     }
 }

@@ -40,7 +40,7 @@ abstract class GitHubArtifact {
     }
 
     void checkoutCucumberBackendFeatureOrUseMaster() {
-        pipelineEnvironment.buildScript.sh "echo 'CUCUMBER from github...'"
+        pipelineEnvironment.buildScript.sh "echo 'CUCUMBER-BACKEND from github...'"
 
         pipelineEnvironment.buildScript.withCredentials(
                 [[$class: 'UsernamePasswordMultiBinding', credentialsId: 'jenkinsPipeline', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
@@ -50,7 +50,7 @@ abstract class GitHubArtifact {
 
                 if (bidragCucumberDoesNotExist) {
                     pipelineEnvironment.buildScript.sh "ch ${pipelineEnvironment.path_jenkins_workspace}"
-                    pipelineEnvironment.buildScript.sh "echo 'CUCUMBER BACKEND CLONE: ${pipelineEnvironment.path_jenkins_workspace}......'"
+                    pipelineEnvironment.buildScript.sh "echo 'CUCUMBER-BACKEND CLONE: ${pipelineEnvironment.path_jenkins_workspace}......'"
                     pipelineEnvironment.buildScript.sh(script: "git clone https://${pipelineEnvironment.buildScript.USERNAME}:${pipelineEnvironment.buildScript.PASSWORD}@github.com/navikt/bidrag-cucumber-backend")
                 }
 
