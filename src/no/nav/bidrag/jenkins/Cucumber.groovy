@@ -1,5 +1,7 @@
 package no.nav.bidrag.jenkins
 
+import no.nav.bidrag.jenkins.maven.MavenBuilder
+
 class Cucumber {
     private PipelineEnvironment pipelineEnvironment
 
@@ -68,15 +70,16 @@ class Cucumber {
                 ]
     }
 
-    String runCucumberKotlinTests() {
+    String runCucumberBackendTests() {
         String result = 'SUCCESS'
 
-        pipelineEnvironment.println("[INFO] Run cucumber tests for kotlin")
+        pipelineEnvironment.checkoutCucumberBackendFeatureOrUseMaster()
+        pipelineEnvironment.println("[INFO] Run bidrag-cucumber-backend tests")
 
         try {
             pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
                 try {
-                    runBidragCucumberWithKotlin()
+                    new MavenBuilder(pipelineEnvironment).executeMavenTest(pipelineEnvironment.path_cucumber)
                 } catch (Exception e) {
                     pipelineEnvironment.println('Unstable build: ' + e)
                     result = 'UNSTABLE'
@@ -88,9 +91,5 @@ class Cucumber {
         }
 
         return result
-    }
-
-    private void runBidragCucumberWithKotlin() {
-        pipelineEnvironment.initMavenBuilder().executeMavenTest(pipelineEnvironment.path_cucumber)
     }
 }

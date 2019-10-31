@@ -39,7 +39,7 @@ abstract class GitHubArtifact {
         }
     }
 
-    void checkoutGlobalCucumberFeatureOrUseMaster() {
+    void checkoutCucumberBackendFeatureOrUseMaster() {
         pipelineEnvironment.buildScript.sh "echo 'CUCUMBER from github...'"
 
         pipelineEnvironment.buildScript.withCredentials(
@@ -50,12 +50,12 @@ abstract class GitHubArtifact {
 
                 if (bidragCucumberDoesNotExist) {
                     pipelineEnvironment.buildScript.sh "ch ${pipelineEnvironment.path_jenkins_workspace}"
-                    pipelineEnvironment.buildScript.sh "echo 'CUCUMBER CLONE: ${pipelineEnvironment.path_jenkins_workspace}......'"
-                    pipelineEnvironment.buildScript.sh(script: "git clone https://${pipelineEnvironment.buildScript.USERNAME}:${pipelineEnvironment.buildScript.PASSWORD}@github.com/navikt/bidrag-cucumber")
+                    pipelineEnvironment.buildScript.sh "echo 'CUCUMBER BACKEND CLONE: ${pipelineEnvironment.path_jenkins_workspace}......'"
+                    pipelineEnvironment.buildScript.sh(script: "git clone https://${pipelineEnvironment.buildScript.USERNAME}:${pipelineEnvironment.buildScript.PASSWORD}@github.com/navikt/bidrag-cucumber-backend")
                 }
 
                 pipelineEnvironment.buildScript.sh "cd ${pipelineEnvironment.path_cucumber}"
-                pipelineEnvironment.buildScript.sh "echo 'CUCUMBER BRANCH CHECKOU (${pipelineEnvironment.branchName})to ${pipelineEnvironment.path_cucumber}...'"
+                pipelineEnvironment.buildScript.sh "echo 'CUCUMBER-BACKEND BRANCH CHECKOUT (${pipelineEnvironment.branchName})to ${pipelineEnvironment.path_cucumber}...'"
                 pipelineEnvironment.buildScript.sh(script: "git pull")
                 pipelineEnvironment.buildScript.sh(script: "git checkout ${pipelineEnvironment.branchName}")
             }
