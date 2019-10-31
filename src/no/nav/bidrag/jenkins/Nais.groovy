@@ -42,7 +42,7 @@ class Nais {
         }
     }
 
-    void waitForDeploAndOldPodsTerminated() {
+    void waitForDeployAndOldPodsTerminated() {
         pipelineEnvironment.buildScript.withEnv(['HTTPS_PROXY=http://webproxy-utvikler.nav.no:8088',
                                                  'NO_PROXY=localhost,127.0.0.1,10.33.43.41,.local,.adeo.no,.nav.no,.devillo.no,.oera.no,.nais.preprod.local,.nais-iapp.preprod.local,.nais.oera-q.local']) {
             if (!waitForCurrentBuildToDeploy()) {

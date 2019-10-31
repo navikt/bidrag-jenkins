@@ -181,7 +181,26 @@ class PipelineEnvironment {
         initGitHubArtifact().checkoutCucumberFeatureOrUseMaster(branchName)
     }
 
+    def checkoutCucumberBackendFeatureOrUseMaster() {
+        new GitHubMavenArtifact(this).checkoutCucumberBackendFeatureOrUseMaster()
+    }
+
     boolean canRunPipelineWithMaven() {
         return canRunPipeline && githubArtifact instanceof GitHubMavenArtifact
+    }
+
+    def executeMavenTest() {
+        println "[INFO] Run bidrag-cucumber-backend tests"
+
+        buildScript.withCredentials([
+                buildScript.usernamePassword(credentialsId: 'j104364', usernameVariable: 'USERNAME', passwordVariable: 'USER_AUTH'),
+                buildScript.usernamePassword(credentialsId: '889b0a78-e462-41c5-a49d-3686af79e0b4', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS')
+        ]) {
+            new MavenBuilder(this).executeMavenTest(
+                    path_cucumber,
+                    "${buildScript.USERNAME}", "${buildScript.USER_AUTH}",
+                    "${buildScript.TEST_USER}", "${buildScript.TEST_PASS}"
+            )
+        }
     }
 }
