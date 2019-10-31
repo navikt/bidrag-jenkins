@@ -188,4 +188,19 @@ class PipelineEnvironment {
     boolean canRunPipelineWithMaven() {
         return canRunPipeline && githubArtifact instanceof GitHubMavenArtifact
     }
+
+    def executeMavenTest() {
+        println "[INFO] Run bidrag-cucumber-backend tests"
+
+        buildScript.withCredentials([
+                buildScript.usernamePassword(credentialsId: 'j104364', usernameVariable: 'USERNAME', passwordVariable: 'USER_AUTH'),
+                buildScript.usernamePassword(credentialsId: 'TestUserID', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS')
+        ]) {
+            new MavenBuilder().executeMavenTest(
+                    path_cucumber,
+                    "${buildScript.USERNAME}", "${buildScript.PASSWORD}",
+                    "${buildScript.TEST_USER}", "${buildScript.TEST_PASS}"
+            )
+        }
+    }
 }

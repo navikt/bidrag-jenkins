@@ -74,17 +74,15 @@ class MavenBuilder implements Builder {
         DependentVersions.verify(buildDescriptor)
     }
 
-    void executeMavenTest(String testPath) {
+    void executeMavenTest(String testPath, String username, String auth, String testUser, String testAuth) {
         pipelineEnvironment.buildScript.sh "cd ${testPath}"
         pipelineEnvironment.execute(
                 "docker run --rm -v ${testPath}:/usr/src/mymaven -w /usr/src/mymaven " +
                         "-v \"${pipelineEnvironment.homeFolderJenkins}/.m2\":/root/.m2 ${pipelineEnvironment.buildImage} " +
-                        "mvn clean install " +
+                        "mvn clean install " + // install will generate cucumber reports in target folder...
                         "-DENVIRONMENT=${pipelineEnvironment.fetchEnvironment()} " +
-                        "-DUSERNAME=${pipelineEnvironment.buildScript.USERNAME} " +
-                        "-DUSER_AUTH=${pipelineEnvironment.buildScript.PASSWORD} " +
-                        "-DTEST_USER=${pipelineEnvironment.buildScript.TEST_USER} " +
-                        "-DTEST_AUTH=${pipelineEnvironment.buildScript.TEST_PASS} " +
+                        "-DUSERNAME=$username -DUSER_AUTH=$auth " +
+                        "-DTEST_USER=$testUser -DTEST_AUTH=$testAuth " +
                         "-Dcucumber.options='--tags \"@${pipelineEnvironment.gitHubProjectName}\"'"
         )
     }

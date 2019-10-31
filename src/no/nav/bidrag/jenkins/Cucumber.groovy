@@ -71,25 +71,7 @@ class Cucumber {
     }
 
     String runCucumberBackendTests() {
-        String result = 'SUCCESS'
-
         pipelineEnvironment.checkoutCucumberBackendFeatureOrUseMaster()
-        pipelineEnvironment.println("[INFO] Run bidrag-cucumber-backend tests")
-
-        try {
-            pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-                try {
-                    new MavenBuilder(pipelineEnvironment).executeMavenTest(pipelineEnvironment.path_cucumber)
-                } catch (Exception e) {
-                    pipelineEnvironment.println('Unstable build: ' + e)
-                    result = 'UNSTABLE'
-                }
-            }
-        } catch (Exception e) {
-            pipelineEnvironment.println("Failed build: " + e)
-            result = 'FAIL'
-        }
-
-        return result
+        pipelineEnvironment.executeMavenTest()
     }
 }
