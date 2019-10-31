@@ -1,7 +1,5 @@
 package no.nav.bidrag.jenkins
 
-import no.nav.bidrag.jenkins.maven.MavenBuilder
-
 class Cucumber {
     private PipelineEnvironment pipelineEnvironment
 
@@ -73,21 +71,21 @@ class Cucumber {
     String runCucumberBackendTests() {
         pipelineEnvironment.checkoutCucumberBackendFeatureOrUseMaster()
 
-        try {
+//        try {
             pipelineEnvironment.executeMavenTest()
-        } catch (err) {  // Failures should not terminate the pipeline
-            println("SOMETHING FISHY HAPPENED: " + err)
-            return "UNSTABLE"
-        }
-
-        pipelineEnvironment.buildScript.cucumber buildStatus: 'UNSTABLE',
-                fileIncludePattern: '../bidrag-cucumber-backend/target/cucumber-report/cucumber.json',
-                trendsLimit: 10,
-                classifications: [
-                        [
-                                'key'  : 'Browser',
-                                'value': 'Firefox'
-                        ]
-                ]
+//        } catch (err) {  // Failures should not terminate the pipeline
+//            println("SOMETHING FISHY HAPPENED: " + err)
+//            return "UNSTABLE"
+//        }
+//
+//        pipelineEnvironment.buildScript.cucumber buildStatus: 'UNSTABLE',
+//                fileIncludePattern: '../bidrag-cucumber-backend/target/cucumber-report/cucumber.json',
+//                trendsLimit: 10,
+//                classifications: [
+//                        [
+//                                'key'  : 'Browser',
+//                                'value': 'Firefox'
+//                        ]
+//                ]
     }
 }
