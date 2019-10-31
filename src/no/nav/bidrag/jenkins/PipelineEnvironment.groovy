@@ -194,7 +194,7 @@ class PipelineEnvironment {
 
         buildScript.withCredentials([
                 buildScript.usernamePassword(credentialsId: 'j104364', usernameVariable: 'USERNAME', passwordVariable: 'USER_AUTH'),
-                buildScript.usernamePassword(credentialsId: 'Z992903', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS')
+                buildScript.usernamePassword(credentialsId: 'z992903', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS')
         ]) {
             new MavenBuilder(this).executeMavenTest(
                     path_cucumber,
