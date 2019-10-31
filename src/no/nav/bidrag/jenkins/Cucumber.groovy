@@ -72,6 +72,22 @@ class Cucumber {
 
     String runCucumberBackendTests() {
         pipelineEnvironment.checkoutCucumberBackendFeatureOrUseMaster()
-        pipelineEnvironment.executeMavenTest()
+
+        try {
+            pipelineEnvironment.executeMavenTest()
+        } catch (err) {  // Failures should not terminate the pipeline
+            println("SOMETHING FISHY HAPPENED: " + err)
+            return "UNSTABLE"
+        }
+
+        pipelineEnvironment.buildScript.cucumber buildStatus: 'UNSTABLE',
+                fileIncludePattern: '**/cucumber.json',
+                trendsLimit: 10,
+                classifications: [
+                        [
+                                'key'  : 'Browser',
+                                'value': 'Firefox'
+                        ]
+                ]
     }
 }
