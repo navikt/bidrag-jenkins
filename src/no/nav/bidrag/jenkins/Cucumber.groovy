@@ -81,7 +81,7 @@ class Cucumber {
         }
 
         pipelineEnvironment.buildScript.cucumber buildStatus: 'UNSTABLE',
-                fileIncludePattern: '**/cucumber.json',
+                fileIncludePattern: '../bidrag-cucumber-backend/target/cucumber-report/cucumber.json',
                 trendsLimit: 10,
                 classifications: [
                         [
