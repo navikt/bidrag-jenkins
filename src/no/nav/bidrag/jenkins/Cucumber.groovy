@@ -68,29 +68,24 @@ class Cucumber {
                 ]
     }
 
-    String runCucumberKotlinTests() {
-        String result = 'SUCCESS'
+    String runCucumberBackendTests() {
+        pipelineEnvironment.checkoutCucumberBackendFeatureOrUseMaster()
 
-        pipelineEnvironment.println("[INFO] Run cucumber tests for kotlin")
-
-        try {
-            pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-                try {
-                    runBidragCucumberWithKotlin()
-                } catch (Exception e) {
-                    pipelineEnvironment.println('Unstable build: ' + e)
-                    result = 'UNSTABLE'
-                }
-            }
-        } catch (Exception e) {
-            pipelineEnvironment.println("Failed build: " + e)
-            result = 'FAIL'
-        }
-
-        return result
-    }
-
-    private void runBidragCucumberWithKotlin() {
-        pipelineEnvironment.initMavenBuilder().executeMavenTest(pipelineEnvironment.path_cucumber)
+//        try {
+            pipelineEnvironment.executeMavenTest()
+//        } catch (err) {  // Failures should not terminate the pipeline
+//            println("SOMETHING FISHY HAPPENED: " + err)
+//            return "UNSTABLE"
+//        }
+//
+//        pipelineEnvironment.buildScript.cucumber buildStatus: 'UNSTABLE',
+//                fileIncludePattern: '../bidrag-cucumber-backend/target/cucumber-report/cucumber.json',
+//                trendsLimit: 10,
+//                classifications: [
+//                        [
+//                                'key'  : 'Browser',
+//                                'value': 'Firefox'
+//                        ]
+//                ]
     }
 }
