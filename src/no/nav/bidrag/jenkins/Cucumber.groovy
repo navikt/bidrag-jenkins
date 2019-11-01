@@ -14,7 +14,9 @@ class Cucumber {
         pipelineEnvironment.println("[INFO] Run cucumber tests")
 
         try {
-            pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+            pipelineEnvironment.buildScript.withCredentials([
+                    [$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']
+            ]) {
                 try {
                     runBidragCucumberWithDocker()
                 } catch (Exception e) {
@@ -40,7 +42,7 @@ class Cucumber {
         // Set 'project' env variable to select features prefixed with project name
         pipelineEnvironment.buildScript.withCredentials([
                 [$class: 'UsernamePasswordMultiBinding', credentialsId: 'naisUploader', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'],
-                [$class: 'UsernamePasswordMultiBinding', credentialsId: 'testUser', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS']
+                [$class: 'UsernamePasswordMultiBinding', credentialsId: '889b0a78-e462-41c5-a49d-3686af79e0b4', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS']
         ]) {
             pipelineEnvironment.buildScript.dir('bidrag-cucumber') {
                 pipelineEnvironment.execute('npm install')
