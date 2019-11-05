@@ -79,6 +79,14 @@ class Cucumber {
             return "UNSTABLE"
         }
 
-        cucumber buildStatus: 'UNSTABLE', fileIncludePattern:'**/cucumber.json'
+        pipelineEnvironment.buildScript.cucumber buildStatus: 'UNSTABLE',
+                fileIncludePattern: 'bidrag-cucumber-backend/target/cucumber-report/cucumber.json',
+                trendsLimit: 10,
+                classifications: [
+                        [
+                                'key'  : 'Browser',
+                                'value': 'Firefox'
+                        ]
+                ]
     }
 }
