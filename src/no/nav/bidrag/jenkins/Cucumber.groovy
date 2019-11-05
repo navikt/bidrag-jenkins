@@ -76,9 +76,14 @@ class Cucumber {
             pipelineEnvironment.executeMavenTest()
         } catch (err) {  // Failures should not terminate the pipeline
             println("SOMETHING FISHY HAPPENED: " + err)
+            writeCucumberBackendReports()
             return "UNSTABLE"
         }
 
+        writeCucumberBackendReports()
+    }
+
+    private void writeCucumberBackendReports() {
         pipelineEnvironment.buildScript.cucumber buildStatus: 'UNSTABLE',
                 fileIncludePattern: 'bidrag-cucumber-backend/target/cucumber-report/cucumber.json',
                 trendsLimit: 10,
