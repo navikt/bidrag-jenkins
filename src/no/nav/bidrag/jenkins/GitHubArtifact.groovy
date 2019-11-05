@@ -49,7 +49,7 @@ abstract class GitHubArtifact {
                 boolean bidragCucumberDoesNotExist = !new File(pipelineEnvironment.path_cucumber).exists()
 
                 if (bidragCucumberDoesNotExist) {
-                    pipelineEnvironment.buildScript.sh "ch ${pipelineEnvironment.path_jenkins_workspace}"
+                    pipelineEnvironment.buildScript.sh "cd ${pipelineEnvironment.path_jenkins_workspace}"
                     pipelineEnvironment.buildScript.sh "echo 'CUCUMBER-BACKEND CLONE: ${pipelineEnvironment.path_jenkins_workspace}......'"
                     pipelineEnvironment.buildScript.sh(script: "git clone https://${pipelineEnvironment.buildScript.USERNAME}:${pipelineEnvironment.buildScript.PASSWORD}@github.com/navikt/bidrag-cucumber-backend")
                 }
