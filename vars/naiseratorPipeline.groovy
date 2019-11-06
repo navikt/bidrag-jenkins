@@ -34,7 +34,7 @@ def call(body) {
                         pipelineEnvironment.homeFolderJenkins = "$HOME"
                         pipelineEnvironment.buildScript = this
                         pipelineEnvironment.path_jenkins_workspace = "$JENKINS_HOME" + "/workspace"
-                        pipelineEnvironment.path_cucumber = pipelineEnvironment.path_jenkins_workspace + "/bidrag-cucumber"
+                        pipelineEnvironment.path_cucumber = pipelineEnvironment.path_jenkins_workspace + "/bidrag-cucumber-backend"
                         pipelineEnvironment.path_workspace = "$WORKSPACE"
 
                         boolean isAutomatedBuild = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) == null
@@ -49,7 +49,7 @@ def call(body) {
                             pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
                             pipelineEnvironment.naisBinary = "/usr/bin/nais"
 
-                            gitHubArtifact.checkoutGlobalCucumberFeatureOrUseMaster()
+                            pipelineEnvironment.checkoutCucumberBackendFeatureOrUseMaster()
                         }
                     }
                 }
