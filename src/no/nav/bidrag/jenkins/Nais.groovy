@@ -126,6 +126,6 @@ class Nais {
         pipelineEnvironment.println("replace docker tag in nais.yaml with: ")
         String currentImageVersion = pipelineEnvironment.fetchImageVersion()
         pipelineEnvironment.println currentImageVersion
-        pipelineEnvironment.execute('sed -E -i "s/\\{\\{version\\}\\}/${currentImageVersion}/" nais.yaml')
+        pipelineEnvironment.execute("sed -E -i \"s/\\{\\{version\\}\\}/${currentImageVersion}/\" nais.yaml")
     }
 }
