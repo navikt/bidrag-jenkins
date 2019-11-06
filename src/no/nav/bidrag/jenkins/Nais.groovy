@@ -117,7 +117,14 @@ class Nais {
     }
 
     def applyNaiserator() {
+        replaceDockerTag()
         pipelineEnvironment.println("apply nais.yaml with kubectl")
         pipelineEnvironment.execute("kubectl apply -f nais.yaml")
+    }
+
+    private def replaceDockerTag() {
+        pipelineEnvironment.println("replace docker tag in nais.yaml")
+        String currentImageVersion = pipelineEnvironment.fetchImageVersion()
+        pipelineEnvironment.execute('sed -E -i "s/\\{\\{version\\}\\}/$currentImageVersion/" nais.yaml')
     }
 }
