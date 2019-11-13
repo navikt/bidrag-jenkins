@@ -74,8 +74,6 @@ class Nais {
 
             Integer oldpods = 0
             Integer newpods = 0
-            String appDesc = pipelineEnvironment.buildScript.sh(script: "kubectl -n ${ns} describe application ${app}", returnStdout: true)
-            pipelineEnvironment.println appDesc
             String str = pipelineEnvironment.buildScript.sh(script: "kubectl -n ${ns} get pod -l app=${app}", returnStdout: true)
             pipelineEnvironment.println str
 
