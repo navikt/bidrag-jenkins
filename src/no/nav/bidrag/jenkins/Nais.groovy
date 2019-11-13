@@ -56,7 +56,7 @@ class Nais {
     }
 
     private boolean waitForCurrentBuildToDeploy() {
-        String app = pipelineEnvironment.gitHubProjectName + '-' + 'naiserator'
+        String app = pipelineEnvironment.gitHubProjectName
         String currentImageVersion = pipelineEnvironment.fetchImageVersion()
         String ns = pipelineEnvironment.fetchNamespace()
         Integer sleepInterval = 15000
@@ -91,9 +91,6 @@ class Nais {
 
                             if (it.trim().startsWith("APP_VERSION:")) {
                                 String appVersion = it.tokenize(':').get(1).trim()
-
-                                pipelineEnvironment.println("==> appVersion $appVersion")
-                                pipelineEnvironment.println("==> currentImageVersion $currentImageVersion")
 
                                 if (appVersion != currentImageVersion) {
                                     oldpods++
