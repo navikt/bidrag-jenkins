@@ -117,9 +117,10 @@ class Nais {
     }
 
     def applyNaiserator() {
+        String ns = pipelineEnvironment.fetchNamespace()
         replaceDockerTag()
         pipelineEnvironment.println("apply nais.yaml with kubectl")
-        pipelineEnvironment.execute("kubectl apply -f nais.yaml")
+        pipelineEnvironment.execute("kubectl apply --namespace=${ns} -f nais.yaml")
     }
 
     private def replaceDockerTag() {
