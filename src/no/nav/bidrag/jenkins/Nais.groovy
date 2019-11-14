@@ -89,6 +89,9 @@ class Nais {
                         desc.tokenize("\n").each {
                             // APP_VERSION:                   1.0.176-SNAPSHOT-q0-16899879708
 
+                            String itTrim = it.trim()
+                            pipelineEnvironment.println itTrim
+
                             if (it.trim().startsWith("APP_VERSION:")) {
                                 String appVersion = it.tokenize(':').get(1).trim()
 
