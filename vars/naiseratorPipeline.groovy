@@ -83,7 +83,7 @@ def call(body) {
 
             stage("wait for deploy and termination of old pods") {
                 when { expression { pipelineEnvironment.canRunPipeline } }
-                steps { script { nais.waitForDeployAndOldPodsTerminated() } }
+                steps { script { nais.waitForNaiseratorDeployAndOldPodsTerminated() } }
             }
 
             stage("run cucumber tests for backend") {
