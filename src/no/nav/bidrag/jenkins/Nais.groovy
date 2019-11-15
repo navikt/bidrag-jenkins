@@ -207,7 +207,6 @@ class Nais {
         String currentImageVersion = pipelineEnvironment.fetchImageVersion()
         pipelineEnvironment.println currentImageVersion
         pipelineEnvironment.execute("sed -E -i \"s/\\{\\{version\\}\\}/${currentImageVersion}/\" nais.yaml")
-        pipelineEnvironment.execute("cat nais.yaml")
     }
 
     private def replaceIngress() {
