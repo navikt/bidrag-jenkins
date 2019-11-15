@@ -213,7 +213,7 @@ class Nais {
     private def replaceIngress() {
         pipelineEnvironment.println("replace ingress in nais.yaml with: ")
         String nameSpace = '-' + pipelineEnvironment.fetchNamespace
-        String ingress = 'https://' + pipelineEnvironment.gitHubProjectName() + nameSpace + '.nais.preprod.local'
+        String ingress = 'https://' + pipelineEnvironment.gitHubProjectName() + nameSpace + '.nais.preprod.local/'
         pipelineEnvironment.println ingress
         pipelineEnvironment.execute("sed -E -i \"s/\\{\\{ingress\\}\\}/${ingress}/\" nais.yaml")
         pipelineEnvironment.execute("cat nais.yaml")
