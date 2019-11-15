@@ -163,7 +163,6 @@ class Nais {
                         String desc = pipelineEnvironment.buildScript.sh(script: "kubectl -n ${ns} describe pod ${podId}", returnStdout: true)
 
                         desc.tokenize("\n").each {
-                            pipelineEnvironment.println '==> it: ' + it
                             if (it.trim().contains("NAIS_APP_IMAGE:")) {
                                 String versionOfNaisAppImage = it.tokenize(':').get(3).trim()
 
@@ -198,6 +197,7 @@ class Nais {
     def applyNaiserator() {
         String ns = pipelineEnvironment.fetchNamespace()
         replaceDockerTag()
+        replaceIngress()
         pipelineEnvironment.println("apply nais.yaml with kubectl")
         pipelineEnvironment.execute("kubectl apply --namespace=${ns} -f nais.yaml")
     }
@@ -207,6 +207,15 @@ class Nais {
         String currentImageVersion = pipelineEnvironment.fetchImageVersion()
         pipelineEnvironment.println currentImageVersion
         pipelineEnvironment.execute("sed -E -i \"s/\\{\\{version\\}\\}/${currentImageVersion}/\" nais.yaml")
+        pipelineEnvironment.execute("cat nais.yaml")
+    }
+
+    private def replaceIngress() {
+        pipelineEnvironment.println("replace ingress in nais.yaml with: ")
+        String nameSpace = '-' + pipelineEnvironment.fetchNamespace
+        String ingress = 'https://' + pipelineEnvironment.gitHubProjectName() + nameSpace + '.nais.preprod.local'
+        pipelineEnvironment.println ingress
+        pipelineEnvironment.execute("sed -E -i \"s/\\{\\{ingress\\}\\}/${ingress}/\" nais.yaml")
         pipelineEnvironment.execute("cat nais.yaml")
     }
 }
