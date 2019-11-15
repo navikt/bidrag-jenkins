@@ -213,7 +213,7 @@ class Nais {
         pipelineEnvironment.println("replace ingress in nais.yaml with: ")
         String nameSpace = '-' + pipelineEnvironment.fetchNamespace()
         if (namespace == "-default" || namespace == "-q0") {
-            namespace = ''
+            namespace = ""
         }
         String ingress = 'https:\\/\\/' + pipelineEnvironment.gitHubProjectName + nameSpace + '.nais.preprod.local\\/'
         pipelineEnvironment.println ingress
