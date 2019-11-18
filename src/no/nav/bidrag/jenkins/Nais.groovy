@@ -206,7 +206,7 @@ class Nais {
         pipelineEnvironment.println("replace docker tag in nais.yaml with: ")
         String currentImageVersion = pipelineEnvironment.fetchImageVersion()
         pipelineEnvironment.println currentImageVersion
-        pipelineEnvironment.execute("sed -E -i \"s/\\{\\{version\\}\\}/${currentImageVersion}/\" nais.yaml")
+        pipelineEnvironment.execute("sed -i 's+{{version}}+${currentImageVersion}+' nais.yaml")
     }
 
     private def replaceIngress() {
@@ -215,9 +215,9 @@ class Nais {
         if (nameSpace == '-default' || nameSpace == '-q0') {
             nameSpace = ''
         }
-        String ingress = 'https:\\/\\/' + pipelineEnvironment.gitHubProjectName + nameSpace + '.nais.preprod.local\\/'
+        String ingress = 'https://' + pipelineEnvironment.gitHubProjectName + nameSpace + '.nais.preprod.local/'
         pipelineEnvironment.println ingress
-        pipelineEnvironment.execute("sed -E -i \"s/\\{\\{ingress\\}\\}/${ingress}/\" nais.yaml")
+        pipelineEnvironment.execute("sed -i 's+{{ingress}}+${ingress}+' nais.yaml")
         pipelineEnvironment.execute("cat nais.yaml")
     }
 }
