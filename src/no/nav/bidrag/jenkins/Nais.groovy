@@ -163,6 +163,9 @@ class Nais {
                         String desc = pipelineEnvironment.buildScript.sh(script: "kubectl -n ${ns} describe pod ${podId}", returnStdout: true)
 
                         desc.tokenize("\n").each {
+                            String itTrim = it.trim()
+                            pipelineEnvironment.println itTrim
+
                             if (it.trim().contains("NAIS_APP_IMAGE:")) {
                                 String versionOfNaisAppImage = it.tokenize(':').get(3).trim()
 
