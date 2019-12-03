@@ -163,8 +163,6 @@ class Nais {
                         String desc = pipelineEnvironment.buildScript.sh(script: "kubectl -n ${ns} describe pod ${podId}", returnStdout: true)
 
                         desc.tokenize("\n").each {
-                            String itTrim = it.trim()
-                            pipelineEnvironment.println itTrim
 
                             if (it.trim().contains("NAIS_APP_IMAGE:")) {
                                 String versionOfNaisAppImage = it.tokenize(':').get(3).trim()
@@ -222,5 +220,12 @@ class Nais {
         pipelineEnvironment.println ingress
         pipelineEnvironment.execute("sed -i 's+{{ingress}}+${ingress}+' nais.yaml")
         pipelineEnvironment.execute("cat nais.yaml")
+    }
+
+    private def replaceNamespace() {
+        pipelineEnvironment.println("replace namespace in nais.yaml with: ")
+        String nameSpace = pipelineEnvironment.fetchNamespace()
+        pipelineEnvironment.println nameSpace
+        pipelineEnvironment.execute("sed -i 's+{{namespace}}+${nameSpace}+' nais.yaml")
     }
 }
