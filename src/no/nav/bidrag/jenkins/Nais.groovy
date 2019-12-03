@@ -200,6 +200,7 @@ class Nais {
         replaceDockerTag()
         replaceIngress()
         replaceNamespace()
+        pipelineEnvironment.execute("cat nais.yaml")
         pipelineEnvironment.println("apply nais.yaml with kubectl")
         pipelineEnvironment.execute("kubectl apply --namespace=${ns} -f nais.yaml")
     }
@@ -220,7 +221,6 @@ class Nais {
         String ingress = 'https://' + pipelineEnvironment.gitHubProjectName + nameSpace + '.nais.preprod.local/'
         pipelineEnvironment.println ingress
         pipelineEnvironment.execute("sed -i 's+{{ingress}}+${ingress}+' nais.yaml")
-        pipelineEnvironment.execute("cat nais.yaml")
     }
 
     private def replaceNamespace() {
