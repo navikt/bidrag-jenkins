@@ -199,6 +199,7 @@ class Nais {
         String ns = pipelineEnvironment.fetchNamespace()
         replaceDockerTag()
         replaceIngress()
+        replaceNamespace()
         pipelineEnvironment.println("apply nais.yaml with kubectl")
         pipelineEnvironment.execute("kubectl apply --namespace=${ns} -f nais.yaml")
     }
