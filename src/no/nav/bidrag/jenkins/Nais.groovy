@@ -165,9 +165,9 @@ class Nais {
                         desc.tokenize("\n").each {
 
                             if (it.trim().contains("NAIS_APP_IMAGE:")) {
+                                pipelineEnvironment.println 'full environment var : ' + it
                                 String versionOfNaisAppImage = it.tokenize(':').get(3).trim()
 
-                                pipelineEnvironment.println 'full environment var : ' + it
                                 pipelineEnvironment.println 'versionOfNaisAppImage: ' + versionOfNaisAppImage
                                 pipelineEnvironment.println 'currentImageVersion  : ' + currentImageVersion
 
