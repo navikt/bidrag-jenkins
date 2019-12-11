@@ -166,7 +166,12 @@ class Nais {
 
                             if (it.trim().contains("NAIS_APP_IMAGE:")) {
                                 pipelineEnvironment.println 'full environment var : ' + it
-                                String versionOfNaisAppImage = it.tokenize(':').get(3).trim()
+                                String versionOfNaisAppImage
+                                if (it.tokenize(':').get(1).trim().contains("repo")) {
+                                    versionOfNaisAppImage = it.tokenize(':').get(3).trim()
+                                } else {
+                                    versionOfNaisAppImage = it.tokenize(':').get(1).trim()
+                                }
 
                                 pipelineEnvironment.println 'versionOfNaisAppImage: ' + versionOfNaisAppImage
                                 pipelineEnvironment.println 'currentImageVersion  : ' + currentImageVersion
