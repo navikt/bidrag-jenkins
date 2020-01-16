@@ -83,7 +83,7 @@ class MavenBuilder implements Builder {
                         "-DENVIRONMENT=${pipelineEnvironment.fetchEnvironment()} " +
                         "-DUSERNAME=$username -DUSER_AUTH=$auth " +
                         "-DTEST_USER=$testUser -DTEST_AUTH=$testAuth " +
-                        "-DPIP_USER=$pipUser -DPIP_AUTH=$pipAuth" +
+                        "-DPIP_USER=$pipUser -DPIP_AUTH=$pipAuth " +
                         "-Dcucumber.options='--tags \"@${pipelineEnvironment.gitHubProjectName}\"'"
         )
     }
