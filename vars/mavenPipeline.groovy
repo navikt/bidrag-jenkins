@@ -42,7 +42,6 @@ def call(body) {
                         } else {
                             gitHubArtifact.checkout()
                             pipelineEnvironment.artifactVersion = gitHubArtifact.fetchVersion()
-                            pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
                         }
                     }
                 }

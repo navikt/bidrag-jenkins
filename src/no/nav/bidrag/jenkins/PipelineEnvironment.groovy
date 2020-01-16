@@ -11,17 +11,18 @@ class PipelineEnvironment {
     boolean canRunPipeline = true
     def buildScript
 
-    String appConfig
+    final String appConfig = "nais.yaml"
+    final String dockerRepo = "repo.adeo.no:5443"
+    final String naisBinary = "/usr/bin/nais"
+
     String artifactVersion
     String branchName
     String buildImage
     String buildType
-    String dockerRepo
     String environmentInDevelopBranch
     String gitHubProjectName
     String homeFolderJenkins
     String lastCommitter
-    String naisBinary
     String path_cucumber
     String path_jenkins_workspace
     String path_workspace

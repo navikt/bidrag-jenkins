@@ -43,12 +43,8 @@ def call(body) {
                             pipelineEnvironment.doNotRunPipeline("$BUILD_ID")
                         } else {
                             gitHubArtifact.checkout("$BRANCH_NAME")
-
-                            pipelineEnvironment.appConfig = "nais.yaml"
                             pipelineEnvironment.artifactVersion = gitHubArtifact.fetchVersion()
-                            pipelineEnvironment.dockerRepo = "repo.adeo.no:5443"
-                            pipelineEnvironment.naisBinary = "/usr/bin/nais"
-                        }
+                       }
                     }
                 }
             }
