@@ -74,7 +74,7 @@ class MavenBuilder implements Builder {
         DependentVersions.verify(buildDescriptor)
     }
 
-    void executeMavenTest(String testPath, String username, String auth, String testUser, String testAuth) {
+    void executeMavenTest(String testPath, String username, String auth, String testUser, String testAuth, String pipUser, String pipAuth) {
         pipelineEnvironment.buildScript.sh "cd ${testPath}"
         pipelineEnvironment.execute(
                 "docker run --rm -v ${testPath}:/usr/src/mymaven -w /usr/src/mymaven " +
@@ -83,6 +83,7 @@ class MavenBuilder implements Builder {
                         "-DENVIRONMENT=${pipelineEnvironment.fetchEnvironment()} " +
                         "-DUSERNAME=$username -DUSER_AUTH=$auth " +
                         "-DTEST_USER=$testUser -DTEST_AUTH=$testAuth " +
+                        "-DPIP_USER=$pipUser -DPIP_AUTH=$pipAuth" +
                         "-Dcucumber.options='--tags \"@${pipelineEnvironment.gitHubProjectName}\"'"
         )
     }
