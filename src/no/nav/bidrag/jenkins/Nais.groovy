@@ -205,6 +205,8 @@ class Nais {
         replaceDockerTag()
         replaceIngress()
         replaceNamespace()
+        replaceBidragUrlNs()
+        replaceEnvName()
         pipelineEnvironment.execute("cat nais.yaml")
         pipelineEnvironment.println("apply nais.yaml with kubectl")
         pipelineEnvironment.execute("kubectl apply --namespace=${ns} -f nais.yaml")
@@ -233,5 +235,25 @@ class Nais {
         String nameSpace = pipelineEnvironment.fetchNamespace()
         pipelineEnvironment.println nameSpace
         pipelineEnvironment.execute("sed -i 's+{{namespace}}+${nameSpace}+' nais.yaml")
+    }
+
+    private def replaceBidragUrlNs() {
+        pipelineEnvironment.println("replace bidrag url in nais.yaml with: ")
+        String bidragurlns = pipelineEnvironment.fetchNamespace()
+        if (bidragurlns == '-default' || bidragurlns == '-q0') {
+            bidragurlns = ''
+        }
+        pipelineEnvironment.println bidragurlns
+        pipelineEnvironment.execute("sed -i 's+{{bidragurlns}}+${bidragurlns}+' nais.yaml")
+    }
+
+    private def replaceEnvName() {
+        pipelineEnvironment.println("replace env name in nais.yaml with: ")
+        String envname = pipelineEnvironment.fetchNamespace()
+        if (envname == '-default') {
+            envname = 'q0'
+        }
+        pipelineEnvironment.println envname
+        pipelineEnvironment.execute("sed -i 's+{{envname}}+${envname}+' nais.yaml")
     }
 }
