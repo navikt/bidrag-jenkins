@@ -239,7 +239,7 @@ class Nais {
 
     private def replaceBidragUrlNs() {
         pipelineEnvironment.println("replace bidrag url in nais.yaml with: ")
-        String bidragurlns = pipelineEnvironment.fetchNamespace()
+        String bidragurlns = '-' + pipelineEnvironment.fetchNamespace()
         if (bidragurlns == '-default' || bidragurlns == '-q0') {
             bidragurlns = ''
         }
@@ -250,7 +250,7 @@ class Nais {
     private def replaceEnvName() {
         pipelineEnvironment.println("replace env name in nais.yaml with: ")
         String envname = pipelineEnvironment.fetchNamespace()
-        if (envname == '-default') {
+        if (envname == 'default') {
             envname = 'q0'
         }
         pipelineEnvironment.println envname
