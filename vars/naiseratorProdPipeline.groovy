@@ -7,7 +7,7 @@ def call(body) {
     body.delegate = pipelineParams
     body()
 
-    println "naisPipeline: pipelineParams = ${pipelineParams}"
+    println "naiseratorProdPipeline: pipelineParams = ${pipelineParams}"
 
     PipelineEnvironment pipelineEnvironment = new PipelineEnvironment(
             pipelineParams.gitHubProjectName,
@@ -17,7 +17,6 @@ def call(body) {
     )
 
     Builder builder = pipelineEnvironment.initBuilder()
-    Cucumber cucumber = new Cucumber(pipelineEnvironment)
     DockerImage dockerImage = new DockerImage(pipelineEnvironment)
     GitHubArtifact gitHubArtifact = pipelineEnvironment.initGitHubArtifact()
     Nais nais = new Nais(pipelineEnvironment)
@@ -30,60 +29,35 @@ def call(body) {
                 steps {
                     script {
                         sh 'env'
-                        pipelineEnvironment.branchName = "$BRANCH_NAME"
+                        pipelineEnvironment.branchName = "release"
                         pipelineEnvironment.homeFolderJenkins = "$HOME"
                         pipelineEnvironment.buildScript = this
                         pipelineEnvironment.path_jenkins_workspace = "$JENKINS_HOME/workspace"
-                        pipelineEnvironment.path_cucumber = "$WORKSPACE/bidrag-cucumber-backend"
-                        pipelineEnvironment.path_workspace = "$WORKSPACE"
-
-                        boolean isAutomatedBuild = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) == null
-
-                        if (isAutomatedBuild && gitHubArtifact.isLastCommitterFromPipeline()) {
-                            pipelineEnvironment.doNotRunPipeline("$BUILD_ID")
-                        } else {
-                            gitHubArtifact.checkout("$BRANCH_NAME")
-                            pipelineEnvironment.artifactVersion = gitHubArtifact.fetchVersion()
-                            pipelineEnvironment.checkoutCucumberBackendFeatureOrUseMaster()
-                        }
+                        gitHubArtifact.checkout(pipelineEnvironment.branchName)
+                        pipelineEnvironment.artifactVersion = gitHubArtifact.fetchVersion()
+                        pipelineEnvironment.checkoutCucumberBackendFeatureOrUseMaster()
                     }
                 }
             }
 
             stage("Verify dependency versions") {
-                when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { builder.verifySnapshotDependencies(gitHubArtifact.fetchBuildDescriptor()) } }
             }
 
             stage("build and test") {
-                when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { builder.buildAndTest() } }
             }
 
-            // major/minor versions are always edited manually: todo: tag final versions when master...
-            stage("bump patch version on develop") {
-                when { expression { pipelineEnvironment.canRunPipelineOnDevelop(gitHubArtifact.isLastCommitterFromPipeline()) } }
-                steps { script { gitHubArtifact.updatePatchVersion(builder) } }
-            }
-
             stage("release and publish docker image") {
-                when { expression { pipelineEnvironment.canRunPipeline } }
-                steps { script { dockerImage.releaseAndPublish() } }
+                steps { script { dockerImage.releaseAndPublishForProd() } }
             }
 
             stage("apply naiserator") {
-                when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { nais.applyNaiserator() } }
             }
 
             stage("wait for deploy and termination of old pods") {
-                when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { nais.waitForNaiseratorDeployAndOldPodsTerminated() } }
-            }
-
-            stage("run cucumber tests for backend") {
-                when { expression { pipelineEnvironment.canRunPipelineWithMaven() } }
-                steps { script { result = cucumber.runCucumberBackendTests() } }
             }
         }
 
@@ -91,9 +65,7 @@ def call(body) {
             always {
                 script {
                     gitHubArtifact.resetWorkspace()
-                    gitHubArtifact.resetCucumber()
                     dockerImage.deleteImagesNotUsed()
-                    pipelineEnvironment.deleteBuildWhenPipelineIsNotExecuted(Jenkins.instance.items)
                 }
             }
         }

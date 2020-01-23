@@ -15,7 +15,15 @@ class DockerImage {
         }
     }
 
+    void releaseAndPublishForProd() {
+        releaseAndPublish(true)
+    }
+
     void releaseAndPublish() {
+        releaseAndPublish(false)
+    }
+
+    void releaseAndPublish(boolean gotoProd) {
         if (pipelineEnvironment.isSnapshot()) {
             String workspaceFolder = pipelineEnvironment.path_workspace
 
