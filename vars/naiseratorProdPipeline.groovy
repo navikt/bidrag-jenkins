@@ -35,7 +35,6 @@ def call(body) {
                         pipelineEnvironment.path_jenkins_workspace = "$JENKINS_HOME/workspace"
                         gitHubArtifact.checkout(pipelineEnvironment.branchName)
                         pipelineEnvironment.artifactVersion = gitHubArtifact.fetchProdVersion()
-                        pipelineEnvironment.checkoutCucumberBackendFeatureOrUseMaster()
                     }
                 }
             }
