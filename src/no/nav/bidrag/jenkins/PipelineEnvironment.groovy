@@ -155,7 +155,7 @@ class PipelineEnvironment {
     }
 
     String fetchNamespace() {
-        return isDevelop() ? "default" : fetchEnvironment()
+        return isDevelop() || isRelease() ? "default" : fetchEnvironment()
     }
 
     boolean canRunPipelineOnDevelop(boolean isLastCommitFromPipeline) {

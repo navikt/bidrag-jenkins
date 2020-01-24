@@ -52,7 +52,7 @@ def call(body) {
             }
 
             stage("apply naiserator") {
-                steps { script { nais.applyNaiserator() } }
+                steps { script { nais.applyNaiseratorForProd() } }
             }
 
             stage("wait for deploy and termination of old pods") {
