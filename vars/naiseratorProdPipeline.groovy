@@ -56,7 +56,7 @@ def call(body) {
             }
 
             stage("wait for deploy and termination of old pods") {
-                steps { script { nais.waitForNaiseratorDeployAndOldPodsTerminated() } }
+                steps { script { nais.waitForNaiseratorDeployAndOldPodsTerminatedInProd() } }
             }
         }
 
