@@ -207,6 +207,7 @@ class Nais {
         replaceNamespace()
         replaceBidragUrlNs()
         replaceEnvName()
+        pipelineEnvironment.execute("env")
         pipelineEnvironment.execute("cat nais.yaml")
         pipelineEnvironment.println("apply nais.yaml with kubectl")
         pipelineEnvironment.execute("kubectl apply --namespace=${ns} -f nais.yaml")
