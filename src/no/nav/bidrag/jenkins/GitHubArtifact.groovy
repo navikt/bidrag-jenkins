@@ -76,10 +76,6 @@ abstract class GitHubArtifact {
         return fetchBuildDescriptor().version
     }
 
-    String fetchProdVersion() {
-        return fetchVersion().replace("-SNAPSHOT", "")
-    }
-
     String fetchMajorVersion() {
         return fetchMajorVersion(fetchBuildDescriptor())
     }
