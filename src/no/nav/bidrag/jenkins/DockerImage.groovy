@@ -15,33 +15,42 @@ class DockerImage {
         }
     }
 
-    void releaseAndPublishForProd() {
-        releaseAndPublish(true)
-    }
-
     void releaseAndPublish() {
-        releaseAndPublish(false)
-    }
-
-    void releaseAndPublish(boolean gotoProd) {
         String workspaceFolder = pipelineEnvironment.path_workspace
 
         if (pipelineEnvironment.buildImage != null) {
             pipelineEnvironment.execute "docker run --rm -v $workspaceFolder:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.buildImage} mvn clean install -DskipTests -Dhendelse.environments=${pipelineEnvironment.fetchEnvironment()} -B -e"
         }
 
-        String imgVersion
+        String imgVersion = pipelineEnvironment.fetchImageVersion()
 
-        if (gotoProd) {
-            imgVersion = pipelineEnvironment.fetchImageVersionForProd()
-        } else {
-            imgVersion = pipelineEnvironment.fetchImageVersion()
+        pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.artifactVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:$imgVersion ."
+
+        boolean pushNewTag = tagGitHubArtifact(false)
+        publishDockerImage()
+
+        if (pushNewTag) {
+            pipelineEnvironment.execute "git push --tags"
         }
+    }
+
+    void releaseAndPublishForProd() {
+        String workspaceFolder = pipelineEnvironment.path_workspace
+        pipelineEnvironment.execute("mkdir target")
+
+        if (pipelineEnvironment.buildImage != null) {
+            pipelineEnvironment.execute "docker run --rm -v $workspaceFolder:/usr/src/mymaven -w /usr/src/mymaven \
+                                                    -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 \
+                                                    -v '${pipelineEnvironment.execute "pwd"}/target'://usr/src/mymaven/target \
+                                                    ${pipelineEnvironment.buildImage} mvn install -DskipTests -Dhendelse.environments=${pipelineEnvironment.fetchEnvironment()} -B -e"
+        }
+
+        String imgVersion = pipelineEnvironment.fetchImageVersionForProd()
 
         pipelineEnvironment.execute "ls -la && ls -la target/"
         pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.artifactVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:$imgVersion ."
 
-        boolean pushNewTag = tagGitHubArtifact(gotoProd)
+        boolean pushNewTag = tagGitHubArtifact(true)
         publishDockerImage()
 
         if (pushNewTag) {
