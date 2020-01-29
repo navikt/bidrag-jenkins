@@ -39,7 +39,7 @@ class DockerImage {
             imgVersion = pipelineEnvironment.fetchImageVersion()
         }
 
-        pipelineEnvironment.execute("ls -la && ls -la target/")
+        pipelineEnvironment.execute "ls -la && ls -la target/"
         pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.artifactVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:$imgVersion ."
 
         boolean pushNewTag = tagGitHubArtifact(gotoProd)
