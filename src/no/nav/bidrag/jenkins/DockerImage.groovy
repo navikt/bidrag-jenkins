@@ -27,7 +27,10 @@ class DockerImage {
         String workspaceFolder = pipelineEnvironment.path_workspace
 
         if (pipelineEnvironment.buildImage != null) {
-            pipelineEnvironment.execute "docker run --rm -v $workspaceFolder:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.buildImage} mvn versions:set -B -DnewVersion=${pipelineEnvironment.artifactVersion} -DgenerateBackupPoms=false"
+            if (!gotoProd) {
+                pipelineEnvironment.execute "docker run --rm -v $workspaceFolder:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.buildImage} mvn versions:set -B -DnewVersion=${pipelineEnvironment.artifactVersion} -DgenerateBackupPoms=false"
+            }
+
             pipelineEnvironment.execute "docker run --rm -v $workspaceFolder:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.buildImage} mvn clean install -DskipTests -Dhendelse.environments=${pipelineEnvironment.fetchEnvironment()} -B -e"
         }
 
