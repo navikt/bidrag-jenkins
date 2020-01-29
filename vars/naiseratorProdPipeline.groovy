@@ -15,7 +15,7 @@ def call(body) {
             pipelineParams.buildType
     )
 
-    pipelineEnvironment.gitHubProjectName = "${gitHubProjectName}"
+    pipelineEnvironment.gitHubProjectName = "${gitHubProjectName}_release"
     Builder builder = pipelineEnvironment.initBuilder()
     DockerImage dockerImage = new DockerImage(pipelineEnvironment)
     GitHubArtifact gitHubArtifact = pipelineEnvironment.initGitHubArtifact()
