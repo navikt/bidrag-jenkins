@@ -2,7 +2,6 @@ package no.nav.bidrag.jenkins
 
 import no.nav.bidrag.jenkins.maven.GitHubMavenArtifact
 import no.nav.bidrag.jenkins.maven.MavenBuilder
-
 import no.nav.bidrag.jenkins.node.GitHubNodeArtifact
 import no.nav.bidrag.jenkins.node.NodeBuilder
 
@@ -105,6 +104,17 @@ class PipelineEnvironment {
         if (imageVersion == null) {
             String sha = Long.toHexString(System.currentTimeMillis())
             imageVersion = "$artifactVersion-${fetchEnvironment()}-$sha"
+        } else {
+            println("Using version: $imageVersion")
+        }
+
+
+        return imageVersion
+    }
+
+    String fetchImageVersionForProd() {
+        if (imageVersion == null) {
+            imageVersion = artifactVersion
         }
 
         return imageVersion
@@ -118,14 +128,18 @@ class PipelineEnvironment {
         buildScript.println(toPrint)
     }
 
-    String createTagName() {
+    String createTagName(boolean gotoProd) {
+        if (gotoProd) {
+            return "$gitHubProjectName-$artifactVersion"
+        }
+
         return "$gitHubProjectName-$artifactVersion-${fetchEnvironment()}"
     }
 
-    boolean canTagGitHubArtifact() {
-        String existingTag = buildScript.sh(script: "git tag -l ${createTagName()}", returnStdout: true).trim()
+    boolean canTagGitHubArtifact(boolean gotoProd) {
+        String existingTag = buildScript.sh(script: "git tag -l ${createTagName(gotoProd)}", returnStdout: true).trim()
 
-        return (isMaster() || isDevelop()) && existingTag == ""
+        return (isMaster() || isDevelop() || (gotoProd && isRelease())) && existingTag == ""
     }
 
     boolean isDevelop() {
@@ -136,8 +150,12 @@ class PipelineEnvironment {
         return branchName == "master"
     }
 
+    boolean isRelease() {
+        return branchName == "release"
+    }
+
     String fetchNamespace() {
-        return isDevelop() ? "default" : fetchEnvironment()
+        return isDevelop() || isRelease() ? "default" : fetchEnvironment()
     }
 
     boolean canRunPipelineOnDevelop(boolean isLastCommitFromPipeline) {

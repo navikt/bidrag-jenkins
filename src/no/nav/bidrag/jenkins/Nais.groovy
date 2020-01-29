@@ -130,6 +130,10 @@ class Nais {
         pipelineEnvironment.println("[INFO] Deployet NAIS app. Bare nye apper kjører")
     }
 
+    void waitForNaiseratorDeployAndOldPodsTerminatedInProd() {
+        throw new UnsupportedOperationException("todo: implementer for produksjon")
+    }
+
     private boolean waitForNaiseratorCurrentBuildToDeploy() {
         String app = pipelineEnvironment.gitHubProjectName
         String currentImageVersion = pipelineEnvironment.fetchImageVersion()
@@ -201,51 +205,85 @@ class Nais {
     }
 
     def applyNaiserator() {
+        applyNaiserator(false)
+    }
+
+    def applyNaiseratorForProd() {
+        pipelineEnvironment.execute("kubectl config use-context prod-fss")
+        applyNaiserator(true)
+    }
+
+    def applyNaiserator(boolean gotoProd) {
         String ns = pipelineEnvironment.fetchNamespace()
-        replaceDockerTag()
-        replaceIngress()
-        replaceNamespace()
-        replaceBidragUrlNs()
-        replaceEnvName()
-        pipelineEnvironment.execute("env")
-        pipelineEnvironment.execute("cat nais.yaml")
-        pipelineEnvironment.println("apply nais.yaml with kubectl")
-        pipelineEnvironment.execute("kubectl apply --namespace=${ns} -f nais.yaml")
-    }
+        String naisYaml = gotoProd ? "nais-p.yaml" : "nais.yaml"
 
-    private def replaceDockerTag() {
-        pipelineEnvironment.println("replace docker tag in nais.yaml with: ")
-        String currentImageVersion = pipelineEnvironment.fetchImageVersion()
-        pipelineEnvironment.println currentImageVersion
-        pipelineEnvironment.execute("sed -i 's+{{version}}+${currentImageVersion}+' nais.yaml")
-    }
+        replaceDockerTag(gotoProd, naisYaml)
+        replaceIngress(gotoProd, naisYaml)
+        replaceNamespace(naisYaml)
+        replaceBidragUrlNs(naisYaml)
 
-    private def replaceIngress() {
-        pipelineEnvironment.println("replace ingress in nais.yaml with: ")
-        String nameSpace = '-' + pipelineEnvironment.fetchNamespace()
-        if (nameSpace == '-default' || nameSpace == '-q0') {
-            nameSpace = ''
+        if (!gotoProd) {
+            replaceEnvName()
         }
-        String ingress = 'https://' + pipelineEnvironment.gitHubProjectName + nameSpace + '.nais.preprod.local/'
-        pipelineEnvironment.println ingress
-        pipelineEnvironment.execute("sed -i 's+{{ingress}}+${ingress}+' nais.yaml")
+
+        pipelineEnvironment.execute("env")
+        pipelineEnvironment.execute("cat $naisYaml")
+        pipelineEnvironment.println("apply $naisYaml with kubectl")
+        pipelineEnvironment.execute("kubectl apply --namespace=${ns} -f $naisYaml")
     }
 
-    private def replaceNamespace() {
-        pipelineEnvironment.println("replace namespace in nais.yaml with: ")
+    private def replaceDockerTag(boolean gotoProd, String naisYaml) {
+        pipelineEnvironment.println("replace docker tag in $naisYaml with: ")
+        String currentImageVersion
+
+        if (gotoProd) {
+            currentImageVersion = pipelineEnvironment.fetchImageVersionForProd()
+        } else {
+            currentImageVersion = pipelineEnvironment.fetchImageVersion()
+        }
+
+        pipelineEnvironment.println currentImageVersion
+        pipelineEnvironment.execute("sed -i 's+{{version}}+${currentImageVersion}+' $naisYaml")
+    }
+
+    private def replaceIngress(boolean gotoProd, String naisYaml) {
+        pipelineEnvironment.println("replace ingress in $naisYaml with: ")
+
+        String ingress
+
+        if (gotoProd) {
+            ingress = "https://${pipelineEnvironment.gitHubProjectName}.nais.adeo.no/"
+        } else {
+            String nameSpace = "-${pipelineEnvironment.fetchNamespace()}"
+
+            if (nameSpace == '-default' || nameSpace == '-q0') {
+                nameSpace = ''
+            }
+
+            ingress = "https://${pipelineEnvironment.gitHubProjectName + nameSpace}.nais.preprod.local/"
+        }
+
+        pipelineEnvironment.println ingress
+        pipelineEnvironment.execute("sed -i 's+{{ingress}}+$ingress+' $naisYaml")
+    }
+
+    private def replaceNamespace(String naisYaml) {
+        pipelineEnvironment.println("replace namespace in $naisYaml with: ")
         String nameSpace = pipelineEnvironment.fetchNamespace()
         pipelineEnvironment.println nameSpace
-        pipelineEnvironment.execute("sed -i 's+{{namespace}}+${nameSpace}+' nais.yaml")
+        pipelineEnvironment.execute("sed -i 's+{{namespace}}+${nameSpace}+' $naisYaml")
     }
 
-    private def replaceBidragUrlNs() {
-        pipelineEnvironment.println("replace bidrag url in nais.yaml with: ")
+    private def replaceBidragUrlNs(String naisYaml) {
+        pipelineEnvironment.println("replace bidrag url in $naisYaml with: ")
         String bidragurlns = '-' + pipelineEnvironment.fetchNamespace()
+
         if (bidragurlns == '-default' || bidragurlns == '-q0') {
             bidragurlns = ''
         }
+
         pipelineEnvironment.println bidragurlns
-        pipelineEnvironment.execute("sed -i 's+{{bidragurlns}}+${bidragurlns}+' nais.yaml")
+        pipelineEnvironment.execute("sed -i 's+{{bidragurlns}}+${bidragurlns}+' $naisYaml")
     }
 
     private def replaceEnvName() {

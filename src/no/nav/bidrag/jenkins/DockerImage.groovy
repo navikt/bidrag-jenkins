@@ -15,7 +15,15 @@ class DockerImage {
         }
     }
 
+    void releaseAndPublishForProd() {
+        releaseAndPublish(true)
+    }
+
     void releaseAndPublish() {
+        releaseAndPublish(false)
+    }
+
+    void releaseAndPublish(boolean gotoProd) {
         if (pipelineEnvironment.isSnapshot()) {
             String workspaceFolder = pipelineEnvironment.path_workspace
 
@@ -24,9 +32,17 @@ class DockerImage {
                 pipelineEnvironment.execute "docker run --rm -v $workspaceFolder:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.buildImage} mvn clean install -DskipTests -Dhendelse.environments=${pipelineEnvironment.fetchEnvironment()} -B -e"
             }
 
-            pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.artifactVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:${pipelineEnvironment.fetchImageVersion()} ."
+            String imgVersion
 
-            boolean pushNewTag = tagGitHubArtifact()
+            if (gotoProd) {
+                imgVersion = pipelineEnvironment.fetchImageVersionForProd()
+            } else {
+                imgVersion = pipelineEnvironment.fetchImageVersion()
+            }
+
+            pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.artifactVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:$imgVersion ."
+
+            boolean pushNewTag = tagGitHubArtifact(gotoProd)
             publishDockerImage()
 
             if (pushNewTag) {
@@ -37,13 +53,17 @@ class DockerImage {
         }
     }
 
-    private boolean tagGitHubArtifact() {
-        String tagName = pipelineEnvironment.createTagName()
+    private boolean tagGitHubArtifact(boolean gotoProd) {
+        String tagName = pipelineEnvironment.createTagName(gotoProd)
 
-        if (pipelineEnvironment.canTagGitHubArtifact()) {
+        if (pipelineEnvironment.canTagGitHubArtifact(gotoProd)) {
             pipelineEnvironment.execute "git tag -a $tagName -m $tagName"
 
             return true
+        }
+
+        if (gotoProd && pipelineEnvironment.isRelease()) {
+            throw new IllegalStateException("Unable to tag with $tagName")
         }
 
         if (pipelineEnvironment.isMaster() || pipelineEnvironment.isDevelop()) {
