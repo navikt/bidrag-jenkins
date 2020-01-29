@@ -209,7 +209,7 @@ class Nais {
     }
 
     def applyNaiseratorForProd() {
-        pipelineEnvironment.execute("kubectl config use-context prod-fss")
+        pipelineEnvironment.execute("sudo kubectl config use-context prod-fss")
         applyNaiserator(true)
     }
 
