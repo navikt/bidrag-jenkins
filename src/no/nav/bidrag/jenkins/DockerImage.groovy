@@ -24,32 +24,28 @@ class DockerImage {
     }
 
     void releaseAndPublish(boolean gotoProd) {
-        if (pipelineEnvironment.isSnapshot()) {
-            String workspaceFolder = pipelineEnvironment.path_workspace
+        String workspaceFolder = pipelineEnvironment.path_workspace
 
-            if (pipelineEnvironment.buildImage != null) {
-                pipelineEnvironment.execute "docker run --rm -v $workspaceFolder:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.buildImage} mvn versions:set -B -DnewVersion=${pipelineEnvironment.artifactVersion} -DgenerateBackupPoms=false"
-                pipelineEnvironment.execute "docker run --rm -v $workspaceFolder:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.buildImage} mvn clean install -DskipTests -Dhendelse.environments=${pipelineEnvironment.fetchEnvironment()} -B -e"
-            }
+        if (pipelineEnvironment.buildImage != null) {
+            pipelineEnvironment.execute "docker run --rm -v $workspaceFolder:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.buildImage} mvn versions:set -B -DnewVersion=${pipelineEnvironment.artifactVersion} -DgenerateBackupPoms=false"
+            pipelineEnvironment.execute "docker run --rm -v $workspaceFolder:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.buildImage} mvn clean install -DskipTests -Dhendelse.environments=${pipelineEnvironment.fetchEnvironment()} -B -e"
+        }
 
-            String imgVersion
+        String imgVersion
 
-            if (gotoProd) {
-                imgVersion = pipelineEnvironment.fetchImageVersionForProd()
-            } else {
-                imgVersion = pipelineEnvironment.fetchImageVersion()
-            }
-
-            pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.artifactVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:$imgVersion ."
-
-            boolean pushNewTag = tagGitHubArtifact(gotoProd)
-            publishDockerImage()
-
-            if (pushNewTag) {
-                pipelineEnvironment.execute "git push --tags"
-            }
+        if (gotoProd) {
+            imgVersion = pipelineEnvironment.fetchImageVersionForProd()
         } else {
-            pipelineEnvironment.println("POM version is not a SNAPSHOT, it is ${pipelineEnvironment.artifactVersion}. Skipping release and publish")
+            imgVersion = pipelineEnvironment.fetchImageVersion()
+        }
+
+        pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.artifactVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:$imgVersion ."
+
+        boolean pushNewTag = tagGitHubArtifact(gotoProd)
+        publishDockerImage()
+
+        if (pushNewTag) {
+            pipelineEnvironment.execute "git push --tags"
         }
     }
 
