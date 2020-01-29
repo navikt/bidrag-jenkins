@@ -69,14 +69,10 @@ class DockerImage {
             return true
         }
 
-        if (gotoProd && pipelineEnvironment.isRelease()) {
-            throw new IllegalStateException("Unable to tag with $tagName")
-        }
-
-        if (pipelineEnvironment.isMaster() || pipelineEnvironment.isDevelop()) {
+        if (pipelineEnvironment.isMaster() || pipelineEnvironment.isDevelop() || pipelineEnvironment.isRelease()) {
             pipelineEnvironment.println("Allready tagged git hub artifact: $tagName")
         } else {
-            pipelineEnvironment.println("Will not tag $tagName when branch not being master or develop")
+            pipelineEnvironment.println("Will not tag $tagName when branch not being master, develop or release")
         }
 
         return false
