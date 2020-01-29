@@ -10,12 +10,12 @@ def call(body) {
     println "naiseratorProdPipeline: pipelineParams = ${pipelineParams}"
 
     PipelineEnvironment pipelineEnvironment = new PipelineEnvironment(
-            pipelineParams.gitHubProjectName,
             pipelineParams.buildImage,
             pipelineParams.environmentInDevelopBranch,
             pipelineParams.buildType
     )
 
+    pipelineEnvironment.gitHubProjectName = "${gitHubProjectName}"
     Builder builder = pipelineEnvironment.initBuilder()
     DockerImage dockerImage = new DockerImage(pipelineEnvironment)
     GitHubArtifact gitHubArtifact = pipelineEnvironment.initGitHubArtifact()

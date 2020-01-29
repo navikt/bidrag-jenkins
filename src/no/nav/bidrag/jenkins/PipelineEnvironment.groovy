@@ -38,6 +38,12 @@ class PipelineEnvironment {
         this.buildType = buildType
     }
 
+    PipelineEnvironment(String buildImage, String environmentInDevelopBranch, String buildType) {
+        this.buildImage = buildImage
+        this.environmentInDevelopBranch = environmentInDevelopBranch
+        this.buildType = buildType
+    }
+
     void doNotRunPipeline(String buildId) {
         canRunPipeline = false
         this.buildId = buildId
