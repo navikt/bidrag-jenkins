@@ -120,7 +120,8 @@ class PipelineEnvironment {
 
     String fetchImageVersionForProd() {
         if (imageVersion == null) {
-            imageVersion = artifactVersion
+            String sha = Long.toHexString(System.currentTimeMillis())
+            imageVersion = "$artifactVersion-$sha"
         }
 
         return imageVersion
