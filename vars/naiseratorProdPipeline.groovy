@@ -15,7 +15,7 @@ def call(body) {
             pipelineParams.buildType
     )
 
-    pipelineEnvironment.gitHubProjectName = "${gitHubProjectName}_release"
+    pipelineEnvironment.gitHubProjectName = "${gitHubProjectName}"
     Builder builder = pipelineEnvironment.initBuilder()
     DockerImage dockerImage = new DockerImage(pipelineEnvironment)
     GitHubArtifact gitHubArtifact = pipelineEnvironment.initGitHubArtifact()
@@ -33,7 +33,7 @@ def call(body) {
                         pipelineEnvironment.homeFolderJenkins = "$HOME"
                         pipelineEnvironment.buildScript = this
                         pipelineEnvironment.path_jenkins_workspace = "$JENKINS_HOME/workspace"
-                        pipelineEnvironment.path_workspace = pipelineEnvironment.path_jenkins_workspace + "/" + "${gitHubProjectName}"
+                        pipelineEnvironment.path_workspace = pipelineEnvironment.path_jenkins_workspace + "/" + "${gitHubProjectName}" + "_" + pipelineEnvironment.branchName
                         gitHubArtifact.checkout(pipelineEnvironment.branchName)
                         pipelineEnvironment.artifactVersion = gitHubArtifact.fetchProdVersion()
                     }
