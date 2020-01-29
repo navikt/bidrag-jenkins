@@ -25,7 +25,8 @@ class DockerImage {
 
     void releaseAndPublish(boolean gotoProd) {
         String workspaceFolder = pipelineEnvironment.path_workspace
-        pipelineEnvironment.execute "echo mvn help:evaluate -Dexpression=project.version -q -DforceStdout"
+        pipelineEnvironment.execute "echo version:"
+        pipelineEnvironment.execute "mvn help:evaluate -Dexpression=project.version -q -DforceStdout"
 
         if (pipelineEnvironment.buildImage != null) {
             if (!gotoProd) {
