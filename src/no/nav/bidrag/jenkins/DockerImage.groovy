@@ -16,21 +16,25 @@ class DockerImage {
     }
 
     void releaseAndPublish() {
-        String workspaceFolder = pipelineEnvironment.path_workspace
+        if (pipelineEnvironment.isRelease()) {
+            releaseAndPublishForProd()
+        } else {
+            String workspaceFolder = pipelineEnvironment.path_workspace
 
-        if (pipelineEnvironment.buildImage != null) {
-            pipelineEnvironment.execute "docker run --rm -v $workspaceFolder:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.buildImage} mvn clean install -DskipTests -Dhendelse.environments=${pipelineEnvironment.fetchEnvironment()} -B -e"
-        }
+            if (pipelineEnvironment.buildImage != null) {
+                pipelineEnvironment.execute "docker run --rm -v $workspaceFolder:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.buildImage} mvn clean install -DskipTests -Dhendelse.environments=${pipelineEnvironment.fetchEnvironment()} -B -e"
+            }
 
-        String imgVersion = pipelineEnvironment.fetchImageVersion()
+            String imgVersion = pipelineEnvironment.fetchImageVersion()
 
-        pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.artifactVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:$imgVersion ."
+            pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.artifactVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:$imgVersion ."
 
-        boolean pushNewTag = tagGitHubArtifact(false)
-        publishDockerImage()
+            boolean pushNewTag = tagGitHubArtifact(false)
+            publishDockerImage()
 
-        if (pushNewTag) {
-            pipelineEnvironment.execute "git push --tags"
+            if (pushNewTag) {
+                pipelineEnvironment.execute "git push --tags"
+            }
         }
     }
 
