@@ -213,8 +213,11 @@ class Nais {
     }
 
     def applyNaiseratorForProd() {
-        pipelineEnvironment.execute "whoami"
-        pipelineEnvironment.execute"sudo kubectl config use-context prod-fss"
+        pipelineEnvironment.buildScript.withCredentials(
+                [[$class: 'UsernamePasswordMultiBinding', credentialsId: 'deployer', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+            pipelineEnvironment.execute"sudo -u USERNAME kubectl config use-context prod-fss"
+        }
+
         applyNaiserator(true)
     }
 
