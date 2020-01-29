@@ -205,7 +205,11 @@ class Nais {
     }
 
     def applyNaiserator() {
-        applyNaiserator(false)
+        if (pipelineEnvironment.isRelease()) {
+            applyNaiseratorForProd()
+        } else {
+            applyNaiserator(false)
+        }
     }
 
     def applyNaiseratorForProd() {
