@@ -16,20 +16,12 @@ class MavenBuilder implements Builder {
     void buildAndTest() {
         pipelineEnvironment.println("gitHubArtifact: ${pipelineEnvironment.gitHubProjectName}")
         pipelineEnvironment.println("workspace: ${pipelineEnvironment.path_workspace}")
-
-        if (pipelineEnvironment.isSnapshot()) {
-            pipelineEnvironment.println("running maven build image.")
-            pipelineEnvironment.execute(
-                    "docker run --rm -v ${pipelineEnvironment.path_workspace}:/usr/src/mymaven -w /usr/src/mymaven " +
-                            "-v \"${pipelineEnvironment.homeFolderJenkins}/.m2\":/root/.m2 ${pipelineEnvironment.buildImage} " +
-                            "mvn clean install -B -e"
-            )
-        } else {
-            pipelineEnvironment.println(
-                    "POM version is not a SNAPSHOT, it is ${pipelineEnvironment.artifactVersion}. " +
-                            "Skipping build and testing of backend"
-            )
-        }
+        pipelineEnvironment.println("running maven build image.")
+        pipelineEnvironment.execute(
+                "docker run --rm -v ${pipelineEnvironment.path_workspace}:/usr/src/mymaven -w /usr/src/mymaven " +
+                        "-v \"${pipelineEnvironment.homeFolderJenkins}/.m2\":/root/.m2 ${pipelineEnvironment.buildImage} " +
+                        "mvn clean install -B -e"
+        )
     }
 
     String deployArtifact() {

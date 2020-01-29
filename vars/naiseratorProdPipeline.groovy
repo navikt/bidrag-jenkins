@@ -33,6 +33,7 @@ def call(body) {
                         pipelineEnvironment.homeFolderJenkins = "$HOME"
                         pipelineEnvironment.buildScript = this
                         pipelineEnvironment.path_jenkins_workspace = "$JENKINS_HOME/workspace"
+                        pipelineEnvironment.path_workspace = "$WORKSPACE"
                         gitHubArtifact.checkout(pipelineEnvironment.branchName)
                         pipelineEnvironment.artifactVersion = gitHubArtifact.fetchProdVersion()
                     }
