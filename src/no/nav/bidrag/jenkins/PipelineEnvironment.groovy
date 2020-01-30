@@ -208,6 +208,10 @@ class PipelineEnvironment {
     }
 
     boolean canRunPipelineWithMaven() {
+        if (isRelease()) {
+            return false
+        }
+
         return canRunPipeline && githubArtifact instanceof GitHubMavenArtifact
     }
 
