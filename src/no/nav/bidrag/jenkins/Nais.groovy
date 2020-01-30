@@ -213,13 +213,18 @@ class Nais {
     }
 
     def applyNaiseratorForProd() {
-        pipelineEnvironment.execute "kubectl config use-context prod-fss"
-
         applyNaiserator(true)
     }
 
     def applyNaiserator(boolean gotoProd) {
         String ns = pipelineEnvironment.fetchNamespace()
+
+        if (gotoProd) {
+            pipelineEnvironment.execute "kubectl config use-context prod-fss"
+        } else {
+            pipelineEnvironment.execute "kubectl config use-context dev-fss"
+        }
+
         String naisYaml = gotoProd ? "nais-p.yaml" : "nais.yaml"
 
         replaceDockerTag(gotoProd, naisYaml)
