@@ -28,13 +28,6 @@ class DockerImage {
             String imgVersion = pipelineEnvironment.fetchImageVersion()
 
             pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.artifactVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:$imgVersion ."
-
-            boolean pushNewTag = tagGitHubArtifact(false)
-            publishDockerImage()
-
-            if (pushNewTag) {
-                pipelineEnvironment.execute "git push --tags"
-            }
         }
     }
 
@@ -52,7 +45,7 @@ class DockerImage {
         pipelineEnvironment.execute "ls -la && ls -la target/"
         pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.artifactVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:$imgVersion ."
 
-        boolean pushNewTag = tagGitHubArtifact(true)
+        boolean pushNewTag = tagGitHubArtifact()
         publishDockerImage()
 
         if (pushNewTag) {
@@ -60,19 +53,13 @@ class DockerImage {
         }
     }
 
-    private boolean tagGitHubArtifact(boolean gotoProd) {
-        String tagName = pipelineEnvironment.createTagName(gotoProd)
+    private boolean tagGitHubArtifact() {
+        String tagName = pipelineEnvironment.artifactVersion
 
-        if (pipelineEnvironment.canTagGitHubArtifact(gotoProd)) {
+        if (pipelineEnvironment.canTagGitHubArtifact()) {
             pipelineEnvironment.execute "git tag -a $tagName -m $tagName"
 
             return true
-        }
-
-        if (pipelineEnvironment.isMaster() || pipelineEnvironment.isDevelop() || pipelineEnvironment.isRelease()) {
-            pipelineEnvironment.println("Allready tagged git hub artifact: $tagName")
-        } else {
-            pipelineEnvironment.println("Will not tag $tagName when branch not being master, develop or release")
         }
 
         return false

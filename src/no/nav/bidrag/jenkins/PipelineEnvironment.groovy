@@ -82,10 +82,6 @@ class PipelineEnvironment {
         }
     }
 
-    boolean isSnapshot() {
-        return artifactVersion.contains("-SNAPSHOT")
-    }
-
     void execute(String command) {
         buildScript.sh("$command")
     }
@@ -135,18 +131,14 @@ class PipelineEnvironment {
         buildScript.println(toPrint)
     }
 
-    String createTagName(boolean gotoProd) {
-        if (gotoProd) {
-            return "$gitHubProjectName-$artifactVersion"
-        }
-
-        return "$gitHubProjectName-$artifactVersion-${fetchEnvironment()}"
+    String createTagName() {
+        return "$artifactVersion"
     }
 
-    boolean canTagGitHubArtifact(boolean gotoProd) {
-        String existingTag = buildScript.sh(script: "git tag -l ${createTagName(gotoProd)}", returnStdout: true).trim()
+    boolean canTagGitHubArtifact() {
+        String existingTag = buildScript.sh(script: "git tag -l ${createTagName()}", returnStdout: true).trim()
 
-        return (isMaster() || isDevelop() || (gotoProd && isRelease())) && existingTag == ""
+        return isRelease() && existingTag == ""
     }
 
     boolean isDevelop() {

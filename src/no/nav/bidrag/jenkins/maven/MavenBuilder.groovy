@@ -43,9 +43,6 @@ class MavenBuilder implements Builder {
             return 'UNSTABLE'
         }
 
-        pipelineEnvironment.execute "git tag -a $stableVersion -m $stableVersion"
-        pipelineEnvironment.execute "git push --tags"
-
         return 'SUCCESS'
     }
 
