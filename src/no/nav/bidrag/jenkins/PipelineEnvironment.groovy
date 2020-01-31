@@ -207,6 +207,14 @@ class PipelineEnvironment {
         return canRunPipeline && githubArtifact instanceof GitHubMavenArtifact
     }
 
+    boolean canRunCucumber() {
+        if (isRelease()) {
+            return false
+        }
+
+        return canRunPipeline
+    }
+
     def executeMavenTest() {
         println "[INFO] Run bidrag-cucumber-backend tests"
 

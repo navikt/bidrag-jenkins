@@ -130,10 +130,6 @@ class Nais {
         pipelineEnvironment.println("[INFO] Deployet NAIS app. Bare nye apper kjører")
     }
 
-    void waitForNaiseratorDeployAndOldPodsTerminatedInProd() {
-        throw new UnsupportedOperationException("todo: implementer for produksjon")
-    }
-
     private boolean waitForNaiseratorCurrentBuildToDeploy() {
         String app = pipelineEnvironment.gitHubProjectName
         String currentImageVersion = pipelineEnvironment.fetchImageVersion()

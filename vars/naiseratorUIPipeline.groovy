@@ -81,7 +81,7 @@ def call(body) {
             }
 
             stage("run cucumber tests") {
-                when { expression { pipelineEnvironment.canRunPipeline } }
+                when { expression { pipelineEnvironment.canRunCucumber } }
                 steps { script { result = cucumber.runCucumberTests() } }
             }
         }
