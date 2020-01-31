@@ -21,6 +21,7 @@ class PipelineEnvironment {
     String environmentInDevelopBranch
     String gitHubProjectName
     String homeFolderJenkins
+    String imageVersionForProd
     String lastCommitter
     String path_cucumber
     String path_jenkins_workspace
@@ -119,8 +120,12 @@ class PipelineEnvironment {
     }
 
     String fetchImageVersionForProd() {
-        String sha = Long.toHexString(System.currentTimeMillis())
-        return "${fetchStableVersion()}-$sha"
+        if (imageVersionForProd == null) {
+            String sha = Long.toHexString(System.currentTimeMillis())
+            imageVersionForProd = "${fetchStableVersion()}-$sha"
+        }
+
+        return imageVersionForProd
     }
 
     String fetchStableVersion() {
