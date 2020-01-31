@@ -132,7 +132,7 @@ class PipelineEnvironment {
     }
 
     String createTagName() {
-        return "$artifactVersion"
+        return "$artifactVersion".replace("-SNAPSHOT", "")
     }
 
     boolean canTagGitHubArtifact() {
