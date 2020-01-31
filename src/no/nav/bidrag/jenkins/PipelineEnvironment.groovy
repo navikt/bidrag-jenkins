@@ -119,7 +119,8 @@ class PipelineEnvironment {
     }
 
     String fetchImageVersionForProd() {
-        return fetchStableVersion()
+        String sha = Long.toHexString(System.currentTimeMillis())
+        return "${fetchStableVersion()}-$sha"
     }
 
     String fetchStableVersion() {

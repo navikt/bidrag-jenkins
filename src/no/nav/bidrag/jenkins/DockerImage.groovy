@@ -12,7 +12,7 @@ class DockerImage {
         String version
 
         if (gotoProd) {
-            version = pipelineEnvironment.fetchStableVersion()
+            version = pipelineEnvironment.fetchImageVersionForProd()
         } else {
             version = pipelineEnvironment.fetchImageVersion()
         }
