@@ -83,10 +83,6 @@ class PipelineEnvironment {
         }
     }
 
-    boolean isSnapshot() {
-        return artifactVersion.contains("-SNAPSHOT")
-    }
-
     void execute(String command) {
         buildScript.sh("$command")
     }
