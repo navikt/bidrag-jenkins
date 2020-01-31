@@ -133,7 +133,7 @@ class PipelineEnvironment {
 
     String createTagName(boolean gotoProd) {
         if (gotoProd) {
-            return "$gitHubProjectName-${fetchStableVersion()}"
+            return fetchImageVersionForProd()
         }
 
         return "$gitHubProjectName-$artifactVersion-${fetchEnvironment()}"
