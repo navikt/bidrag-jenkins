@@ -28,6 +28,13 @@ class DockerImage {
             String imgVersion = pipelineEnvironment.fetchImageVersion()
 
             pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.artifactVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:$imgVersion ."
+
+            boolean pushNewTag = tagGitHubArtifact(false)
+            publishDockerImage()
+
+            if (pushNewTag) {
+                pipelineEnvironment.execute "git push --tags"
+            }
         }
     }
 
@@ -39,12 +46,11 @@ class DockerImage {
             pipelineEnvironment.execute "docker run --rm -v $workspaceFolder:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.buildImage} mvn clean install -DskipTests -Dhendelse.environments=${pipelineEnvironment.fetchEnvironment()} -B -e"
         }
 
-        String imgVersion = pipelineEnvironment.fetchImageVersionForProd()
+        String imgVersion = pipelineEnvironment.fetchImageVersionForProd().replace("-SNAPSHOT", "")
 
-        pipelineEnvironment.execute "pwd"
         pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.artifactVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:$imgVersion ."
 
-        boolean pushNewTag = tagGitHubArtifact()
+        boolean pushNewTag = tagGitHubArtifact(true)
         publishDockerImage()
 
         if (pushNewTag) {
@@ -52,13 +58,19 @@ class DockerImage {
         }
     }
 
-    private boolean tagGitHubArtifact() {
-        String tagName = pipelineEnvironment.artifactVersion
+    private boolean tagGitHubArtifact(boolean gotoProd) {
+        String tagName = pipelineEnvironment.createTagName(gotoProd)
 
-        if (pipelineEnvironment.canTagGitHubArtifact()) {
+        if (pipelineEnvironment.canTagGitHubArtifact(gotoProd)) {
             pipelineEnvironment.execute "git tag -a $tagName -m $tagName"
 
             return true
+        }
+
+        if (pipelineEnvironment.isMaster() || pipelineEnvironment.isDevelop() || pipelineEnvironment.isRelease()) {
+            pipelineEnvironment.println("Allready tagged git hub artifact: $tagName")
+        } else {
+            pipelineEnvironment.println("Will not tag $tagName when branch not being master, develop or release")
         }
 
         return false
