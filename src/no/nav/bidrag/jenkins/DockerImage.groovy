@@ -8,10 +8,18 @@ class DockerImage {
         this.pipelineEnvironment = pipelineEnvironment
     }
 
-    private void publishDockerImage() {
+    private void publishDockerImage(boolean gotoProd) {
+        String version
+
+        if (gotoProd) {
+            version = pipelineEnvironment.fetchStableVersion()
+        } else {
+            version = pipelineEnvironment.fetchImageVersion()
+        }
+
         pipelineEnvironment.buildScript.withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'nexusCredentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
             pipelineEnvironment.buildScript.sh "docker login -u ${pipelineEnvironment.buildScript.USERNAME} -p ${pipelineEnvironment.buildScript.PASSWORD} ${pipelineEnvironment.dockerRepo}"
-            pipelineEnvironment.buildScript.sh "docker push ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:${pipelineEnvironment.fetchImageVersion()}"
+            pipelineEnvironment.buildScript.sh "docker push ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:$version"
         }
     }
 
@@ -30,7 +38,7 @@ class DockerImage {
             pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.artifactVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:$imgVersion ."
 
             boolean pushNewTag = tagGitHubArtifact(false)
-            publishDockerImage()
+            publishDockerImage(false)
 
             if (pushNewTag) {
                 pipelineEnvironment.execute "git push --tags"
@@ -51,7 +59,7 @@ class DockerImage {
         pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.artifactVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:$imgVersion ."
 
         boolean pushNewTag = tagGitHubArtifact(true)
-        publishDockerImage()
+        publishDockerImage(true)
 
         if (pushNewTag) {
             pipelineEnvironment.execute "git push --tags"
