@@ -119,11 +119,7 @@ class PipelineEnvironment {
     }
 
     String fetchImageVersionForProd() {
-        if (imageVersion == null) {
-            imageVersion = artifactVersion
-        }
-
-        return imageVersion
+        return fetchStableVersion()
     }
 
     String fetchStableVersion() {
