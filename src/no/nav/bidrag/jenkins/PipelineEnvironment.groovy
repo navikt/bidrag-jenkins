@@ -21,6 +21,7 @@ class PipelineEnvironment {
     String environmentInDevelopBranch
     String gitHubProjectName
     String homeFolderJenkins
+    String imageVersionForProd
     String lastCommitter
     String path_cucumber
     String path_jenkins_workspace
@@ -82,10 +83,6 @@ class PipelineEnvironment {
         }
     }
 
-    boolean isSnapshot() {
-        return artifactVersion.contains("-SNAPSHOT")
-    }
-
     void execute(String command) {
         buildScript.sh("$command")
     }
@@ -119,11 +116,12 @@ class PipelineEnvironment {
     }
 
     String fetchImageVersionForProd() {
-        if (imageVersion == null) {
-            imageVersion = artifactVersion
+        if (imageVersionForProd == null) {
+            String sha = Long.toHexString(System.currentTimeMillis())
+            imageVersionForProd = "${fetchStableVersion()}-$sha"
         }
 
-        return imageVersion
+        return imageVersionForProd
     }
 
     String fetchStableVersion() {
@@ -136,7 +134,7 @@ class PipelineEnvironment {
 
     String createTagName(boolean gotoProd) {
         if (gotoProd) {
-            return "$gitHubProjectName-${fetchStableVersion()}"
+            return fetchImageVersionForProd()
         }
 
         return "$gitHubProjectName-$artifactVersion-${fetchEnvironment()}"

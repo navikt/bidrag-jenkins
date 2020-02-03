@@ -12,7 +12,7 @@ class DockerImage {
         String version
 
         if (gotoProd) {
-            version = pipelineEnvironment.fetchStableVersion()
+            version = pipelineEnvironment.fetchImageVersionForProd()
         } else {
             version = pipelineEnvironment.fetchImageVersion()
         }
@@ -54,7 +54,7 @@ class DockerImage {
             pipelineEnvironment.execute "docker run --rm -v $workspaceFolder:/usr/src/mymaven -w /usr/src/mymaven -v '${pipelineEnvironment.homeFolderJenkins}/.m2':/root/.m2 ${pipelineEnvironment.buildImage} mvn clean install -DskipTests -Dhendelse.environments=${pipelineEnvironment.fetchEnvironment()} -B -e"
         }
 
-        String imgVersion = pipelineEnvironment.fetchImageVersionForProd().replace("-SNAPSHOT", "")
+        String imgVersion = pipelineEnvironment.fetchImageVersionForProd()
 
         pipelineEnvironment.execute "docker build --build-arg version=${pipelineEnvironment.artifactVersion} -t ${pipelineEnvironment.dockerRepo}/${pipelineEnvironment.gitHubProjectName}:$imgVersion ."
 
