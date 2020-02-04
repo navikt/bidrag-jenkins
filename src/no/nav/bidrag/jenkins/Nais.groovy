@@ -133,6 +133,9 @@ class Nais {
     private boolean waitForNaiseratorCurrentBuildToDeploy() {
         String app = pipelineEnvironment.gitHubProjectName
         String currentImageVersion = pipelineEnvironment.fetchImageVersion()
+        if (pipelineEnvironment.isRelease()) {
+            currentImageVersion = pipelineEnvironment.fetchImageVersionForProd()
+        }
         String ns = pipelineEnvironment.fetchNamespace()
         Integer sleepInterval = 15000
         Integer maxRetries = 20
