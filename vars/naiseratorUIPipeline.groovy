@@ -79,11 +79,6 @@ def call(body) {
                 when { expression { pipelineEnvironment.canRunPipeline } }
                 steps { script { nais.waitForNaiseratorDeployAndOldPodsTerminated() } }
             }
-
-            stage("run cucumber tests") {
-                when { expression { pipelineEnvironment.canRunCucumber } }
-                steps { script { result = cucumber.runCucumberTests() } }
-            }
         }
 
         post {
